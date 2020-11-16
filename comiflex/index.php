@@ -42,6 +42,60 @@
             $error_message = ExecuteSql($sql, 'comiflex');
         }
         
+        // Заказчика
+        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['organization'])) {
+            $organization = addslashes($_POST['organization']);
+            $sql = '';
+            
+            if(isset($_POST['id'])) {
+                $id = $_POST['id'];
+                $sql = "update comiflex set organization='$organization' where id=$id";
+            }
+            else {
+                $date = $_POST['date'];
+                $shift = $_POST['shift'];
+                $sql = "insert into comiflex (date, shift, organization) values ('$date', '$shift', '$organization')";
+            }
+            
+            $error_message = ExecuteSql($sql, 'comiflex');
+        }
+        
+        // Тираж
+        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edition'])) {
+            $edition = addslashes($_POST['edition']);
+            $sql = '';
+            
+            if(isset($_POST['id'])) {
+                $id = $_POST['id'];
+                $sql = "update comiflex set edition='$edition' where id=$id";
+            }
+            else {
+                $date = $_POST['date'];
+                $shift = $_POST['shift'];
+                $sql = "insert into comiflex (date, shift, edition) values ('$date', '$shift', '$edition')";
+            }
+            
+            $error_message = ExecuteSql($sql, 'comiflex');
+        }
+        
+        // Метраж
+        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['length'])) {
+            $length = filter_var($_POST['length'], FILTER_SANITIZE_NUMBER_INT);
+            $sql = '';
+            
+            if(isset($_POST['id'])) {
+                $id = $_POST['id'];
+                $sql = "update comiflex set length='$length' where id=$id";
+            }
+            else {
+                $date = $_POST['date'];
+                $shift = $_POST['shift'];
+                $sql = "insert into comiflex (date, shift, length) values ('$date', '$shift', $length)";
+            }
+            
+            $error_message = ExecuteSql($sql, 'comiflex');
+        }
+        
         // Удаление рабочей смены
         if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_submit'])) {
             $id = $_POST['id'];
@@ -239,9 +293,88 @@
                             }
                             echo '</td>';
 
-                            echo '<td'.$top.'>'.$row['organization'].'</td>';
-                            echo '<td'.$top.'>'.$row['edition'].'</td>';
-                            echo '<td'.$top.'>'.$row['length'].'</td>';
+                            // Заказчик
+                            echo '<td'.$top.'>';
+                            if(IsInRole('admin')) {
+                                echo '<form method="post">';
+                                echo '<input type="hidden" id="scroll" name="scroll" />';
+                                if(isset($row['id'])) {
+                                    echo '<input type="hidden" id="id" name="id" value="'.$row['id'].'" />';
+                                }
+                                echo '<input type="hidden" id="date" name="date" value="'.$row['date'].'" />';
+                                echo '<input type="hidden" id="shift" name="shift" value="'.$row['shift'].'" />';
+                                if(isset($_GET['from'])) {
+                                    echo '<input type="hidden" id="from" name="from" value="'.$_GET['from'].'" />';
+                                }
+                                if(isset($_GET['to'])) {
+                                    echo '<input type="hidden" id="to" name="to" value="'.$_GET['to'].'" />';
+                                }
+                                echo '<div class="input-group">';
+                                echo '<input type="text" id="organization" name="organization" value="'.htmlentities($row['organization']).'" class="editable" />';
+                                echo '<div class="input-group-append invisible"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                                echo '</div>';
+                                echo '</form>';
+                            }
+                            else {
+                                echo $row['organization'];
+                            }
+                            echo '</td>';
+                            
+                            // Тираж
+                            echo '<td'.$top.'>';
+                            if(IsInRole('admin')) {
+                                echo '<form method="post">';
+                                echo '<input type="hidden" id="scroll" name="scroll" />';
+                                if(isset($row['id'])) {
+                                    echo '<input type="hidden" id="id" name="id" value="'.$row['id'].'" />';
+                                }
+                                echo '<input type="hidden" id="date" name="date" value="'.$row['date'].'" />';
+                                echo '<input type="hidden" id="shift" name="shift" value="'.$row['shift'].'" />';
+                                if(isset($_GET['from'])) {
+                                    echo '<input type="hidden" id="from" name="from" value="'.$_GET['from'].'" />';
+                                }
+                                if(isset($_GET['to'])) {
+                                    echo '<input type="hidden" id="to" name="to" value="'.$_GET['to'].'" />';
+                                }
+                                echo '<div class="input-group">';
+                                echo '<input type="text" id="edition" name="edition" value="'.htmlentities($row['edition']).'" class="editable" />';
+                                echo '<div class="input-group-append invisible"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                                echo '</div>';
+                                echo '</form>';
+                            }
+                            else {
+                                echo $row['edition'];
+                            }
+                            echo '</td>';
+                            
+                            // Метраж
+                            echo '<td'.$top.'>';
+                            if(IsInRole('admin')) {
+                                echo '<form method="post">';
+                                echo '<input type="hidden" id="scroll" name="scroll" />';
+                                if(isset($row['id'])) {
+                                    echo '<input type="hidden" id="id" name="id" value="'.$row['id'].'" />';
+                                }
+                                echo '<input type="hidden" id="date" name="date" value="'.$row['date'].'" />';
+                                echo '<input type="hidden" id="shift" name="shift" value="'.$row['shift'].'" />';
+                                if(isset($_GET['from'])) {
+                                    echo '<input type="hidden" id="from" name="from" value="'.$_GET['from'].'" />';
+                                }
+                                if(isset($_GET['to'])) {
+                                    echo '<input type="hidden" id="to" name="to" value="'.$_GET['to'].'" />';
+                                }
+                                echo '<div class="input-group">';
+                                echo '<input type="number" step="1" id="length" name="length" value="'.$row['length'].'" class="editable" />';
+                                echo '<div class="input-group-append invisible"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                                echo '</div>';
+                                echo '</form>';
+                            }
+                            else {
+                                echo $row['edition'];
+                            }
+                            echo '</td>';
+                            
+                            // Вал
                             echo '<td'.$top.'>'.$row['roller'].'</td>';
                             echo '<td'.$top.'>'.$row['lamination'].'</td>';
                             echo '<td'.$top.'>'.$row['coloring'].'</td>';

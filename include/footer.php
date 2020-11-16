@@ -28,6 +28,14 @@
             $(this).removeClass('is-invalid');
         });
         
+        $('.editable').keypress(function(){
+            $(this).next('.invisible').removeClass('invisible');
+        });
+        
+        $('.editable').change(function(){
+            $(this).next('.invisible').removeClass('invisible');
+        });
+        
         <?php if (!empty($_REQUEST['scroll'])): ?>
         window.scrollTo(0, <?php echo intval($_REQUEST['scroll']); ?>);
         <?php endif; ?>
