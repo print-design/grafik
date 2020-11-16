@@ -100,7 +100,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout_submit'])) {
             $atlas_status = $_SERVER['PHP_SELF'] == APPLICATION.'/atlas/index.php' ? ' disabled' : '';
             $laminators_status = $_SERVER['PHP_SELF'] == APPLICATION.'/laminators/index.php' ? ' disabled' : '';
             $cutters_status = $_SERVER['PHP_SELF'] == APPLICATION.'/cutters/index.php' ? ' disabled' : '';
-            $organization_status = $_SERVER['PHP_SELF'] == APPLICATION.'/organization/index.php' ? ' disabled' : '';
+            $machine_status = $_SERVER['PHP_SELF'] == APPLICATION.'/machine/index.php' ? ' disabled' : '';
             $lamination_status = $_SERVER['PHP_SELF'] == APPLICATION.'/lamination/index.php' ? ' disabled' : '';
             $user_status = $_SERVER['PHP_SELF'] == APPLICATION.'/user/index.php' ? ' disabled' : '';
             $personal_status = $_SERVER['PHP_SELF'] == APPLICATION.'/personal/index.php' ? ' disabled' : '';
@@ -150,8 +150,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout_submit'])) {
                     Администратор
                 </a>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item<?=$organization_status ?>" href="<?=APPLICATION ?>/organization/">Предприятия</a>
                     <a class="dropdown-item<?=$user_status ?>" href="<?=APPLICATION ?>/user/">Пользователи</a>
+                    <a class="dropdown-item<?=$machine_status ?>" href="<?=APPLICATION ?>/machine/">Машины</a>
                 </div>
             </li>
             <?php
