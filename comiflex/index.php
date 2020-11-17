@@ -117,6 +117,43 @@
             $error_message = ExecuteSql($sql);
         }
         
+        // Выбор ламинации
+        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['lamination_id'])) {
+            $lamination_id = $_POST['lamination_id'];
+            if($_POST['lamination_id'] == '') $lamination_id = "NULL";
+            $sql = '';
+            
+            if(isset($_POST['id'])) {
+                $id = $_POST['id'];
+                $sql = "update comiflex set lamination_id=$lamination_id where id=$id";
+            }
+            else {
+                $date = $_POST['date'];
+                $shift = $_POST['shift'];
+                $sql = "insert into comiflex (date, shift, lamination_id) values ('$date', '$shift', $lamination_id)";
+            }
+            
+            $error_message = ExecuteSql($sql);
+        }
+        
+        // Красочность
+        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['coloring'])) {
+            $coloring = filter_var($_POST['coloring'], FILTER_SANITIZE_NUMBER_INT);
+            $sql = '';
+            
+            if(isset($_POST['id'])) {
+                $id = $_POST['id'];
+                $sql = "update comiflex set coloring='$coloring' where id=$id";
+            }
+            else {
+                $date = $_POST['date'];
+                $shift = $_POST['shift'];
+                $sql = "insert into comiflex (date, shift, coloring) values ('$date', '$shift', $coloring)";
+            }
+            
+            $error_message = ExecuteSql($sql);
+        }
+        
         // Удаление рабочей смены
         if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_submit'])) {
             $id = $_POST['id'];
@@ -224,13 +261,27 @@
                         }
                     }
                     
+                    // Список ламинаций
+                    $laminations = array();
+                    
+                    if(IsInRole('admin')) {
+                        $lamination_sql = "select id, name from lamination where common = 1 order by sort";
+                        $lamination_result = mysqli_query($conn, $lamination_sql);
+                        if(is_bool($lamination_result)) {
+                            die("Ошибка при запросе списка ламинаций");
+                        }
+                        else {
+                            $laminations = mysqli_fetch_all($lamination_result, MYSQLI_ASSOC);
+                        }
+                    }
+                    
                     // Список рабочих смен
                     $sql = "with recursive date_ranges as (select '".$date_from->format('Y-m-d')."' as date union all select date + interval 1 day from date_ranges where date < '".$date_to->format('Y-m-d')."') "
                             . "select t.id, dr.date date, date_format(dr.date, '%d.%m.%Y') fdate, 'day' shift, "
                             . "up.id p_id, up.last_name p_last_name, up.first_name p_first_name, up.middle_name p_middle_name, "
                             . "ua.id a_id, ua.last_name a_last_name, ua.first_name a_first_name, ua.middle_name a_middle_name, "
-                            . "t.organization, t.edition, t.length, r.name roller, lam.name lamination, t.coloring, t.roller_id, "
-                            . "um.last_name m_last_name, um.first_name m_first_name, um.middle_name m_middle_name "
+                            . "t.organization, t.edition, t.length, r.name roller, lam.name lamination, t.coloring, t.roller_id, t.lamination_id, "
+                            . "um.name m_name "
                             . "from date_ranges dr left join comiflex t "
                             . "left join user up on t.typographer_id = up.id "
                             . "left join user ua on t.assistant_id = ua.id "
@@ -242,8 +293,8 @@
                             . "select t.id, dr.date date, date_format(dr.date, '%d.%m.%Y') fdate, 'night' shift, "
                             . "up.id p_id, up.last_name p_last_name, up.first_name p_first_name, up.middle_name p_middle_name, "
                             . "ua.id a_id, ua.last_name a_last_name, ua.first_name a_first_name, ua.middle_name a_middle_name, "
-                            . "t.organization, t.edition, t.length, r.name roller, lam.name lamination, t.coloring, t.roller_id, "
-                            . "um.last_name m_last_name, um.first_name m_first_name, um.middle_name m_middle_name "
+                            . "t.organization, t.edition, t.length, r.name roller, lam.name lamination, t.coloring, t.roller_id, t.lamination_id, "
+                            . "um.name m_name "
                             . "from date_ranges dr left join comiflex t "
                             . "left join user up on t.typographer_id = up.id "
                             . "left join user ua on t.assistant_id = ua.id "
@@ -377,10 +428,45 @@
                             echo '</td>';
                             
                             // Ламинация
-                            echo '<td'.$top.'>'.$row['lamination'].'</td>';
-                            echo '<td'.$top.'>'.$row['coloring'].'</td>';
-                            echo '<td'.$top.'>'.$row['m_last_name'].' '.(mb_strlen($row['m_first_name']) > 1 ? mb_substr($row['m_first_name'], 0, 1).'.' : $row['m_first_name']).' '.(mb_strlen($row['m_middle_name']) > 1 ? mb_substr($row['m_middle_name'], 0, 1).'.' : $row['m_middle_name']).'</td>';
+                            echo '<td'.$top.'>';
+                            if(IsInRole('admin')) {
+                                echo "<form method='post'>";
+                                AddHiddenFields($row);
+                                echo '<select onchange="javascript: this.form.submit();" id="lamination_id" name="lamination_id">';
+                                echo '<option value="">...</option>';
+                                foreach ($laminations as $value) {
+                                    $selected = '';
+                                    if($row['lamination_id'] == $value['id']) $selected = " selected = 'selected'";
+                                    echo "<option$selected value='".$value['id']."'>".$value['name']."</option>";
+                                }
+                                echo '</select>';
+                                echo '</form>';
+                            }
+                            else {
+                                echo $row['lamination'];
+                            }
+                            echo '</td>';
                             
+                            // Красочность
+                            echo '<td'.$top.'>';
+                            if(IsInRole('admin')) {
+                                echo '<form method="post">';
+                                AddHiddenFields($row);
+                                echo '<div class="input-group">';
+                                echo '<input type="number" step="1" id="coloring" name="coloring" value="'.$row['coloring'].'" class="editable" />';
+                                echo '<div class="input-group-append invisible"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                                echo '</div>';
+                                echo '</form>';
+                            }
+                            else {
+                                echo $row['coloring'];
+                            }
+                            echo '</td>';
+                            
+                            // Менеджер
+                            echo '<td'.$top.'>'.$row['m_name'].'</td>';
+                            
+                            // Удаление смены
                             if(IsInRole('admin')) {
                                 echo '<td'.$top.'>';
                                 if(isset($row['id'])) {
