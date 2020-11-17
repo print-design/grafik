@@ -3,6 +3,8 @@
     <head>
         <?php
         include '../include/head.php';
+        
+        $machine_id = 1;
 
         // Выбор печатника
         if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['typographer_id'])) {
@@ -42,7 +44,7 @@
             $error_message = ExecuteSql($sql);
         }
         
-        // Заказчика
+        // Заказчик
         if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['organization'])) {
             $organization = addslashes($_POST['organization']);
             $sql = '';
@@ -91,6 +93,25 @@
                 $date = $_POST['date'];
                 $shift = $_POST['shift'];
                 $sql = "insert into comiflex (date, shift, length) values ('$date', '$shift', $length)";
+            }
+            
+            $error_message = ExecuteSql($sql);
+        }
+        
+        // Выбор вала
+        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['roller_id'])) {
+            $roller_id = $_POST['roller_id'];
+            if($_POST['roller_id'] == '') $roller_id = "NULL";
+            $sql = '';
+            
+            if(isset($_POST['id'])) {
+                $id = $_POST['id'];
+                $sql = "update comiflex set roller_id=$roller_id where id=$id";
+            }
+            else {
+                $date = $_POST['date'];
+                $shift = $_POST['shift'];
+                $sql = "insert into comiflex (date, shift, roller_id) values ('$date', '$shift', $roller_id)";
             }
             
             $error_message = ExecuteSql($sql);
@@ -179,7 +200,7 @@
                     $typographers = array();
                     
                     if(IsInRole('admin')) {
-                        $typographer_sql = "select u.id, u.last_name, u.first_name, u.middle_name from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 3";
+                        $typographer_sql = "select u.id, u.last_name, u.first_name, u.middle_name from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 3 order by u.last_name";
                         $typographer_result = mysqli_query($conn, $typographer_sql);
                         if(is_bool($typographer_result)){
                             die("Ошибка при запросе списка печатников");
@@ -189,29 +210,45 @@
                         }
                     }
                     
+                    // Список валов
+                    $rollers = array();
+                    
+                    if(IsInRole('admin')) {
+                        $roller_sql = "select id, name from roller where machine_id=$machine_id order by name";
+                        $roller_result = mysqli_query($conn, $roller_sql);
+                        if(is_bool($roller_result)) {
+                            die("Ошибка при запросе списка валов");
+                        }
+                        else {
+                            $rollers = mysqli_fetch_all($roller_result, MYSQLI_ASSOC);
+                        }
+                    }
+                    
                     // Список рабочих смен
                     $sql = "with recursive date_ranges as (select '".$date_from->format('Y-m-d')."' as date union all select date + interval 1 day from date_ranges where date < '".$date_to->format('Y-m-d')."') "
                             . "select t.id, dr.date date, date_format(dr.date, '%d.%m.%Y') fdate, 'day' shift, "
                             . "up.id p_id, up.last_name p_last_name, up.first_name p_first_name, up.middle_name p_middle_name, "
                             . "ua.id a_id, ua.last_name a_last_name, ua.first_name a_first_name, ua.middle_name a_middle_name, "
-                            . "t.organization, t.edition, t.length, lam.name lamination, t.coloring, t.roller, "
+                            . "t.organization, t.edition, t.length, r.name roller, lam.name lamination, t.coloring, t.roller_id, "
                             . "um.last_name m_last_name, um.first_name m_first_name, um.middle_name m_middle_name "
                             . "from date_ranges dr left join comiflex t "
                             . "left join user up on t.typographer_id = up.id "
                             . "left join user ua on t.assistant_id = ua.id "
                             . "left join user um on t.manager_id = um.id "
+                            . "left join roller r on t.roller_id = r.id "
                             . "left join lamination lam on t.lamination_id = lam.id "
                             . "on t.date = dr.date and t.shift = 'day' "
                             . "union "
                             . "select t.id, dr.date date, date_format(dr.date, '%d.%m.%Y') fdate, 'night' shift, "
                             . "up.id p_id, up.last_name p_last_name, up.first_name p_first_name, up.middle_name p_middle_name, "
                             . "ua.id a_id, ua.last_name a_last_name, ua.first_name a_first_name, ua.middle_name a_middle_name, "
-                            . "t.organization, t.edition, t.length, lam.name lamination, t.coloring, t.roller, "
+                            . "t.organization, t.edition, t.length, r.name roller, lam.name lamination, t.coloring, t.roller_id, "
                             . "um.last_name m_last_name, um.first_name m_first_name, um.middle_name m_middle_name "
                             . "from date_ranges dr left join comiflex t "
                             . "left join user up on t.typographer_id = up.id "
                             . "left join user ua on t.assistant_id = ua.id "
                             . "left join user um on t.manager_id = um.id "
+                            . "left join roller r on t.roller_id = r.id "
                             . "left join lamination lam on t.lamination_id = lam.id "
                             . "on t.date = dr.date and t.shift = 'night' "
                             . "order by date desc, shift asc;";
@@ -235,18 +272,7 @@
                             echo '<td'.$top.'>';
                             if(IsInRole('admin')) {
                                 echo "<form method='post'>";
-                                echo '<input type="hidden" id="scroll" name="scroll" />';
-                                if(isset($row['id'])) {
-                                    echo '<input type="hidden" id="id" name="id" value="'.$row['id'].'" />';
-                                }
-                                echo '<input type="hidden" id="date" name="date" value="'.$row['date'].'" />';
-                                echo '<input type="hidden" id="shift" name="shift" value="'.$row['shift'].'" />';
-                                if(isset($_GET['from'])) {
-                                    echo '<input type="hidden" id="from" name="from" value="'.$_GET['from'].'" />';
-                                }
-                                if(isset($_GET['to'])) {
-                                    echo '<input type="hidden" id="to" name="to" value="'.$_GET['to'].'" />';
-                                }
+                                AddHiddenFields($row);
                                 echo '<select onchange="javascript: this.form.submit();" id="typographer_id" name="typographer_id">';
                                 echo '<option value="">...</option>';
                                 foreach ($typographers as $value) {
@@ -266,18 +292,7 @@
                             echo '<td'.$top.'>';
                             if(IsInRole('admin')) {
                                 echo '<form method="post">';
-                                echo '<input type="hidden" id="scroll" name="scroll" />';
-                                if(isset($row['id'])) {
-                                    echo '<input type="hidden" id="id" name="id" value="'.$row['id'].'" />';
-                                }
-                                echo '<input type="hidden" id="date" name="date" value="'.$row['date'].'" />';
-                                echo '<input type="hidden" id="shift" name="shift" value="'.$row['shift'].'" />';
-                                if(isset($_GET['from'])) {
-                                    echo '<input type="hidden" id="from" name="from" value="'.$_GET['from'].'" />';
-                                }
-                                if(isset($_GET['to'])) {
-                                    echo '<input type="hidden" id="to" name="to" value="'.$_GET['to'].'" />';
-                                }
+                                AddHiddenFields($row);
                                 echo '<select onchange="javascript:this.form.submit();" id="assistant_id" name="assistant_id">';
                                 echo '<option value="">...</option>';
                                 foreach ($typographers as $value) {
@@ -297,18 +312,7 @@
                             echo '<td'.$top.'>';
                             if(IsInRole('admin')) {
                                 echo '<form method="post">';
-                                echo '<input type="hidden" id="scroll" name="scroll" />';
-                                if(isset($row['id'])) {
-                                    echo '<input type="hidden" id="id" name="id" value="'.$row['id'].'" />';
-                                }
-                                echo '<input type="hidden" id="date" name="date" value="'.$row['date'].'" />';
-                                echo '<input type="hidden" id="shift" name="shift" value="'.$row['shift'].'" />';
-                                if(isset($_GET['from'])) {
-                                    echo '<input type="hidden" id="from" name="from" value="'.$_GET['from'].'" />';
-                                }
-                                if(isset($_GET['to'])) {
-                                    echo '<input type="hidden" id="to" name="to" value="'.$_GET['to'].'" />';
-                                }
+                                AddHiddenFields($row);
                                 echo '<div class="input-group">';
                                 echo '<input type="text" id="organization" name="organization" value="'.htmlentities($row['organization']).'" class="editable" />';
                                 echo '<div class="input-group-append invisible"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
@@ -324,18 +328,7 @@
                             echo '<td'.$top.'>';
                             if(IsInRole('admin')) {
                                 echo '<form method="post">';
-                                echo '<input type="hidden" id="scroll" name="scroll" />';
-                                if(isset($row['id'])) {
-                                    echo '<input type="hidden" id="id" name="id" value="'.$row['id'].'" />';
-                                }
-                                echo '<input type="hidden" id="date" name="date" value="'.$row['date'].'" />';
-                                echo '<input type="hidden" id="shift" name="shift" value="'.$row['shift'].'" />';
-                                if(isset($_GET['from'])) {
-                                    echo '<input type="hidden" id="from" name="from" value="'.$_GET['from'].'" />';
-                                }
-                                if(isset($_GET['to'])) {
-                                    echo '<input type="hidden" id="to" name="to" value="'.$_GET['to'].'" />';
-                                }
+                                AddHiddenFields($row);
                                 echo '<div class="input-group">';
                                 echo '<input type="text" id="edition" name="edition" value="'.htmlentities($row['edition']).'" class="editable" />';
                                 echo '<div class="input-group-append invisible"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
@@ -351,18 +344,7 @@
                             echo '<td'.$top.'>';
                             if(IsInRole('admin')) {
                                 echo '<form method="post">';
-                                echo '<input type="hidden" id="scroll" name="scroll" />';
-                                if(isset($row['id'])) {
-                                    echo '<input type="hidden" id="id" name="id" value="'.$row['id'].'" />';
-                                }
-                                echo '<input type="hidden" id="date" name="date" value="'.$row['date'].'" />';
-                                echo '<input type="hidden" id="shift" name="shift" value="'.$row['shift'].'" />';
-                                if(isset($_GET['from'])) {
-                                    echo '<input type="hidden" id="from" name="from" value="'.$_GET['from'].'" />';
-                                }
-                                if(isset($_GET['to'])) {
-                                    echo '<input type="hidden" id="to" name="to" value="'.$_GET['to'].'" />';
-                                }
+                                AddHiddenFields($row);
                                 echo '<div class="input-group">';
                                 echo '<input type="number" step="1" id="length" name="length" value="'.$row['length'].'" class="editable" />';
                                 echo '<div class="input-group-append invisible"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
@@ -375,7 +357,26 @@
                             echo '</td>';
                             
                             // Вал
-                            echo '<td'.$top.'>'.$row['roller'].'</td>';
+                            echo '<td'.$top.'>';
+                            if(IsInRole('admin')) {
+                                echo "<form method='post'>";
+                                AddHiddenFields($row);
+                                echo '<select onchange="javascript: this.form.submit();" id="roller_id" name="roller_id">';
+                                echo '<option value="">...</option>';
+                                foreach ($rollers as $value) {
+                                    $selected = '';
+                                    if($row['roller_id'] == $value['id']) $selected = " selected = 'selected'";
+                                    echo "<option$selected value='".$value['id']."'>".$value['name']."</option>";
+                                }
+                                echo '</select>';
+                                echo '</form>';
+                            }
+                            else {
+                                echo $row['roller'];
+                            }
+                            echo '</td>';
+                            
+                            // Ламинация
                             echo '<td'.$top.'>'.$row['lamination'].'</td>';
                             echo '<td'.$top.'>'.$row['coloring'].'</td>';
                             echo '<td'.$top.'>'.$row['m_last_name'].' '.(mb_strlen($row['m_first_name']) > 1 ? mb_substr($row['m_first_name'], 0, 1).'.' : $row['m_first_name']).' '.(mb_strlen($row['m_middle_name']) > 1 ? mb_substr($row['m_middle_name'], 0, 1).'.' : $row['m_middle_name']).'</td>';

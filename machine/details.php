@@ -99,7 +99,7 @@
                     <table class="table table-striped table-bordered">
                         <tbody>
                             <?php
-                            $roller_name = '';
+                            $roller_num = 0;
                             
                             $roller_conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
                             $roller_sql = "select id, name from roller where machine_id=".$_GET['id'];
@@ -112,6 +112,7 @@
                             if ($roller_result->num_rows > 0) {
                                 while($roller_row = $roller_result->fetch_assoc()) {
                                     echo "<tr>"
+                                            ."<td>".(++$roller_num)."</td>"
                                             ."<td>".htmlentities($roller_row['name'])."</td>"
                                             ."<td><a title='Редактировать' href='edit_roller.php?id=".$roller_row['id']."'><span class='font-awesome'>&#xf044;</span></a></td>"
                                             ."</tr>";

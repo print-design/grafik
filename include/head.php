@@ -49,6 +49,21 @@ function ExecuteSql($sql) {
     $conn->close();
     return $message;
 }
+
+function AddHiddenFields($row) {
+    echo '<input type="hidden" id="scroll" name="scroll" />';
+    if(isset($row['id'])) {
+        echo '<input type="hidden" id="id" name="id" value="'.$row['id'].'" />';
+    }
+    echo '<input type="hidden" id="date" name="date" value="'.$row['date'].'" />';
+    echo '<input type="hidden" id="shift" name="shift" value="'.$row['shift'].'" />';
+    if(isset($_GET['from'])) {
+        echo '<input type="hidden" id="from" name="from" value="'.$_GET['from'].'" />';
+    }
+    if(isset($_GET['to'])) {
+        echo '<input type="hidden" id="to" name="to" value="'.$_GET['to'].'" />';
+    }
+}
 ?>
 <meta charset="UTF-8">
 <title>Принт-дизайн. График работы сотрудиков</title>

@@ -4,9 +4,10 @@
         <?php
         include '../include/head.php';
         
+        $nn = 2;
+        
         // Получение начальной даты и конечной даты
         include '../include/date_from_date_to.php';
-        $nn = 2;
         ?>
     </head>
     <body>
