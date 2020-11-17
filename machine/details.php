@@ -23,7 +23,7 @@
                 $name = addslashes($_POST['name']);
                 $machine_id = $_POST['machine_id'];
                 $sql = "insert into roller (name, machine_id) values ('$name', $machine_id)";
-                $error_message = ExecuteSql($sql, 'roller');
+                $error_message = ExecuteSql($sql);
                 
                 if($error_message == '') {
                     header('Location: '.APPLICATION.'/machine/details.php?id='.$machine_id);

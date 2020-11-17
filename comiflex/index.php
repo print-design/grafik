@@ -20,7 +20,7 @@
                 $sql = "insert into comiflex (date, shift, typographer_id) values ('$date', '$shift', $typographer_id)";
             }
             
-            $error_message = ExecuteSql($sql, 'comiflex');
+            $error_message = ExecuteSql($sql);
         }
         
         // Выбор помощника
@@ -39,7 +39,7 @@
                 $sql = "insert into comiflex (date, shift, assistant_id) values ('$date', '$shift', $assistant_id)";
             }
             
-            $error_message = ExecuteSql($sql, 'comiflex');
+            $error_message = ExecuteSql($sql);
         }
         
         // Заказчика
@@ -57,7 +57,7 @@
                 $sql = "insert into comiflex (date, shift, organization) values ('$date', '$shift', '$organization')";
             }
             
-            $error_message = ExecuteSql($sql, 'comiflex');
+            $error_message = ExecuteSql($sql);
         }
         
         // Тираж
@@ -75,7 +75,7 @@
                 $sql = "insert into comiflex (date, shift, edition) values ('$date', '$shift', '$edition')";
             }
             
-            $error_message = ExecuteSql($sql, 'comiflex');
+            $error_message = ExecuteSql($sql);
         }
         
         // Метраж
@@ -93,14 +93,14 @@
                 $sql = "insert into comiflex (date, shift, length) values ('$date', '$shift', $length)";
             }
             
-            $error_message = ExecuteSql($sql, 'comiflex');
+            $error_message = ExecuteSql($sql);
         }
         
         // Удаление рабочей смены
         if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_submit'])) {
             $id = $_POST['id'];
             $sql = "delete from comiflex where id=$id";
-            $error_message = ExecuteSql($sql, 'comiflex');
+            $error_message = ExecuteSql($sql);
         }
         
         // Получение начальной даты и конечной даты

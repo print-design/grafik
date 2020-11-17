@@ -22,7 +22,7 @@
             if($form_valid) {
                 $name = addslashes($_POST['name']);
                 $sql = "insert into machine (name) values ('$name')";
-                $error_message = ExecuteSql($sql, 'machine');
+                $error_message = ExecuteSql($sql);
                 
                 if($error_message == '') {
                     header('Location: '.APPLICATION.'/machine/');

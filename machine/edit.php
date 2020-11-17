@@ -23,7 +23,7 @@
                 $id = $_POST['id'];
                 $name = addslashes($_POST['name']);
                 $sql = "update machine set name='$name' where id=$id";
-                $error_message = ExecuteSql($sql, 'machine');
+                $error_message = ExecuteSql($sql);
                 
                 if($error_message == '') {
                     header('Location: '.APPLICATION."/machine/?details.php?id=$id");

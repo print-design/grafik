@@ -34,7 +34,7 @@ function IsInRole($role) {
     return false;
 }
 
-function ExecuteSql($sql, $path) {
+function ExecuteSql($sql) {
     $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
     $message = '';
     
