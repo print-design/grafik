@@ -23,11 +23,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login_submit'])){
         $login_username = '';
         $login_first_name = '';
         $login_middle_name = '';
-        $login_last_name = '';
+        $login_name = '';
         $login_roles = '';
 
         $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-        $sql = "select id, username, first_name, middle_name, last_name from user where username='".$_POST['login_username']."' and password=password('".$_POST['login_password']."')";
+        $sql = "select id, username, first_name, middle_name, name from user where username='".$_POST['login_username']."' and password=password('".$_POST['login_password']."')";
         
         if($conn->connect_error) {
             die('Ошибка соединения: ' . $conn->connect_error);
@@ -46,8 +46,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login_submit'])){
             $login_middle_name = $row['middle_name'];
             setcookie(MIDDLE_NAME, $row['middle_name'], 0, "/");
             
-            $login_last_name = $row['last_name'];
-            setcookie(LAST_NAME, $row['last_name'], 0, "/");
+            $login_name = $row['name'];
+            setcookie(USER_NAME, $row['name'], 0, "/");
         }
         else {
             $error_message = "Неправильный логин или пароль.";
@@ -80,7 +80,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout_submit'])) {
     setcookie(USERNAME, '', 0, "/");
     setcookie(FIRST_NAME, '', 0, "/");
     setcookie(MIDDLE_NAME, '', 0, "/");
-    setcookie(LAST_NAME, '', 0, "/");
+    setcookie(USER_NAME, '', 0, "/");
     setcookie(ROLES, '', 0, "/");
     header("Refresh:0");
     header('Location: '.APPLICATION.'/');
@@ -165,8 +165,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout_submit'])) {
             <label>
                 <?php
                 $full_user_name = '';
-                if(isset($_COOKIE[LAST_NAME]) && $_COOKIE[LAST_NAME] != '') {
-                    $full_user_name .= $_COOKIE[LAST_NAME];
+                if(isset($_COOKIE[USER_NAME]) && $_COOKIE[USER_NAME] != '') {
+                    $full_user_name .= $_COOKIE[USER_NAME];
                 }
                 if(isset($_COOKIE[FIRST_NAME]) && $_COOKIE[FIRST_NAME] != '') {
                     if($full_user_name != '') $full_user_name .= ' ';

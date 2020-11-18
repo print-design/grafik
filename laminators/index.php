@@ -81,10 +81,10 @@
                     
                     $sql = "with recursive date_ranges as (select '".$date_from->format('Y-m-d')."' as date union all select date + interval 1 day from date_ranges where date < '".$date_to->format('Y-m-d')."') "
                             . "select t.id, dr.date date, date_format(dr.date, '%d.%m.%Y') fdate, 'day' shift, "
-                            . "up.last_name p_last_name, up.first_name p_first_name, up.middle_name p_middle_name, "
-                            . "ua.last_name a_last_name, ua.first_name a_first_name, ua.middle_name a_middle_name, "
+                            . "up.name p_name, up.first_name p_first_name, up.middle_name p_middle_name, "
+                            . "ua.name a_name, ua.first_name a_first_name, ua.middle_name a_middle_name, "
                             . "org.name organization, ed.name edition, t.length, lam.name lamination, t.roller, t.comment, "
-                            . "um.last_name m_last_name, um.first_name m_first_name, um.middle_name m_middle_name "
+                            . "um.name m_name, um.first_name m_first_name, um.middle_name m_middle_name "
                             . "from date_ranges dr left join laminators t "
                             . "left join user up on t.laminator1_id = up.id "
                             . "left join user ua on t.laminator2_id = ua.id "
@@ -95,10 +95,10 @@
                             . "on t.date = dr.date and t.shift = 'day' "
                             . "union "
                             . "select t.id, dr.date date, date_format(dr.date, '%d.%m.%Y') fdate, 'night' shift, "
-                            . "up.last_name p_last_name, up.first_name p_first_name, up.middle_name p_middle_name, "
-                            . "ua.last_name a_last_name, ua.first_name a_first_name, ua.middle_name a_middle_name, "
+                            . "up.name p_name, up.first_name p_first_name, up.middle_name p_middle_name, "
+                            . "ua.name a_name, ua.first_name a_first_name, ua.middle_name a_middle_name, "
                             . "org.name organization, ed.name edition, t.length, lam.name lamination, t.roller, t.comment, "
-                            . "um.last_name m_last_name, um.first_name m_first_name, um.middle_name m_middle_name "
+                            . "um.name m_name, um.first_name m_first_name, um.middle_name m_middle_name "
                             . "from date_ranges dr left join laminators t "
                             . "left join user up on t.laminator1_id = up.id "
                             . "left join user ua on t.laminator2_id = ua.id "
@@ -123,14 +123,14 @@
                                 echo "<td".$top." rowspan='2'>".$row['fdate'].'</td>';
                             }
                             echo '<td'.$top.'>'.($row['shift'] == 'day' ? 'День' : 'Ночь').'</td>';
-                            echo '<td'.$top.'>'.$row['p_last_name'].' '.(mb_strlen($row['p_first_name']) > 1 ? mb_substr($row['p_first_name'], 0, 1).'.' : $row['p_first_name']).' '.(mb_strlen($row['p_middle_name']) > 1 ? mb_substr($row['p_middle_name'], 0, 1).'.' : $row['p_middle_name']).'</td>';
-                            echo '<td'.$top.'>'.$row['a_last_name'].' '.(mb_strlen($row['a_first_name']) > 1 ? mb_substr($row['a_first_name'], 0, 1).'.' : $row['a_first_name']).' '.(mb_strlen($row['a_middle_name']) > 1 ? mb_substr($row['a_middle_name'], 0, 1).'.' : $row['a_middle_name']).'</td>';
+                            echo '<td'.$top.'>'.$row['p_name'].' '.(mb_strlen($row['p_first_name']) > 1 ? mb_substr($row['p_first_name'], 0, 1).'.' : $row['p_first_name']).' '.(mb_strlen($row['p_middle_name']) > 1 ? mb_substr($row['p_middle_name'], 0, 1).'.' : $row['p_middle_name']).'</td>';
+                            echo '<td'.$top.'>'.$row['a_name'].' '.(mb_strlen($row['a_first_name']) > 1 ? mb_substr($row['a_first_name'], 0, 1).'.' : $row['a_first_name']).' '.(mb_strlen($row['a_middle_name']) > 1 ? mb_substr($row['a_middle_name'], 0, 1).'.' : $row['a_middle_name']).'</td>';
                             echo '<td'.$top.'>'.$row['organization'].'</td>';
                             echo '<td'.$top.'>'.$row['edition'].'</td>';
                             echo '<td'.$top.'>'.$row['length'].'</td>';
                             echo '<td'.$top.'>'.$row['roller'].'</td>';
                             echo '<td'.$top.'>'.$row['lamination'].'</td>';
-                            echo '<td'.$top.'>'.$row['m_last_name'].' '.(mb_strlen($row['m_first_name']) > 1 ? mb_substr($row['m_first_name'], 0, 1).'.' : $row['m_first_name']).' '.(mb_strlen($row['m_middle_name']) > 1 ? mb_substr($row['m_middle_name'], 0, 1).'.' : $row['m_middle_name']).'</td>';
+                            echo '<td'.$top.'>'.$row['m_name'].' '.(mb_strlen($row['m_first_name']) > 1 ? mb_substr($row['m_first_name'], 0, 1).'.' : $row['m_first_name']).' '.(mb_strlen($row['m_middle_name']) > 1 ? mb_substr($row['m_middle_name'], 0, 1).'.' : $row['m_middle_name']).'</td>';
                             echo "<td".$top." class='newline'>".$row['comment']."</td>";
                             
                             if(IsInRole('admin')) {

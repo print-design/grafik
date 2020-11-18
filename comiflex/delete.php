@@ -44,10 +44,10 @@
         // Получение объекта
         $date = '';
         $shift = '';
-        $p_last_name = '';
+        $p_name = '';
         $p_first_name = '';
         $p_middle_name = '';
-        $a_last_name = '';
+        $a_name = '';
         $a_first_name = '';
         $a_middle_name = '';
         $organization = '';
@@ -56,17 +56,17 @@
         $lamination = '';
         $coloring = '';
         $roller = '';
-        $m_last_name = '';
+        $m_name = '';
         $m_first_name = '';
         $m_middle_name = '';
         
         $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
         $sql = "select t.id, date_format(t.date, '%d.%m.%Y') date, t.shift, "
-                . "up.last_name p_last_name, up.first_name p_first_name, up.middle_name p_middle_name, "
-                . "ua.last_name a_last_name, ua.first_name a_first_name, ua.middle_name a_middle_name, "
+                . "up.name p_name, up.first_name p_first_name, up.middle_name p_middle_name, "
+                . "ua.name a_name, ua.first_name a_first_name, ua.middle_name a_middle_name, "
                 . "org.name organization, ed.name edition, "
                 . "t.length, lam.name lamination, t.coloring, t.roller, "
-                . "um.last_name m_last_name, um.first_name m_first_name, um.middle_name m_middle_name "
+                . "um.name m_name, um.first_name m_first_name, um.middle_name m_middle_name "
                 . "from comiflex t "
                 . "left join user up on t.typographer_id = up.id "
                 . "left join user ua on t.assistant_id = ua.id "
@@ -83,10 +83,10 @@
         if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
             $date = $row['date'];
             $shift = $row['shift'];
-            $p_last_name = $row['p_last_name'];
+            $p_name = $row['p_name'];
             $p_first_name = $row['p_first_name'];
             $p_middle_name = $row['p_middle_name'];
-            $a_last_name = $row['a_last_name'];
+            $a_name = $row['a_name'];
             $a_first_name = $row['a_first_name'];
             $a_middle_name = $row['a_middle_name'];
             $organization = $row['organization'];
@@ -95,7 +95,7 @@
             $lamination = $row['lamination'];
             $coloring = $row['coloring'];
             $roller = $row['roller'];
-            $m_last_name = $row['m_last_name'];
+            $m_name = $row['m_name'];
             $m_first_name = $row['m_first_name'];
             $m_middle_name = $row['m_middle_name'];
         }
@@ -135,13 +135,13 @@
                         </tr>
                         <tr>
                             <th>Печатник</th>
-                            <td><?=$p_last_name.' '.(mb_strlen($p_first_name) > 1 ? mb_substr($p_first_name, 0, 1).'.' : $p_first_name).' '.(mb_strlen($p_first_name) > 1 ? mb_substr($p_middle_name, 0, 1).'.' : $p_middle_name) ?></td>
+                            <td><?=$p_name.' '.(mb_strlen($p_first_name) > 1 ? mb_substr($p_first_name, 0, 1).'.' : $p_first_name).' '.(mb_strlen($p_first_name) > 1 ? mb_substr($p_middle_name, 0, 1).'.' : $p_middle_name) ?></td>
                             <th>Помощник</th>
-                            <td><?=$a_last_name.' '.(mb_strlen($a_first_name) > 1 ? mb_substr($a_first_name, 0, 1).'.' : $a_first_name).' '.(mb_strlen($a_first_name) > 1 ? mb_substr($a_middle_name, 0, 1).'.' : $a_middle_name) ?></td>
+                            <td><?=$a_name.' '.(mb_strlen($a_first_name) > 1 ? mb_substr($a_first_name, 0, 1).'.' : $a_first_name).' '.(mb_strlen($a_first_name) > 1 ? mb_substr($a_middle_name, 0, 1).'.' : $a_middle_name) ?></td>
                         </tr>
                         <tr>
                             <th>Менеджер</th>
-                            <td><?=$m_last_name.' '.(mb_strlen($m_first_name) > 1 ? mb_substr($m_first_name, 0, 1).'.' : $m_first_name).' '.(mb_strlen($m_first_name) > 1 ? mb_substr($m_middle_name, 0, 1).'.' : $m_middle_name) ?></td>
+                            <td><?=$m_name.' '.(mb_strlen($m_first_name) > 1 ? mb_substr($m_first_name, 0, 1).'.' : $m_first_name).' '.(mb_strlen($m_first_name) > 1 ? mb_substr($m_middle_name, 0, 1).'.' : $m_middle_name) ?></td>
                             <th></th>
                             <td></td>
                         </tr>

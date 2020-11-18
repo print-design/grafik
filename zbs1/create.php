@@ -121,18 +121,18 @@
                                             die('Ошибка соединения: ' . $conn->connect_error);
                                         }
                                         
-                                        $sql = "select u.id, u.last_name, u.first_name, u.middle_name from user_role ur "
+                                        $sql = "select u.id, u.name, u.first_name, u.middle_name from user_role ur "
                                                 . "inner join user u on ur.user_id = u.id "
                                                 . "inner join role r on ur.role_id = r.id "
                                                 . "where r.name = 'typographer' "
-                                                . "order by u.last_name";
+                                                . "order by u.name";
                                         
                                         $result = $conn->query($sql);
                                         
                                         if ($result->num_rows > 0) {
                                             while ($row = $result->fetch_assoc()) {
                                                 $selected = $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['typographer_id']) && $_POST['typographer_id'] == $row['id'] ? " selected='selected'" : "";
-                                                echo "<option value='".$row['id']."'".$selected.">".$row["last_name"].' '.(mb_strlen($row['first_name']) > 1 ? mb_substr($row['first_name'], 0, 1).'.' : $row['first_name']).' '.(mb_strlen($row['first_name']) > 1 ? mb_substr($row['middle_name'], 0, 1).'.' : $row['middle_name'])."</option>";
+                                                echo "<option value='".$row['id']."'".$selected.">".$row["name"].' '.(mb_strlen($row['first_name']) > 1 ? mb_substr($row['first_name'], 0, 1).'.' : $row['first_name']).' '.(mb_strlen($row['first_name']) > 1 ? mb_substr($row['middle_name'], 0, 1).'.' : $row['middle_name'])."</option>";
                                             }
                                         }
                                         $conn->close();
@@ -154,18 +154,18 @@
                                             die('Ошибка соединения: ' . $conn->connect_error);
                                         }
                                         
-                                        $sql = "select u.id, u.last_name, u.first_name, u.middle_name from user_role ur "
+                                        $sql = "select u.id, u.name, u.first_name, u.middle_name from user_role ur "
                                                 . "inner join user u on ur.user_id = u.id "
                                                 . "inner join role r on ur.role_id = r.id "
                                                 . "where r.name = 'manager' "
-                                                . "order by u.last_name";
+                                                . "order by u.name";
                                         
                                         $result = $conn->query($sql);
                                         
                                         if ($result->num_rows > 0) {
                                             while ($row = $result->fetch_assoc()) {
                                                 $selected = $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['manager_id']) && $_POST['manager_id'] == $row['id'] ? " selected='selected'" : "";
-                                                echo "<option value='".$row['id']."'".$selected.">".$row["last_name"].' '.(mb_strlen($row['first_name']) > 1 ? mb_substr($row['first_name'], 0, 1).'.' : $row['first_name']).' '.(mb_strlen($row['first_name']) > 1 ? mb_substr($row['middle_name'], 0, 1).'.' : $row['middle_name'])."</option>";
+                                                echo "<option value='".$row['id']."'".$selected.">".$row["name"].' '.(mb_strlen($row['first_name']) > 1 ? mb_substr($row['first_name'], 0, 1).'.' : $row['first_name']).' '.(mb_strlen($row['first_name']) > 1 ? mb_substr($row['middle_name'], 0, 1).'.' : $row['middle_name'])."</option>";
                                             }
                                         }
                                         $conn->close();

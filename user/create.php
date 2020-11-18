@@ -10,14 +10,14 @@
         $form_valid = true;
         $error_message = '';
         
-        $first_name_valid = '';
+        $name_valid = '';
         $username_valid = '';
         $password_valid = '';
         
         // Обработка отправки формы
         if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_create_submit'])) {
-            if($_POST['first_name'] == '') {
-                $first_name_valid = ISINVALID;
+            if($_POST['name'] == '') {
+                $name_valid = ISINVALID;
                 $form_valid = false;
             }
             
@@ -37,16 +37,16 @@
                     die('Ошибка соединения: '.$conn->connect_error);
                 }
                 
-                $last_name = addslashes($_POST['last_name']);
+                $name = addslashes($_POST['name']);
                 $first_name = addslashes($_POST['first_name']);
                 $middle_name = addslashes($_POST['middle_name']);
                 $username = addslashes($_POST['username']);
                 $password = addslashes($_POST['password']);
                 
                 $sql = "insert into user"
-                        . "(last_name, first_name, middle_name, username, password) "
+                        . "(name, first_name, middle_name, username, password) "
                         . "values "
-                        . "('$last_name', '$first_name', '$middle_name', '$username', password('$password'))";
+                        . "('$name', '$first_name', '$middle_name', '$username', password('$password'))";
                 
                 if ($conn->query($sql) === true) {
                     header('Location: '.APPLICATION.'/user/');
@@ -85,12 +85,13 @@
                     <hr/>
                     <form method="post">
                         <div class="form-group">
-                            <label for="last_name">Фамилия</label>
-                            <input type="text" id="last_name" name="last_name" class="form-control" value="<?=$_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['last_name']) ? $_POST['last_name'] : '' ?>" autocomplete="off"/>
+                            <label for="name">ФИО</label>
+                            <input type="text" id="name" name="name" class="form-control<?=$name_valid ?>" value="<?=$_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name']) ? $_POST['name'] : '' ?>" autocomplete="off" required="required"/>
+                            <div class="invalid-feedback">ФИО обязательно</div>
                         </div>
                         <div class="form-group">
                             <label for="first_name">Имя</label>
-                            <input type="text" id="first_name" name="first_name" class="form-control<?=$first_name_valid ?>" value="<?=$_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['first_name']) ? $_POST['first_name'] : '' ?>" required="required" autocomplete="off"/>
+                            <input type="text" id="first_name" name="first_name" class="form-control" value="<?=$_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['first_name']) ? $_POST['first_name'] : '' ?>" required="required" autocomplete="off"/>
                             <div class="invalid-feedback">Имя обязательно</div>
                         </div>
                         <div class="form-group">

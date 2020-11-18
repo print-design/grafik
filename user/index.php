@@ -33,7 +33,7 @@
                     <tr>
                         <th>Зарегистрирован</th>
                         <th>Логин</th>
-                        <th>Фамилия</th>
+                        <th>ФИО</th>
                         <th>Имя</th>
                         <th>Отчество</th>
                         <th>Роли</th>
@@ -42,9 +42,9 @@
                 <tbody>
                     <?php
                     $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-                    $sql = "select u.id, date_format(u.date, '%d.%m.%Y') date, u.username, u.last_name, u.first_name, u.middle_name, "
+                    $sql = "select u.id, date_format(u.date, '%d.%m.%Y') date, u.username, u.name, u.first_name, u.middle_name, "
                             . "(SELECT GROUP_CONCAT(DISTINCT r.local_name SEPARATOR ', ') FROM role r inner join user_role ur on ur.role_id = r.id where ur.user_id = u.id) roles "
-                            . "from user u order by u.last_name asc";
+                            . "from user u order by u.name asc";
                             
                     if($conn->connect_error) {
                         die('Ошибка соединения: ' . $conn->connect_error);
@@ -56,7 +56,7 @@
                             echo "<tr>"
                                     ."<td>".$row['date']."</td>"
                                     ."<td><a href='".APPLICATION."/user/details.php?id=".$row['id']."'>".$row['username']."</a></td>"
-                                    ."<td>".$row['last_name']."</td>"
+                                    ."<td>".$row['name']."</td>"
                                     ."<td>".$row['first_name']."</td>"
                                     ."<td>".$row['middle_name']."</td>"
                                     ."<td>".$row['roles']."</td>"

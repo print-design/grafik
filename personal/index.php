@@ -6,13 +6,13 @@
         include '../include/restrict_logged_in.php';
         
         // Получение личных данных
-        $last_name = '';
+        $name = '';
         $first_name = '';
         $middle_name = '';
         $username = '';
         
         $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-        $sql = "select last_name, first_name, middle_name, username 
+        $sql = "select name, first_name, middle_name, username 
             from user where id=".GetUserId();
         
         if($conn->connect_error) {
@@ -20,7 +20,7 @@
         }
         $result = $conn->query($sql);
         if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
-            $last_name = $row['last_name'];
+            $name = $row['name'];
             $first_name = $row['first_name'];
             $middle_name = $row['middle_name'];
             $username = $row['username'];
@@ -63,7 +63,7 @@
                     <table class="table table-bordered">
                         <tr>
                             <th>Фамилия</th>
-                            <td><?=$last_name ?></td>
+                            <td><?=$name ?></td>
                         </tr>
                         <tr>
                             <th>Имя</th>

@@ -44,7 +44,7 @@
         // Получение объекта
         $date = '';
         $shift = '';
-        $p_last_name = '';
+        $p_name = '';
         $p_first_name = '';
         $p_middle_name = '';
         $organization = '';
@@ -52,17 +52,17 @@
         $length = '';
         $lamination = '';
         $roller = '';
-        $m_last_name = '';
+        $m_name = '';
         $m_first_name = '';
         $m_middle_name = '';
         $comment = '';
         
         $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
         $sql = "select t.id, date_format(t.date, '%d.%m.%Y') date, t.shift, "
-                . "up.last_name p_last_name, up.first_name p_first_name, up.middle_name p_middle_name, "
+                . "up.name p_name, up.first_name p_first_name, up.middle_name p_middle_name, "
                 . "org.name organization, ed.name edition, "
                 . "t.length, lam.name lamination, t.roller, t.comment, "
-                . "um.last_name m_last_name, um.first_name m_first_name, um.middle_name m_middle_name "
+                . "um.name m_name, um.first_name m_first_name, um.middle_name m_middle_name "
                 . "from cutters t "
                 . "left join user up on t.cutter_id = up.id "
                 . "left join user um on t.manager_id = um.id "
@@ -78,7 +78,7 @@
         if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
             $date = $row['date'];
             $shift = $row['shift'];
-            $p_last_name = $row['p_last_name'];
+            $p_name = $row['p_name'];
             $p_first_name = $row['p_first_name'];
             $p_middle_name = $row['p_middle_name'];
             $organization = $row['organization'];
@@ -86,7 +86,7 @@
             $length = $row['length'];
             $lamination = $row['lamination'];
             $roller = $row['roller'];
-            $m_last_name = $row['m_last_name'];
+            $m_name = $row['m_name'];
             $m_first_name = $row['m_first_name'];
             $m_middle_name = $row['m_middle_name'];
             $comment = $row['comment'];
@@ -127,13 +127,13 @@
                         </tr>
                         <tr>
                             <th>Резчик</th>
-                            <td><?=$p_last_name.' '.(mb_strlen($p_first_name) > 1 ? mb_substr($p_first_name, 0, 1).'.' : $p_first_name).' '.(mb_strlen($p_first_name) > 1 ? mb_substr($p_middle_name, 0, 1).'.' : $p_middle_name) ?></td>
+                            <td><?=$p_name.' '.(mb_strlen($p_first_name) > 1 ? mb_substr($p_first_name, 0, 1).'.' : $p_first_name).' '.(mb_strlen($p_first_name) > 1 ? mb_substr($p_middle_name, 0, 1).'.' : $p_middle_name) ?></td>
                             <th></th>
                             <td></td>
                         </tr>
                         <tr>
                             <th>Менеджер</th>
-                            <td><?=$m_last_name.' '.(mb_strlen($m_first_name) > 1 ? mb_substr($m_first_name, 0, 1).'.' : $m_first_name).' '.(mb_strlen($m_first_name) > 1 ? mb_substr($m_middle_name, 0, 1).'.' : $m_middle_name) ?></td>
+                            <td><?=$m_name.' '.(mb_strlen($m_first_name) > 1 ? mb_substr($m_first_name, 0, 1).'.' : $m_first_name).' '.(mb_strlen($m_first_name) > 1 ? mb_substr($m_middle_name, 0, 1).'.' : $m_middle_name) ?></td>
                             <th></th>
                             <td></td>
                         </tr>

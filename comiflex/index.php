@@ -154,6 +154,25 @@
             $error_message = ExecuteSql($sql);
         }
         
+        // Менеджер
+        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['manager_id'])) {
+            $manager_id = $_POST['manager_id'];
+            if($_POST['manager_id'] == '') $manager_id = "NULL";
+            $sql = '';
+            
+            if(isset($_POST['id'])) {
+                $id = $_POST['id'];
+                $sql = "update comiflex set manager_id=$manager_id where id=$id";
+            }
+            else {
+                $date = $_POST['date'];
+                $shift = $_POST['shift'];
+                $sql = "insert into comiflex (date, shift, manager_id) values ('$date', '$shift', $manager_id)";
+            }
+            
+            $error_message = ExecuteSql($sql);
+        }
+        
         // Удаление рабочей смены
         if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_submit'])) {
             $id = $_POST['id'];
@@ -237,7 +256,7 @@
                     $typographers = array();
                     
                     if(IsInRole('admin')) {
-                        $typographer_sql = "select u.id, u.last_name, u.first_name, u.middle_name from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 3 order by u.last_name";
+                        $typographer_sql = "select u.id, u.name from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 3 order by u.name";
                         $typographer_result = mysqli_query($conn, $typographer_sql);
                         if(is_bool($typographer_result)){
                             die("Ошибка при запросе списка печатников");
@@ -275,13 +294,24 @@
                         }
                     }
                     
+                    // Список менеджеров
+                    $managers = array();
+                    
+                    if(IsInRole('admin')) {
+                        $manager_sql = "select u.id, u.name from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 2 order by u.name";
+                        $manager_result = mysqli_query($conn, $manager_sql);
+                        if(is_bool($manager_result)){
+                            die("Ошибка при запросе списка менеджеров");
+                        }
+                        else {
+                            $managers = mysqli_fetch_all($manager_result, MYSQLI_ASSOC);
+                        }
+                    }
+                    
                     // Список рабочих смен
                     $sql = "with recursive date_ranges as (select '".$date_from->format('Y-m-d')."' as date union all select date + interval 1 day from date_ranges where date < '".$date_to->format('Y-m-d')."') "
-                            . "select t.id, dr.date date, date_format(dr.date, '%d.%m.%Y') fdate, 'day' shift, "
-                            . "up.id p_id, up.last_name p_last_name, up.first_name p_first_name, up.middle_name p_middle_name, "
-                            . "ua.id a_id, ua.last_name a_last_name, ua.first_name a_first_name, ua.middle_name a_middle_name, "
-                            . "t.organization, t.edition, t.length, r.name roller, lam.name lamination, t.coloring, t.roller_id, t.lamination_id, "
-                            . "um.name m_name "
+                            . "select t.id, dr.date date, date_format(dr.date, '%d.%m.%Y') fdate, 'day' shift, up.id p_id, up.name p_name, ua.id a_id, ua.name a_name, um.id m_id, um.name m_name, "
+                            . "t.organization, t.edition, t.length, r.name roller, lam.name lamination, t.coloring, t.roller_id, t.lamination_id "
                             . "from date_ranges dr left join comiflex t "
                             . "left join user up on t.typographer_id = up.id "
                             . "left join user ua on t.assistant_id = ua.id "
@@ -290,11 +320,8 @@
                             . "left join lamination lam on t.lamination_id = lam.id "
                             . "on t.date = dr.date and t.shift = 'day' "
                             . "union "
-                            . "select t.id, dr.date date, date_format(dr.date, '%d.%m.%Y') fdate, 'night' shift, "
-                            . "up.id p_id, up.last_name p_last_name, up.first_name p_first_name, up.middle_name p_middle_name, "
-                            . "ua.id a_id, ua.last_name a_last_name, ua.first_name a_first_name, ua.middle_name a_middle_name, "
-                            . "t.organization, t.edition, t.length, r.name roller, lam.name lamination, t.coloring, t.roller_id, t.lamination_id, "
-                            . "um.name m_name "
+                            . "select t.id, dr.date date, date_format(dr.date, '%d.%m.%Y') fdate, 'night' shift, up.id p_id, up.name p_name, ua.id a_id, ua.name a_name, um.id m_id, um.name m_name, "
+                            . "t.organization, t.edition, t.length, r.name roller, lam.name lamination, t.coloring, t.roller_id, t.lamination_id "
                             . "from date_ranges dr left join comiflex t "
                             . "left join user up on t.typographer_id = up.id "
                             . "left join user ua on t.assistant_id = ua.id "
@@ -329,13 +356,13 @@
                                 foreach ($typographers as $value) {
                                     $selected = '';
                                     if($row['p_id'] == $value['id']) $selected = " selected = 'selected'";
-                                    echo "<option$selected value='".$value['id']."'>".$value['last_name'].' '.(mb_strlen($value['first_name']) > 1 ? mb_substr($value['first_name'], 0, 1).'.' : $value['first_name']).' '.(mb_strlen($value['middle_name']) > 1 ? mb_substr($value['middle_name'], 0, 1).'.' : $value['middle_name'])."</option>";
+                                    echo "<option$selected value='".$value['id']."'>".$value['name']."</option>";
                                 }
                                 echo '</select>';
                                 echo '</form>';
                             }
                             else {
-                                echo $row['p_last_name'].' '.(mb_strlen($row['p_first_name']) > 1 ? mb_substr($row['p_first_name'], 0, 1).'.' : $row['p_first_name']).' '.(mb_strlen($row['p_middle_name']) > 1 ? mb_substr($row['p_middle_name'], 0, 1).'.' : $row['p_middle_name']);
+                                echo $row['p_name'];
                             }
                             echo '</td>';
                             
@@ -349,13 +376,13 @@
                                 foreach ($typographers as $value) {
                                     $selected = '';
                                     if($row['a_id'] == $value['id']) $selected = " selected = 'selected'";
-                                    echo "<option$selected value='".$value['id']."'>".$value['last_name'].' '.(mb_strlen($value['first_name']) > 1 ? mb_substr($value['first_name'], 0, 1).'.' : $value['first_name']).' '.(mb_strlen($value['middle_name']) > 1 ? mb_substr($value['middle_name'], 0, 1).'.' : $value['middle_name'])."</option>";
+                                    echo "<option$selected value='".$value['id']."'>".$value['name']."</option>";
                                 }
                                 echo '</select>';
                                 echo '</form>';
                             }
                             else {
-                                echo $row['a_last_name'].' '.(mb_strlen($row['a_first_name']) > 1 ? mb_substr($row['a_first_name'], 0, 1).'.' : $row['a_first_name']).' '.(mb_strlen($row['a_middle_name']) > 1 ? mb_substr($row['a_middle_name'], 0, 1).'.' : $row['a_middle_name']);
+                                echo $row['a_name'];
                             }
                             echo '</td>';
 
@@ -464,7 +491,24 @@
                             echo '</td>';
                             
                             // Менеджер
-                            echo '<td'.$top.'>'.$row['m_name'].'</td>';
+                            echo '<td'.$top.'>';
+                            if(IsInRole('admin')) {
+                                echo "<form method='post'>";
+                                AddHiddenFields($row);
+                                echo '<select onchange="javascript: this.form.submit();" id="manager_id" name="manager_id">';
+                                echo '<option value="">...</option>';
+                                foreach ($managers as $value) {
+                                    $selected = '';
+                                    if($row['m_id'] == $value['id']) $selected = " selected = 'selected'";
+                                    echo "<option$selected value='".$value['id']."'>".$value['name']."</option>";
+                                }
+                                echo '</select>';
+                                echo '</form>';
+                            }
+                            else {
+                                echo $row['m_name'];
+                            }
+                            echo '</td>';
                             
                             // Удаление смены
                             if(IsInRole('admin')) {
