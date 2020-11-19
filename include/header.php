@@ -21,13 +21,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login_submit'])){
     if($login_form_valid) {
         $login_user_id = '';
         $login_username = '';
-        $login_first_name = '';
-        $login_middle_name = '';
         $login_name = '';
         $login_roles = '';
 
         $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-        $sql = "select id, username, first_name, middle_name, name from user where username='".$_POST['login_username']."' and password=password('".$_POST['login_password']."')";
+        $sql = "select id, username, name from user where username='".$_POST['login_username']."' and password=password('".$_POST['login_password']."')";
         
         if($conn->connect_error) {
             die('Ошибка соединения: ' . $conn->connect_error);
@@ -40,14 +38,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login_submit'])){
             $login_username = $row['username'];
             setcookie(USERNAME, $row['username'], 0, "/");
             
-            $login_first_name = $row['first_name'];
-            setcookie(FIRST_NAME, $row['first_name'], 0, "/");
-            
-            $login_middle_name = $row['middle_name'];
-            setcookie(MIDDLE_NAME, $row['middle_name'], 0, "/");
-            
             $login_name = $row['name'];
-            setcookie(USER_NAME, $row['name'], 0, "/");
+            setcookie(FIO, $row['name'], 0, "/");
         }
         else {
             $error_message = "Неправильный логин или пароль.";
@@ -78,9 +70,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login_submit'])){
 if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout_submit'])) {
     setcookie(USER_ID, '', 0, "/");
     setcookie(USERNAME, '', 0, "/");
-    setcookie(FIRST_NAME, '', 0, "/");
-    setcookie(MIDDLE_NAME, '', 0, "/");
-    setcookie(USER_NAME, '', 0, "/");
+    setcookie(FIO, '', 0, "/");
     setcookie(ROLES, '', 0, "/");
     header("Refresh:0");
     header('Location: '.APPLICATION.'/');
@@ -165,16 +155,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout_submit'])) {
             <label>
                 <?php
                 $full_user_name = '';
-                if(isset($_COOKIE[USER_NAME]) && $_COOKIE[USER_NAME] != '') {
-                    $full_user_name .= $_COOKIE[USER_NAME];
-                }
-                if(isset($_COOKIE[FIRST_NAME]) && $_COOKIE[FIRST_NAME] != '') {
-                    if($full_user_name != '') $full_user_name .= ' ';
-                    $full_user_name .= $_COOKIE[FIRST_NAME];
-                }
-                if(isset($_COOKIE[MIDDLE_NAME]) && $_COOKIE[MIDDLE_NAME] != '') {
-                    if($full_user_name != '') $full_user_name .= ' ';
-                    $full_user_name .= $_COOKIE[MIDDLE_NAME];
+                if(isset($_COOKIE[FIO]) && $_COOKIE[FIO] != '') {
+                    $full_user_name .= $_COOKIE[FIO];
                 }
                 echo $full_user_name;
                 ?>

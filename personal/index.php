@@ -7,13 +7,10 @@
         
         // Получение личных данных
         $name = '';
-        $first_name = '';
-        $middle_name = '';
         $username = '';
         
         $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-        $sql = "select name, first_name, middle_name, username 
-            from user where id=".GetUserId();
+        $sql = "select name, username from user where id=".GetUserId();
         
         if($conn->connect_error) {
             die('Ошибка соединения: ' . $conn->connect_error);
@@ -21,8 +18,6 @@
         $result = $conn->query($sql);
         if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
             $name = $row['name'];
-            $first_name = $row['first_name'];
-            $middle_name = $row['middle_name'];
             $username = $row['username'];
         }
         $conn->close();
@@ -62,16 +57,8 @@
                     <hr/>
                     <table class="table table-bordered">
                         <tr>
-                            <th>Фамилия</th>
+                            <th>ФИО</th>
                             <td><?=$name ?></td>
-                        </tr>
-                        <tr>
-                            <th>Имя</th>
-                            <td><?=$first_name ?></td>
-                        </tr>
-                        <tr>
-                            <th>Отчество</th>
-                            <td><?=$middle_name ?></td>
                         </tr>
                         <tr>
                             <th>Логин</th>

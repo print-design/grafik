@@ -7,12 +7,10 @@
         
         // Получение личных данных
         $name = '';
-        $first_name = '';
-        $middle_name = '';
         $username = '';
         
         $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-        $sql = "select name, first_name, middle_name, username 
+        $sql = "select name, username 
             from user where id=".GetUserId();
         
         if($conn->connect_error) {
@@ -21,8 +19,6 @@
         $result = $conn->query($sql);
         if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
             $name = $row['name'];
-            $first_name = $row['first_name'];
-            $middle_name = $row['middle_name'];
             $username = $row['username'];
         }
         $conn->close();
@@ -32,13 +28,13 @@
         $form_valid = true;
         $error_message = '';
         
-        $first_name_valid = '';
+        $name_valid = '';
         $username_valid = '';
         
         // Обработка отправки формы
         if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_edit_submit'])) {
-            if($_POST['first_name'] == '') {
-                $first_name_valid = ISINVALID;
+            if($_POST['name'] == '') {
+                $name_valid = ISINVALID;
                 $form_valid = false;
             }
             
@@ -54,11 +50,9 @@
                 }
                 
                 $name = addslashes($_POST['name']);
-                $first_name = addslashes($_POST['first_name']);
-                $middle_name = addslashes($_POST['middle_name']);
                 $username = addslashes($_POST['username']);
                 
-                $sql = "update user set name='$name', first_name='$first_name', middle_name='$middle_name', username='$username' where id=".GetUserId();
+                $sql = "update user set name='$name', username='$username' where id=".GetUserId();
                 
                 if ($conn->query($sql) === true) {
                     header('Location: '.APPLICATION.'/personal/');
@@ -97,17 +91,9 @@
                     <hr/>
                     <form method="post">
                         <div class="form-group">
-                            <label for="name">Фамилия</label>
-                            <input type="text" id="name" name="name" class="form-control" value="<?=$_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name']) ? $_POST['name'] : $name ?>" autocomplete="off"/>
-                        </div>
-                        <div class="form-group">
-                            <label for="first_name">Имя</label>
-                            <input type="text" id="first_name" name="first_name" class="form-control<?=$first_name_valid ?>" value="<?=$_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['first_name']) ? $_POST['first_name'] : $first_name ?>" required="required" autocomplete="off"/>
-                            <div class="invalid-feedback">Имя обязательно</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="middle_name">Отчество</label>
-                            <input type="text" id="middle_name" name="middle_name" class="form-control" value="<?=$_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['middle_name']) ? $_POST['middle_name'] : $middle_name ?>" autocomplete="off"/>
+                            <label for="name">ФИО</label>
+                            <input type="text" id="name" name="name" class="form-control" value="<?=$_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name']) ? $_POST['name'] : $name ?>" autocomplete="off" required="required"/>
+                            <div class="invalid-feedback">ФИО обязательно</div>
                         </div>
                         <div class="form-group">
                             <label for="username">Логин</label>

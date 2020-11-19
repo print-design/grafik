@@ -69,11 +69,9 @@
         // Получение объекта
         $username = '';
         $name = '';
-        $first_name = '';
-        $middle_name = '';
         
         $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-        $sql = "select username, name, first_name, middle_name from user where id = ".$_GET['id'];
+        $sql = "select username, name from user where id = ".$_GET['id'];
         
         if($conn->connect_error) {
             die('Ошибка соединения: ' . $conn->connect_error);
@@ -82,8 +80,6 @@
         if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
             $username = $row['username'];
             $name = $row['name'];
-            $first_name = $row['first_name'];
-            $middle_name = $row['middle_name'];
         }
         $conn->close();
         ?>
@@ -117,14 +113,6 @@
                         <tr>
                             <th>ФИО</th>
                             <td><?=$name ?></td>
-                        </tr>
-                        <tr>
-                            <th>Имя</th>
-                            <td><?=$first_name ?></td>
-                        </tr>
-                        <tr>
-                            <th>Отчество</th>
-                            <td><?=$middle_name ?></td>
                         </tr>
                     </table>
                 </div>

@@ -33,11 +33,9 @@
                 
                 $id = $_POST['id'];
                 $name = addslashes($_POST['name']);
-                $first_name = addslashes($_POST['first_name']);
-                $middle_name = addslashes($_POST['middle_name']);
                 $username = addslashes($_POST['username']);
                 
-                $sql = "update user set name='$name', first_name='$first_name', middle_name='$middle_name', username='$username' where id=$id";
+                $sql = "update user set name='$name', username='$username' where id=$id";
                 
                 if ($conn->query($sql) === true) {
                     header('Location: '.APPLICATION.'/user/details.php?id='.$id);
@@ -57,12 +55,10 @@
         
         // Получение объекта
         $name = '';
-        $first_name = '';
-        $middle_name = '';
         $username = '';
         
         $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-        $sql = "select name, first_name, middle_name, username from user where id=".$_GET['id'];
+        $sql = "select name, username from user where id=".$_GET['id'];
         
         if($conn->connect_error) {
             die('Ошибка соединения: ' . $conn->connect_error);
@@ -70,8 +66,6 @@
         $result = $conn->query($sql);
         if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
             $name = $row['name'];
-            $first_name = $row['first_name'];
-            $middle_name = $row['middle_name'];
             $username = $row['username'];
         }
         $conn->close();
@@ -98,15 +92,7 @@
                         <div class="form-group">
                             <label for="name">ФИО</label>
                             <input type="text" id="name" name="name" class="form-control<?=$name_valid ?>" value="<?=$_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name']) ? htmlentities($_POST['name']) : htmlentities($name) ?>" autocomplete="off" required="required"/>
-                        </div>
-                        <div class="form-group">
-                            <label for="first_name">Имя</label>
-                            <input type="text" id="first_name" name="first_name" class="form-control" value="<?=$_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['first_name']) ? htmlentities($_POST['first_name']) : htmlentities($first_name) ?>" autocomplete="off" required="required"/>
-                            <div class="invalid-feedback">Имя обязательно</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="middle_name">Отчество</label>
-                            <input type="text" id="middle_name" name="middle_name" class="form-control" value="<?=$_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['middle_name']) ? htmlentities($_POST['middle_name']) : htmlentities($middle_name) ?>" autocomplete="off"/>
+                            <div class="invalid-feedback">ФИО обязательно</div>
                         </div>
                         <div class="form-group">
                             <label for="username">Логин</label>
