@@ -29,11 +29,11 @@
         });
         
         $('.editable').keypress(function(){
-            $(this).next('.invisible').removeClass('invisible');
+            $(this).next('.d-none').removeClass('d-none');
         });
         
         $('.editable').change(function(){
-            $(this).next('.invisible').removeClass('invisible');
+            $(this).next('.d-none').removeClass('d-none');
         });
         
         <?php if (!empty($_REQUEST['scroll'])): ?>
@@ -43,5 +43,19 @@
     
     $(window).on("scroll", function(){
         $('input[name="scroll"]').val($(window).scrollTop());
+        
+        if($('thead#grafik-thead').length > 0 && $('tbody#grafik-tbody').length > 0) {
+            var windowTop = $(window).scrollTop();
+            var headHeight = $('thead#grafik-thead').height();
+            var bodyTop = $('tbody#grafik-tbody').offset().top;
+            var bodyPosition = $('tbody#grafik-tbody').offset().top - windowTop;
+            
+            if(bodyPosition < headHeight) {
+                $('thead#grafik-thead').css('transform', 'translate3d(0, ' + (windowTop - bodyTop + headHeight) + 'px, 100px)');
+            }
+            else {
+                $('thead#grafik-thead').css('transform', 'none');
+            }
+        }
     });
 </script>

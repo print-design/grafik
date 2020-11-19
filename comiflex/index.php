@@ -223,7 +223,7 @@
                 </div>
             </div>
             <table class="table table-bordered typography">
-                <thead>
+                <thead id="grafik-thead">
                     <tr>
                         <th></th>
                         <th>Дата</th>
@@ -244,7 +244,7 @@
                         ?>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="grafik-tbody">
                     <?php
                     $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
                     
@@ -347,18 +347,31 @@
                             echo '<td'.$top.'>'.($row['shift'] == 'day' ? 'День' : 'Ночь').'</td>';
                             
                             // Печатник
-                            echo '<td'.$top.'>';
+                            echo '<td'.$top.' title="Печатник">';
                             if(IsInRole('admin')) {
                                 echo "<form method='post'>";
                                 AddHiddenFields($row);
-                                echo '<select onchange="javascript: this.form.submit();" id="typographer_id" name="typographer_id">';
+                                echo '<select id="typographer_id" name="typographer_id">';
+                                echo '<optgroup>';
                                 echo '<option value="">...</option>';
                                 foreach ($typographers as $value) {
                                     $selected = '';
                                     if($row['p_id'] == $value['id']) $selected = " selected = 'selected'";
                                     echo "<option$selected value='".$value['id']."'>".$value['fio']."</option>";
                                 }
+                                echo '</optgroup>';
+                                echo "<optgroup label='______________'>";
+                                echo "<option value='+'>(добавить)</option>";
+                                echo '</optgroup>';
                                 echo '</select>';
+                                echo '</form>';
+                                
+                                echo '<form method="post" class="d-none">';
+                                AddHiddenFields($row);
+                                echo '<div class="input-group">';
+                                echo '<input type="text" id="typographer" name="typographer" value="" class="editable" />';
+                                echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                                echo '</div>';
                                 echo '</form>';
                             }
                             else {
@@ -371,7 +384,7 @@
                             if(IsInRole('admin')) {
                                 echo '<form method="post">';
                                 AddHiddenFields($row);
-                                echo '<select onchange="javascript:this.form.submit();" id="assistant_id" name="assistant_id">';
+                                echo '<select id="assistant_id" name="assistant_id">';
                                 echo '<option value="">...</option>';
                                 foreach ($typographers as $value) {
                                     $selected = '';
@@ -393,7 +406,7 @@
                                 AddHiddenFields($row);
                                 echo '<div class="input-group">';
                                 echo '<input type="text" id="organization" name="organization" value="'.htmlentities($row['organization']).'" class="editable" />';
-                                echo '<div class="input-group-append invisible"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                                echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
                                 echo '</div>';
                                 echo '</form>';
                             }
@@ -409,7 +422,7 @@
                                 AddHiddenFields($row);
                                 echo '<div class="input-group">';
                                 echo '<input type="text" id="edition" name="edition" value="'.htmlentities($row['edition']).'" class="editable" />';
-                                echo '<div class="input-group-append invisible"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                                echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
                                 echo '</div>';
                                 echo '</form>';
                             }
@@ -425,7 +438,7 @@
                                 AddHiddenFields($row);
                                 echo '<div class="input-group">';
                                 echo '<input type="number" step="1" id="length" name="length" value="'.$row['length'].'" class="editable" />';
-                                echo '<div class="input-group-append invisible"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                                echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
                                 echo '</div>';
                                 echo '</form>';
                             }
@@ -481,7 +494,7 @@
                                 AddHiddenFields($row);
                                 echo '<div class="input-group">';
                                 echo '<input type="number" step="1" id="coloring" name="coloring" value="'.$row['coloring'].'" class="editable" />';
-                                echo '<div class="input-group-append invisible"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                                echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
                                 echo '</div>';
                                 echo '</form>';
                             }
@@ -495,7 +508,7 @@
                             if(IsInRole('admin')) {
                                 echo "<form method='post'>";
                                 AddHiddenFields($row);
-                                echo '<select onchange="javascript: this.form.submit();" id="manager_id" name="manager_id">';
+                                echo '<select id="manager_id" name="manager_id">';
                                 echo '<option value="">...</option>';
                                 foreach ($managers as $value) {
                                     $selected = '';
@@ -541,5 +554,15 @@
         <?php
         include '../include/footer.php';
         ?>
+        <script>
+            $('select[id=typographer_id],select[id=assistant_id],select[id=manager_id]').change(function(){
+                if(this.value == '+') {
+                    $(this).parent().next().removeClass('d-none');
+                    $(this).parent().addClass('d-none');
+                    return;
+                }
+                this.form.submit();
+            });
+        </script>
     </body>
 </html>

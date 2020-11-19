@@ -21,11 +21,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login_submit'])){
     if($login_form_valid) {
         $login_user_id = '';
         $login_username = '';
-        $login_name = '';
+        $login_fio = '';
         $login_roles = '';
 
         $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-        $sql = "select id, username, name from user where username='".$_POST['login_username']."' and password=password('".$_POST['login_password']."')";
+        $sql = "select id, username, fio from user where username='".$_POST['login_username']."' and password=password('".$_POST['login_password']."')";
         
         if($conn->connect_error) {
             die('Ошибка соединения: ' . $conn->connect_error);
@@ -38,8 +38,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login_submit'])){
             $login_username = $row['username'];
             setcookie(USERNAME, $row['username'], 0, "/");
             
-            $login_name = $row['name'];
-            setcookie(FIO, $row['name'], 0, "/");
+            $login_fio = $row['fio'];
+            setcookie(FIO, $row['fio'], 0, "/");
         }
         else {
             $error_message = "Неправильный логин или пароль.";

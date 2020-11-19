@@ -16,10 +16,18 @@ body {
 }
 
 /**-- Таблицы --**/
+.table {
+    transform-style: preserve-3d;
+}
+
 table.typography tbody tr td {
     background-color: white;
 }
 
 table.typography tbody tr td.top {
     border-top: solid 2px darkgray;
+}
+
+thead#grafik-thead {
+    background-color: lightcyan;
 }
