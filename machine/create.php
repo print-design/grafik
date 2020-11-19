@@ -56,7 +56,7 @@
                     <hr/>
                     <form method="post">
                         <div class="form-group">
-                            <label for="first_name">Наименование</label>
+                            <label for="name">Наименование</label>
                             <input type="text" id="name" name="name" class="form-control<?=$name_valid ?>" value="<?=$_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name']) ? $_POST['name'] : '' ?>" required="required" autocomplete="off"/>
                             <div class="invalid-feedback">Наименование обязательно</div>
                         </div>
