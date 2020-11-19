@@ -6,19 +6,18 @@
         include '../include/restrict_logged_in.php';
         
         // Получение личных данных
-        $name = '';
+        $fio = '';
         $username = '';
         
         $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-        $sql = "select name, username 
-            from user where id=".GetUserId();
+        $sql = "select fio, username from user where id=".GetUserId();
         
         if($conn->connect_error) {
             die('Ошибка соединения: ' . $conn->connect_error);
         }
         $result = $conn->query($sql);
         if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
-            $name = $row['name'];
+            $fio = $row['fio'];
             $username = $row['username'];
         }
         $conn->close();
@@ -28,13 +27,13 @@
         $form_valid = true;
         $error_message = '';
         
-        $name_valid = '';
+        $fio_valid = '';
         $username_valid = '';
         
         // Обработка отправки формы
         if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_edit_submit'])) {
-            if($_POST['name'] == '') {
-                $name_valid = ISINVALID;
+            if($_POST['fio'] == '') {
+                $fio_valid = ISINVALID;
                 $form_valid = false;
             }
             
@@ -49,10 +48,10 @@
                     die('Ошибка соединения: '.$conn->connect_error);
                 }
                 
-                $name = addslashes($_POST['name']);
+                $fio = addslashes($_POST['fio']);
                 $username = addslashes($_POST['username']);
                 
-                $sql = "update user set name='$name', username='$username' where id=".GetUserId();
+                $sql = "update user set fio='$fio', username='$username' where id=".GetUserId();
                 
                 if ($conn->query($sql) === true) {
                     header('Location: '.APPLICATION.'/personal/');
@@ -92,7 +91,7 @@
                     <form method="post">
                         <div class="form-group">
                             <label for="name">ФИО</label>
-                            <input type="text" id="name" name="name" class="form-control" value="<?=$_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name']) ? $_POST['name'] : $name ?>" autocomplete="off" required="required"/>
+                            <input type="text" id="fio" name="fio" class="form-control<?=$fio_valid ?>" value="<?=$_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['fio']) ? htmlentities($_POST['fio']) : $fio ?>" autocomplete="off" required="required"/>
                             <div class="invalid-feedback">ФИО обязательно</div>
                         </div>
                         <div class="form-group">

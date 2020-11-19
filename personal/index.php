@@ -6,18 +6,18 @@
         include '../include/restrict_logged_in.php';
         
         // Получение личных данных
-        $name = '';
+        $fio = '';
         $username = '';
         
         $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-        $sql = "select name, username from user where id=".GetUserId();
+        $sql = "select fio, username from user where id=".GetUserId();
         
         if($conn->connect_error) {
             die('Ошибка соединения: ' . $conn->connect_error);
         }
         $result = $conn->query($sql);
         if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
-            $name = $row['name'];
+            $fio = $row['fio'];
             $username = $row['username'];
         }
         $conn->close();
@@ -58,7 +58,7 @@
                     <table class="table table-bordered">
                         <tr>
                             <th>ФИО</th>
-                            <td><?=$name ?></td>
+                            <td><?=$fio ?></td>
                         </tr>
                         <tr>
                             <th>Логин</th>

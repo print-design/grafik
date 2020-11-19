@@ -256,7 +256,7 @@
                     $typographers = array();
                     
                     if(IsInRole('admin')) {
-                        $typographer_sql = "select u.id, u.name from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 3 order by u.name";
+                        $typographer_sql = "select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 3 order by u.fio";
                         $typographer_result = mysqli_query($conn, $typographer_sql);
                         if(is_bool($typographer_result)){
                             die("Ошибка при запросе списка печатников");
@@ -298,7 +298,7 @@
                     $managers = array();
                     
                     if(IsInRole('admin')) {
-                        $manager_sql = "select u.id, u.name from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 2 order by u.name";
+                        $manager_sql = "select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 2 order by u.fio";
                         $manager_result = mysqli_query($conn, $manager_sql);
                         if(is_bool($manager_result)){
                             die("Ошибка при запросе списка менеджеров");
@@ -310,7 +310,7 @@
                     
                     // Список рабочих смен
                     $sql = "with recursive date_ranges as (select '".$date_from->format('Y-m-d')."' as date union all select date + interval 1 day from date_ranges where date < '".$date_to->format('Y-m-d')."') "
-                            . "select t.id, dr.date date, date_format(dr.date, '%d.%m.%Y') fdate, 'day' shift, up.id p_id, up.name p_name, ua.id a_id, ua.name a_name, um.id m_id, um.name m_name, "
+                            . "select t.id, dr.date date, date_format(dr.date, '%d.%m.%Y') fdate, 'day' shift, up.id p_id, up.fio p_name, ua.id a_id, ua.fio a_name, um.id m_id, um.fio m_name, "
                             . "t.organization, t.edition, t.length, r.name roller, lam.name lamination, t.coloring, t.roller_id, t.lamination_id "
                             . "from date_ranges dr left join comiflex t "
                             . "left join user up on t.typographer_id = up.id "
@@ -320,7 +320,7 @@
                             . "left join lamination lam on t.lamination_id = lam.id "
                             . "on t.date = dr.date and t.shift = 'day' "
                             . "union "
-                            . "select t.id, dr.date date, date_format(dr.date, '%d.%m.%Y') fdate, 'night' shift, up.id p_id, up.name p_name, ua.id a_id, ua.name a_name, um.id m_id, um.name m_name, "
+                            . "select t.id, dr.date date, date_format(dr.date, '%d.%m.%Y') fdate, 'night' shift, up.id p_id, up.fio p_name, ua.id a_id, ua.fio a_name, um.id m_id, um.fio m_name, "
                             . "t.organization, t.edition, t.length, r.name roller, lam.name lamination, t.coloring, t.roller_id, t.lamination_id "
                             . "from date_ranges dr left join comiflex t "
                             . "left join user up on t.typographer_id = up.id "
@@ -356,7 +356,7 @@
                                 foreach ($typographers as $value) {
                                     $selected = '';
                                     if($row['p_id'] == $value['id']) $selected = " selected = 'selected'";
-                                    echo "<option$selected value='".$value['id']."'>".$value['name']."</option>";
+                                    echo "<option$selected value='".$value['id']."'>".$value['fio']."</option>";
                                 }
                                 echo '</select>';
                                 echo '</form>';
@@ -376,7 +376,7 @@
                                 foreach ($typographers as $value) {
                                     $selected = '';
                                     if($row['a_id'] == $value['id']) $selected = " selected = 'selected'";
-                                    echo "<option$selected value='".$value['id']."'>".$value['name']."</option>";
+                                    echo "<option$selected value='".$value['id']."'>".$value['fio']."</option>";
                                 }
                                 echo '</select>';
                                 echo '</form>';
@@ -500,7 +500,7 @@
                                 foreach ($managers as $value) {
                                     $selected = '';
                                     if($row['m_id'] == $value['id']) $selected = " selected = 'selected'";
-                                    echo "<option$selected value='".$value['id']."'>".$value['name']."</option>";
+                                    echo "<option$selected value='".$value['id']."'>".$value['fio']."</option>";
                                 }
                                 echo '</select>';
                                 echo '</form>';

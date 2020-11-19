@@ -10,14 +10,14 @@
         $form_valid = true;
         $error_message = '';
         
-        $name_valid = '';
+        $fio_valid = '';
         $username_valid = '';
         $password_valid = '';
         
         // Обработка отправки формы
         if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_create_submit'])) {
-            if($_POST['name'] == '') {
-                $name_valid = ISINVALID;
+            if($_POST['fio'] == '') {
+                $fio_valid = ISINVALID;
                 $form_valid = false;
             }
             
@@ -37,11 +37,11 @@
                     die('Ошибка соединения: '.$conn->connect_error);
                 }
                 
-                $name = addslashes($_POST['name']);
+                $fio = addslashes($_POST['fio']);
                 $username = addslashes($_POST['username']);
                 $password = addslashes($_POST['password']);
                 
-                $sql = "insert into user (name, username, password) values ('$name', '$username', password('$password'))";
+                $sql = "insert into user (fio, username, password) values ('$fio', '$username', password('$password'))";
                 
                 if ($conn->query($sql) === true) {
                     header('Location: '.APPLICATION.'/user/');
@@ -81,7 +81,7 @@
                     <form method="post">
                         <div class="form-group">
                             <label for="name">ФИО</label>
-                            <input type="text" id="name" name="name" class="form-control<?=$name_valid ?>" value="<?=$_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name']) ? $_POST['name'] : '' ?>" autocomplete="off" required="required"/>
+                            <input type="text" id="fio" name="fio" class="form-control<?=$fio_valid ?>" value="<?=$_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['fio']) ? $_POST['fio'] : '' ?>" autocomplete="off" required="required"/>
                             <div class="invalid-feedback">ФИО обязательно</div>
                         </div>
                         <div class="form-group">

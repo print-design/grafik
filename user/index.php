@@ -40,9 +40,9 @@
                 <tbody>
                     <?php
                     $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-                    $sql = "select u.id, date_format(u.date, '%d.%m.%Y') date, u.username, u.name, "
+                    $sql = "select u.id, date_format(u.date, '%d.%m.%Y') date, u.username, u.fio, "
                             . "(SELECT GROUP_CONCAT(DISTINCT r.local_name SEPARATOR ', ') FROM role r inner join user_role ur on ur.role_id = r.id where ur.user_id = u.id) roles "
-                            . "from user u order by u.name asc";
+                            . "from user u order by u.fio asc";
                             
                     if($conn->connect_error) {
                         die('Ошибка соединения: ' . $conn->connect_error);
@@ -54,7 +54,7 @@
                             echo "<tr>"
                                     ."<td>".$row['date']."</td>"
                                     ."<td><a href='".APPLICATION."/user/details.php?id=".$row['id']."'>".$row['username']."</a></td>"
-                                    ."<td>".$row['name']."</td>"
+                                    ."<td>".$row['fio']."</td>"
                                     ."<td>".$row['roles']."</td>"
                                     ."</tr>";
                         }
