@@ -25,12 +25,44 @@
             $error_message = ExecuteSql($sql);
         }
         
+        // Создание нового печатника
+        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['typographer'])) {
+            $typographer = addslashes($_POST['typographer']);
+            $sql_user = "insert into user (fio, username) values ('$typographer', CURRENT_TIMESTAMP())";
+            $conn_user = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
+            if ($conn_user->query($sql_user) === true) {
+                $typographer_id = $conn_user->insert_id;
+                
+                $role_id = 3;
+                $sql_role = "insert into user_role (user_id, role_id) values ($typographer_id, $role_id)";
+                $error_message = ExecuteSql($sql_role);
+                if($error_message == ''){
+                    $sql = '';
+                    
+                    if(isset($_POST['id'])) {
+                        $id = $_POST['id'];
+                        $sql = "update comiflex set typographer_id=$typographer_id where id=$id";
+                    }
+                    else {
+                        $date = $_POST['date'];
+                        $shift = $_POST['shift'];
+                        $sql = "insert into comiflex (date, shift, typographer_id) values ('$date', '$shift', $typographer_id)";
+                    }
+                    $error_message = ExecuteSql($sql);
+                }
+            }
+            else {
+                $error_message = $conn_user->error;
+            }
+            
+            $conn_user->close();
+        }
+        
         // Выбор помощника
         if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['assistant_id'])) {
             $assistant_id = $_POST['assistant_id'];
             if($_POST['assistant_id'] == '') $assistant_id = "NULL";
             $sql = '';
-            
             if(isset($_POST['id'])) {
                 $id = $_POST['id'];
                 $sql = "update comiflex set assistant_id=$assistant_id where id=$id";
@@ -40,8 +72,39 @@
                 $shift = $_POST['shift'];
                 $sql = "insert into comiflex (date, shift, assistant_id) values ('$date', '$shift', $assistant_id)";
             }
-            
             $error_message = ExecuteSql($sql);
+        }
+        
+        // Создание нового помощника
+        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['assistant'])) {
+            $assistant = addslashes($_POST['assistant']);
+            $sql_user = "insert into user (fio, username) values ('$assistant', CURRENT_TIMESTAMP())";
+            $conn_user = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
+            if ($conn_user->query($sql_user) === true) {
+                $assistant_id = $conn_user->insert_id;
+                
+                $role_id = 3;
+                $sql_role = "insert into user_role (user_id, role_id) values ($assistant_id, $role_id)";
+                $error_message = ExecuteSql($sql_role);
+                if($error_message == ''){
+                    $sql = '';
+                    if(isset($_POST['id'])) {
+                        $id = $_POST['id'];
+                        $sql = "update comiflex set assistant_id=$assistant_id where id=$id";
+                    }
+                    else {
+                        $date = $_POST['date'];
+                        $shift = $_POST['shift'];
+                        $sql = "insert into comiflex (date, shift, assistant_id) values ('$date', '$shift', $assistant_id)";
+                    }
+                    $error_message = ExecuteSql($sql);
+                }
+            }
+            else {
+                $error_message = $conn_user->error;
+            }
+            
+            $conn_user->close();
         }
         
         // Заказчик
@@ -385,13 +448,26 @@
                                 echo '<form method="post">';
                                 AddHiddenFields($row);
                                 echo '<select id="assistant_id" name="assistant_id">';
+                                echo '<optgroup>';
                                 echo '<option value="">...</option>';
                                 foreach ($typographers as $value) {
                                     $selected = '';
                                     if($row['a_id'] == $value['id']) $selected = " selected = 'selected'";
                                     echo "<option$selected value='".$value['id']."'>".$value['fio']."</option>";
                                 }
+                                echo '</optgroup>';
+                                echo "<optgroup label='______________'>";
+                                echo "<option value='+'>(добавить)</option>";
+                                echo '</optgroup>';
                                 echo '</select>';
+                                echo '</form>';
+                                
+                                echo '<form method="post" class="d-none">';
+                                AddHiddenFields($row);
+                                echo '<div class="input-group">';
+                                echo '<input type="text" id="assistant" name="assistant" value="" class="editable" />';
+                                echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                                echo '</div>';
                                 echo '</form>';
                             }
                             else {
