@@ -120,7 +120,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout_submit'])) {
                 <a class="nav-link<?=$atlas_status ?>" href="<?=APPLICATION ?>/atlas/<?=$query_string ?>">Атлас</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link<?=$laminators_status ?>" href="<?=APPLICATION ?>/laminators/<?=$query_string ?>">Ламинаторы</a>
+                <a class="nav-link<?=$laminators_status ?>" href="<?=APPLICATION ?>/laminators/<?=$query_string ?>">Ламинаторщики</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link<?=$cutters_status ?>" href="<?=APPLICATION ?>/cutters/<?=$query_string ?>">Резчики</a>
