@@ -126,6 +126,106 @@
             $error_message = ExecuteSql($sql);
         }
         
+        // Тираж
+        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edition'])) {
+            $edition = addslashes($_POST['edition']);
+            $sql = '';
+            
+            if(isset($_POST['id'])) {
+                $id = $_POST['id'];
+                $sql = "update zbs set edition='$edition' where id=$id";
+            }
+            else {
+                $date = $_POST['date'];
+                $shift = $_POST['shift'];
+                $sql = "insert into zbs (date, shift, edition, nn) values ('$date', '$shift', '$edition', $nn)";
+            }
+            
+            $error_message = ExecuteSql($sql);
+        }
+        
+        // Метраж
+        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['length'])) {
+            $length = filter_var($_POST['length'], FILTER_SANITIZE_NUMBER_INT);
+            $sql = '';
+            
+            if(isset($_POST['id'])) {
+                $id = $_POST['id'];
+                $sql = "update zbs set length='$length' where id=$id";
+            }
+            else {
+                $date = $_POST['date'];
+                $shift = $_POST['shift'];
+                $sql = "insert into zbs (date, shift, length, nn) values ('$date', '$shift', $length, $nn)";
+            }
+            
+            $error_message = ExecuteSql($sql);
+        }
+        
+        // Выбор вала
+        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['roller_id'])) {
+            $roller_id = $_POST['roller_id'];
+            if($_POST['roller_id'] == '') $roller_id = "NULL";
+            $sql = '';
+            
+            if(isset($_POST['id'])) {
+                $id = $_POST['id'];
+                $sql = "update zbs set roller_id=$roller_id where id=$id";
+            }
+            else {
+                $date = $_POST['date'];
+                $shift = $_POST['shift'];
+                $sql = "insert into zbs (date, shift, roller_id, nn) values ('$date', '$shift', $roller_id, $nn)";
+            }
+            
+            $error_message = ExecuteSql($sql);
+        }
+        
+        // Выбор ламинации
+        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['lamination_id'])) {
+            $lamination_id = $_POST['lamination_id'];
+            if($_POST['lamination_id'] == '') $lamination_id = "NULL";
+            $sql = '';
+            
+            if(isset($_POST['id'])) {
+                $id = $_POST['id'];
+                $sql = "update zbs set lamination_id=$lamination_id where id=$id";
+            }
+            else {
+                $date = $_POST['date'];
+                $shift = $_POST['shift'];
+                $sql = "insert into zbs (date, shift, lamination_id, nn) values ('$date', '$shift', $lamination_id, $nn)";
+            }
+            
+            $error_message = ExecuteSql($sql);
+        }
+        
+        // Менеджер
+        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['manager_id'])) {
+            $manager_id = $_POST['manager_id'];
+            if($_POST['manager_id'] == '') $manager_id = "NULL";
+            $sql = '';
+            
+            if(isset($_POST['id'])) {
+                $id = $_POST['id'];
+                $sql = "update zbs set manager_id=$manager_id where id=$id";
+            }
+            else {
+                $date = $_POST['date'];
+                $shift = $_POST['shift'];
+                $sql = "insert into zbs (date, shift, manager_id, nn) values ('$date', '$shift', $manager_id, $nn)";
+            }
+            
+            $error_message = ExecuteSql($sql);
+        }
+        
+        // Удаление рабочей смены
+        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_submit'])) {
+            $id = $_POST['id'];
+            $sql = "delete from zbs where id=$id";
+            $error_message = ExecuteSql($sql);
+        }
+        
         // Получение начальной даты и конечной даты
         include '../include/date_from_date_to.php';
         ?>
