@@ -435,7 +435,7 @@
                                 echo '</form>';
                             }
                             else {
-                                echo $row['edition'];
+                                echo $row['length'];
                             }
                             echo '</td>';
                             

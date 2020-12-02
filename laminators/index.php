@@ -221,6 +221,24 @@
             $error_message = ExecuteSql($sql);
         }
         
+        // Комментарий
+        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['comment'])) {
+            $comment = addslashes($_POST['comment']);
+            $sql = '';
+            
+            if(isset($_POST['id'])) {
+                $id = $_POST['id'];
+                $sql = "update laminators set comment='$comment' where id=$id";
+            }
+            else {
+                $date = $_POST['date'];
+                $shift = $_POST['shift'];
+                $sql = "insert into laminators (date, shift, comment) values ('$date', '$shift', '$comment')";
+            }
+            
+            $error_message = ExecuteSql($sql);
+        }
+        
         // Удаление рабочей смены
         if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_submit'])) {
             $id = $_POST['id'];
@@ -504,7 +522,7 @@
                                 echo '</form>';
                             }
                             else {
-                                echo $row['edition'];
+                                echo $row['length'];
                             }
                             echo '</td>';
                             
@@ -568,6 +586,7 @@
                             }
                             echo '</td>';
                             
+                            // Комментарий
                             echo "<td".$top." class='newline'>";
                             if(IsInRole('admin')) {
                                 echo '<form method="post">';
