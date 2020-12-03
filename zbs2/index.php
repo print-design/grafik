@@ -213,7 +213,7 @@
             ?>
             <div class="d-flex justify-content-between mb-2">
                 <div class="p-1">
-                    <h1>ZBS-1</h1>
+                    <h1>ZBS-2</h1>
                 </div>
                 <div class="p-1">
                     <?php
