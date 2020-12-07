@@ -613,7 +613,7 @@ include '../include/topscripts.php';
                             echo '</form>';
                         }
                         else {
-                            echo $row['m_name'];
+                            if(isset($row['m_name'])) echo $row['m_name'];
                         }
                         echo '</td>';
                         

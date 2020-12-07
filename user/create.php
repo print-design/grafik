@@ -1,3 +1,6 @@
+<?php
+include '../include/topscripts.php';
+?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -36,6 +39,8 @@
                 if($conn->connect_error) {
                     die('Ошибка соединения: '.$conn->connect_error);
                 }
+                
+                mysqli_query($conn, 'set names utf8');
                 
                 $fio = addslashes($_POST['fio']);
                 $username = addslashes($_POST['username']);

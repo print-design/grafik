@@ -1,3 +1,6 @@
+<?php
+include '../include/topscripts.php';
+?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -37,6 +40,7 @@
                 
                 $sql = "update user set fio='$fio', username='$username' where id=$id";
                 
+                mysqli_query($conn, 'set names utf8');
                 if ($conn->query($sql) === true) {
                     header('Location: '.APPLICATION.'/user/details.php?id='.$id);
                 }
@@ -63,6 +67,8 @@
         if($conn->connect_error) {
             die('Ошибка соединения: ' . $conn->connect_error);
         }
+        
+        mysqli_query($conn, 'set names utf8');
         $result = $conn->query($sql);
         if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
             $fio = $row['fio'];
