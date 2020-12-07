@@ -1,3 +1,6 @@
+<?php
+include '../include/topscripts.php';
+?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -254,9 +257,7 @@
         <div class="container-fluid">
             <?php
             if(isset($error_message) && $error_message != '') {
-               echo <<<ERROR
-               <div class="alert alert-danger">$error_message</div>
-               ERROR;
+               echo "<div class='alert alert-danger'>$error_message</div>";
             }
             ?>
             <div class="d-flex justify-content-between mb-2">
@@ -314,6 +315,8 @@
                     if($conn->connect_error) {
                         die('Ошибка соединения: ' . $conn->connect_error);
                     }
+                    
+                    mysqli_query($conn, 'set names utf8');
                     
                     // Список печатников
                     $typographers = array();

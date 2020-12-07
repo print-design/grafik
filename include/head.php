@@ -1,6 +1,4 @@
 <?php
-include 'defines.php';
-
 $weekdays = array();
 $weekdays[0] = 'Вс';
 $weekdays[1] = 'Пн';
