@@ -50,13 +50,13 @@ function ExecuteSql($sql) {
     return $message;
 }
 
-function AddHiddenFields($row) {
+function AddHiddenFields($dateshift, $row) {
     echo '<input type="hidden" id="scroll" name="scroll" />';
     if(isset($row['id'])) {
         echo '<input type="hidden" id="id" name="id" value="'.$row['id'].'" />';
     }
-    echo '<input type="hidden" id="date" name="date" value="'.$row['date'].'" />';
-    echo '<input type="hidden" id="shift" name="shift" value="'.$row['shift'].'" />';
+    echo '<input type="hidden" id="date" name="date" value="'.$dateshift['date']->format('Y-m-d').'" />';
+    echo '<input type="hidden" id="shift" name="shift" value="'.$dateshift['shift'].'" />';
     if(isset($_GET['from'])) {
         echo '<input type="hidden" id="from" name="from" value="'.$_GET['from'].'" />';
     }

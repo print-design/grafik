@@ -372,256 +372,271 @@
                     }
                     
                     // Список рабочих смен
-                    $sql = "with recursive date_ranges as (select '".$date_from->format('Y-m-d')."' as date union all select date + interval 1 day from date_ranges where date < '".$date_to->format('Y-m-d')."') "
-                            . "select t.id, dr.date date, date_format(dr.date, '%d.%m.%Y') fdate, 'day' shift, up.id p_id, up.fio p_name, ua.id a_id, ua.fio a_name, um.id m_id, um.fio m_name, "
+                    $sql = "select t.id, t.date date, date_format(t.date, '%d.%m.%Y') fdate, t.shift, up.id p_id, up.fio p_name, ua.id a_id, ua.fio a_name, um.id m_id, um.fio m_name, "
                             . "t.organization, t.edition, t.length, r.name roller, lam.name lamination, t.coloring, t.roller_id, t.lamination_id "
-                            . "from date_ranges dr left join comiflex t "
+                            . "from comiflex t "
                             . "left join user up on t.typographer_id = up.id "
                             . "left join user ua on t.assistant_id = ua.id "
                             . "left join user um on t.manager_id = um.id "
                             . "left join roller r on t.roller_id = r.id "
                             . "left join lamination lam on t.lamination_id = lam.id "
-                            . "on t.date = dr.date and t.shift = 'day' "
-                            . "union "
-                            . "select t.id, dr.date date, date_format(dr.date, '%d.%m.%Y') fdate, 'night' shift, up.id p_id, up.fio p_name, ua.id a_id, ua.fio a_name, um.id m_id, um.fio m_name, "
-                            . "t.organization, t.edition, t.length, r.name roller, lam.name lamination, t.coloring, t.roller_id, t.lamination_id "
-                            . "from date_ranges dr left join comiflex t "
-                            . "left join user up on t.typographer_id = up.id "
-                            . "left join user ua on t.assistant_id = ua.id "
-                            . "left join user um on t.manager_id = um.id "
-                            . "left join roller r on t.roller_id = r.id "
-                            . "left join lamination lam on t.lamination_id = lam.id "
-                            . "on t.date = dr.date and t.shift = 'night' "
-                            . "order by date desc, shift asc;";
+                            . "where t.date >= '".$date_from->format('Y-m-d')."' and t.date <= '".$date_to->format('Y-m-d')."'";
                     
                     $result = $conn->query($sql);
-                    if ($result->num_rows > 0) {
-                        while($row = $result->fetch_assoc()) {
-                            $top = "";
-                            if($row['shift'] == 'day') {
-                                $top = " class='top'";
-                            }
-                            
-                            echo '<tr>';
-                            if($row['shift'] == 'day') {
-                                echo "<td".$top." rowspan='2'>".$weekdays[DateTime::createFromFormat('d.m.Y', $row['fdate'])->format('w')].'</td>';
-                                echo "<td".$top." rowspan='2'>".$row['fdate'].'</td>';
-                            }
-                            echo '<td'.$top.'>'.($row['shift'] == 'day' ? 'День' : 'Ночь').'</td>';
-                            
-                            // Печатник
-                            echo '<td'.$top.' title="Печатник">';
-                            if(IsInRole('admin')) {
-                                echo "<form method='post'>";
-                                AddHiddenFields($row);
-                                echo '<select id="typographer_id" name="typographer_id">';
-                                echo '<optgroup>';
-                                echo '<option value="">...</option>';
-                                foreach ($typographers as $value) {
-                                    $selected = '';
-                                    if($row['p_id'] == $value['id']) $selected = " selected = 'selected'";
-                                    echo "<option$selected value='".$value['id']."'>".$value['fio']."</option>";
-                                }
-                                echo '</optgroup>';
-                                echo "<optgroup label='______________'>";
-                                echo "<option value='+'>(добавить)</option>";
-                                echo '</optgroup>';
-                                echo '</select>';
-                                echo '</form>';
-                                
-                                echo '<form method="post" class="d-none">';
-                                AddHiddenFields($row);
-                                echo '<div class="input-group">';
-                                echo '<input type="text" id="typographer" name="typographer" value="" class="editable" />';
-                                echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
-                                echo '</div>';
-                                echo '</form>';
-                            }
-                            else {
-                                echo $row['p_name'];
-                            }
-                            echo '</td>';
-                            
-                            // Помощник
-                            echo '<td'.$top.'>';
-                            if(IsInRole('admin')) {
-                                echo '<form method="post">';
-                                AddHiddenFields($row);
-                                echo '<select id="assistant_id" name="assistant_id">';
-                                echo '<optgroup>';
-                                echo '<option value="">...</option>';
-                                foreach ($typographers as $value) {
-                                    $selected = '';
-                                    if($row['a_id'] == $value['id']) $selected = " selected = 'selected'";
-                                    echo "<option$selected value='".$value['id']."'>".$value['fio']."</option>";
-                                }
-                                echo '</optgroup>';
-                                echo "<optgroup label='______________'>";
-                                echo "<option value='+'>(добавить)</option>";
-                                echo '</optgroup>';
-                                echo '</select>';
-                                echo '</form>';
-                                
-                                echo '<form method="post" class="d-none">';
-                                AddHiddenFields($row);
-                                echo '<div class="input-group">';
-                                echo '<input type="text" id="assistant" name="assistant" value="" class="editable" />';
-                                echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
-                                echo '</div>';
-                                echo '</form>';
-                            }
-                            else {
-                                echo $row['a_name'];
-                            }
-                            echo '</td>';
-
-                            // Заказчик
-                            echo '<td'.$top.'>';
-                            if(IsInRole('admin')) {
-                                echo '<form method="post">';
-                                AddHiddenFields($row);
-                                echo '<div class="input-group">';
-                                echo '<input type="text" id="organization" name="organization" value="'.htmlentities($row['organization']).'" class="editable" />';
-                                echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
-                                echo '</div>';
-                                echo '</form>';
-                            }
-                            else {
-                                echo $row['organization'];
-                            }
-                            echo '</td>';
-                            
-                            // Тираж
-                            echo '<td'.$top.'>';
-                            if(IsInRole('admin')) {
-                                echo '<form method="post">';
-                                AddHiddenFields($row);
-                                echo '<div class="input-group">';
-                                echo '<input type="text" id="edition" name="edition" value="'.htmlentities($row['edition']).'" class="editable" />';
-                                echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
-                                echo '</div>';
-                                echo '</form>';
-                            }
-                            else {
-                                echo $row['edition'];
-                            }
-                            echo '</td>';
-                            
-                            // Метраж
-                            echo '<td'.$top.'>';
-                            if(IsInRole('admin')) {
-                                echo '<form method="post">';
-                                AddHiddenFields($row);
-                                echo '<div class="input-group">';
-                                echo '<input type="number" step="1" id="length" name="length" value="'.$row['length'].'" class="editable" />';
-                                echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
-                                echo '</div>';
-                                echo '</form>';
-                            }
-                            else {
-                                echo $row['length'];
-                            }
-                            echo '</td>';
-                            
-                            // Вал
-                            echo '<td'.$top.'>';
-                            if(IsInRole('admin')) {
-                                echo "<form method='post'>";
-                                AddHiddenFields($row);
-                                echo '<select onchange="javascript: this.form.submit();" id="roller_id" name="roller_id">';
-                                echo '<option value="">...</option>';
-                                foreach ($rollers as $value) {
-                                    $selected = '';
-                                    if($row['roller_id'] == $value['id']) $selected = " selected = 'selected'";
-                                    echo "<option$selected value='".$value['id']."'>".$value['name']."</option>";
-                                }
-                                echo '</select>';
-                                echo '</form>';
-                            }
-                            else {
-                                echo $row['roller'];
-                            }
-                            echo '</td>';
-                            
-                            // Ламинация
-                            echo '<td'.$top.'>';
-                            if(IsInRole('admin')) {
-                                echo "<form method='post'>";
-                                AddHiddenFields($row);
-                                echo '<select onchange="javascript: this.form.submit();" id="lamination_id" name="lamination_id">';
-                                echo '<option value="">...</option>';
-                                foreach ($laminations as $value) {
-                                    $selected = '';
-                                    if($row['lamination_id'] == $value['id']) $selected = " selected = 'selected'";
-                                    echo "<option$selected value='".$value['id']."'>".$value['name']."</option>";
-                                }
-                                echo '</select>';
-                                echo '</form>';
-                            }
-                            else {
-                                echo $row['lamination'];
-                            }
-                            echo '</td>';
-                            
-                            // Красочность
-                            echo '<td'.$top.'>';
-                            if(IsInRole('admin')) {
-                                echo '<form method="post">';
-                                AddHiddenFields($row);
-                                echo '<div class="input-group">';
-                                echo '<input type="number" step="1" id="coloring" name="coloring" value="'.$row['coloring'].'" class="editable" />';
-                                echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
-                                echo '</div>';
-                                echo '</form>';
-                            }
-                            else {
-                                echo $row['coloring'];
-                            }
-                            echo '</td>';
-                            
-                            // Менеджер
-                            echo '<td'.$top.'>';
-                            if(IsInRole('admin')) {
-                                echo "<form method='post'>";
-                                AddHiddenFields($row);
-                                echo '<select id="manager_id" name="manager_id">';
-                                echo '<option value="">...</option>';
-                                foreach ($managers as $value) {
-                                    $selected = '';
-                                    if($row['m_id'] == $value['id']) $selected = " selected = 'selected'";
-                                    echo "<option$selected value='".$value['id']."'>".$value['fio']."</option>";
-                                }
-                                echo '</select>';
-                                echo '</form>';
-                            }
-                            else {
-                                echo $row['m_name'];
-                            }
-                            echo '</td>';
-                            
-                            // Удаление смены
-                            if(IsInRole('admin')) {
-                                echo '<td'.$top.'>';
-                                if(isset($row['id'])) {
-                                    echo "<form method='post'>";
-                                    echo '<input type="hidden" id="scroll" name="scroll" />';
-                                    echo "<input type='hidden' id='id' name='id' value='".$row['id']."' />";
-                                    echo "<input type='hidden' id='date' name='date' value='".$row['date']."' />";
-                                    if(isset($_GET['from'])) {
-                                        echo '<input type="hidden" id="from" name="from" value="'.$_GET['from'].'" />';
-                                    }
-                                    if(isset($_GET['to'])) {
-                                        echo '<input type="hidden" id="to" name="to" value="'.$_GET['to'].'" />';
-                                    }
-                                    echo "<button type='submit' id='delete_submit' name='delete_submit' class='btn btn-outline-dark' onclick='javascript:return confirm(\"Действительно удалить?\");'><span class='font-awesome'>&#xf1f8;</span></button>";
-                                    echo '</form>';
-                                }
-                                echo '</td>';
-                            }
-
-                            echo '</tr>';
-                        }
+                    $all = array();
+                    
+                    while ($item = mysqli_fetch_array($result)) {
+                        $all[$item['date'].$item['shift']] = $item;
                     }
+
+                    // Список дат и смен
+                    $date_diff = $date_to->diff($date_from);
+                    $interval = DateInterval::createFromDateString("-1 day");
+                    $period = new DatePeriod($date_to, $interval, $date_diff->days);
+                    $dateshifts = array();
+                    
+                    foreach ($period as $date) {
+                        $dateshift = array();
+                        $dateshift['date'] = $date;
+                        $dateshift['shift'] = 'day';
+                        array_push($dateshifts, $dateshift);
+                        
+                        $dateshift = array();
+                        $dateshift['date'] = $date;
+                        $dateshift['shift'] = 'night';
+                        array_push($dateshifts, $dateshift);
+                    }
+                    
+                    foreach ($dateshifts as $dateshift) {
+                        $key = $dateshift['date']->format('Y-m-d').$dateshift['shift'];
+                        $row = array();
+                        if(isset($all[$key])) $row = $all[$key];
+                        
+                        $top = "";
+                        if($dateshift['shift'] == 'day') {
+                            $top = " class='top'";
+                        }
+                            
+                        echo "<tr>";
+                        if($dateshift['shift'] == 'day') {
+                            echo "<td$top rowspan='2'>".$weekdays[$dateshift['date']->format('w')]."</td>";
+                        }
+                        echo "<td$top>".$dateshift['date']->format('Y-m-d').'</td>';
+                        echo "<td$top>".($dateshift['shift'] == 'day' ? 'День' : 'Ночь').'</td>';
+                        
+                        // Печатник
+                        echo '<td'.$top.' title="Печатник">';
+                        if(IsInRole('admin')) {
+                            echo "<form method='post'>";
+                            AddHiddenFields($dateshift, $row);
+                            echo '<select id="typographer_id" name="typographer_id">';
+                            echo '<optgroup>';
+                            echo '<option value="">...</option>';
+                            foreach ($typographers as $value) {
+                                $selected = '';
+                                if(isset($row['p_id']) && $row['p_id'] == $value['id']) $selected = " selected = 'selected'";
+                                echo "<option$selected value='".$value['id']."'>".$value['fio']."</option>";
+                            }
+                            echo '</optgroup>';
+                            echo "<optgroup label='______________'>";
+                            echo "<option value='+'>(добавить)</option>";
+                            echo '</optgroup>';
+                            echo '</select>';
+                            echo '</form>';
+                            
+                            echo '<form method="post" class="d-none">';
+                            AddHiddenFields($dateshift, $row);
+                            echo '<div class="input-group">';
+                            echo '<input type="text" id="typographer" name="typographer" value="" class="editable" />';
+                            echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                            echo '</div>';
+                            echo '</form>';
+                        }
+                        else {
+                            if(isset($row['p_name'])) echo $row['p_name'];
+                        }
+                        echo '</td>';
+                        
+                        // Помощник
+                        echo '<td'.$top.'>';
+                        if(IsInRole('admin')) {
+                            echo '<form method="post">';
+                            AddHiddenFields($dateshift, $row);
+                            echo '<select id="assistant_id" name="assistant_id">';
+                            echo '<optgroup>';
+                            echo '<option value="">...</option>';
+                            foreach ($typographers as $value) {
+                                $selected = '';
+                                if($row['a_id'] == $value['id']) $selected = " selected = 'selected'";
+                                echo "<option$selected value='".$value['id']."'>".$value['fio']."</option>";
+                            }
+                            echo '</optgroup>';
+                            echo "<optgroup label='______________'>";
+                            echo "<option value='+'>(добавить)</option>";
+                            echo '</optgroup>';
+                            echo '</select>';
+                            echo '</form>';
+                            
+                            echo '<form method="post" class="d-none">';
+                            AddHiddenFields($dateshift, $row);
+                            echo '<div class="input-group">';
+                            echo '<input type="text" id="assistant" name="assistant" value="" class="editable" />';
+                            echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                            echo '</div>';
+                            echo '</form>';
+                        }
+                        else {
+                            if(isset($row['a_name'])) echo $row['a_name'];
+                        }
+                        echo '</td>';
+                        
+                        // Заказчик
+                        echo '<td'.$top.'>';
+                        if(IsInRole('admin')) {
+                            echo '<form method="post">';
+                            AddHiddenFields($dateshift, $row);
+                            echo '<div class="input-group">';
+                            echo '<input type="text" id="organization" name="organization" value="'.(isset($row['organization']) ? htmlentities($row['organization']) : '').'" class="editable" />';
+                            echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                            echo '</div>';
+                            echo '</form>';
+                        }
+                        else {
+                            if(isset($row['organization'])) echo $row['organization'];
+                        }
+                        echo '</td>';
+                        
+                        // Тираж
+                        echo '<td'.$top.'>';
+                        if(IsInRole('admin')) {
+                            echo '<form method="post">';
+                            AddHiddenFields($dateshift, $row);
+                            echo '<div class="input-group">';
+                            echo '<input type="text" id="edition" name="edition" value="'.(isset($row['edition']) ? htmlentities($row['edition']) : '').'" class="editable" />';
+                            echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                            echo '</div>';
+                            echo '</form>';
+                        }
+                        else {
+                            if(isset($row['edition'])) echo $row['edition'];
+                        }
+                        echo '</td>';
+                        
+                        // Метраж
+                        echo '<td'.$top.'>';
+                        if(IsInRole('admin')) {
+                            echo '<form method="post">';
+                            AddHiddenFields($dateshift, $row);
+                            echo '<div class="input-group">';
+                            echo '<input type="number" step="1" id="length" name="length" value="'.(isset($row['length']) ? $row['length'] : '').'" class="editable" />';
+                            echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                            echo '</div>';
+                            echo '</form>';
+                        }
+                        else {
+                            if(isset($row['length'])) echo $row['length'];
+                        }
+                        echo '</td>';
+                        
+                        // Вал
+                        echo '<td'.$top.'>';
+                        if(IsInRole('admin')) {
+                            echo "<form method='post'>";
+                            AddHiddenFields($dateshift, $row);
+                            echo '<select onchange="javascript: this.form.submit();" id="roller_id" name="roller_id">';
+                            echo '<option value="">...</option>';
+                            foreach ($rollers as $value) {
+                                $selected = '';
+                                if(isset($row['roller_id']) && $row['roller_id'] == $value['id']) $selected = " selected = 'selected'";
+                                echo "<option$selected value='".$value['id']."'>".$value['name']."</option>";
+                            }
+                            echo '</select>';
+                            echo '</form>';
+                        }
+                        else {
+                            if(isset($row['roller'])) echo $row['roller'];
+                        }
+                        echo '</td>';
+                        
+                        // Ламинация
+                        echo '<td'.$top.'>';
+                        if(IsInRole('admin')) {
+                            echo "<form method='post'>";
+                            AddHiddenFields($dateshift, $row);
+                            echo '<select onchange="javascript: this.form.submit();" id="lamination_id" name="lamination_id">';
+                            echo '<option value="">...</option>';
+                            foreach ($laminations as $value) {
+                                $selected = '';
+                                if(isset($row['lamination_id']) && $row['lamination_id'] == $value['id']) $selected = " selected = 'selected'";
+                                echo "<option$selected value='".$value['id']."'>".$value['name']."</option>";
+                            }
+                            echo '</select>';
+                            echo '</form>';
+                        }
+                        else {
+                            if(isset($row['lamination'])) echo $row['lamination'];
+                        }
+                        echo '</td>';
+                        
+                        // Красочность
+                        echo '<td'.$top.'>';
+                        if(IsInRole('admin')) {
+                            echo '<form method="post">';
+                            AddHiddenFields($dateshift, $row);
+                            echo '<div class="input-group">';
+                            echo '<input type="number" step="1" id="coloring" name="coloring" value="'.(isset($row['coloring']) ? $row['coloring'] : '').'" class="editable" />';
+                            echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                            echo '</div>';
+                            echo '</form>';
+                        }
+                        else {
+                            if(isset($row['coloring'])) echo $row['coloring'];
+                        }
+                        echo '</td>';
+                        
+                        // Менеджер
+                        echo '<td'.$top.'>';
+                        if(IsInRole('admin')) {
+                            echo "<form method='post'>";
+                            AddHiddenFields($dateshift, $row);
+                            echo '<select id="manager_id" name="manager_id">';
+                            echo '<option value="">...</option>';
+                            foreach ($managers as $value) {
+                                $selected = '';
+                                if(isset($row['m_id']) && $row['m_id'] == $value['id']) $selected = " selected = 'selected'";
+                                echo "<option$selected value='".$value['id']."'>".$value['fio']."</option>";
+                            }
+                            echo '</select>';
+                            echo '</form>';
+                        }
+                        else {
+                            echo $row['m_name'];
+                        }
+                        echo '</td>';
+                        
+                        // Удаление смены
+                        if(IsInRole('admin')) {
+                            echo '<td'.$top.'>';
+                            if(isset($row['id'])) {
+                                echo "<form method='post'>";
+                                echo '<input type="hidden" id="scroll" name="scroll" />';
+                                echo "<input type='hidden' id='id' name='id' value='".(isset($row['id']) ? $row['id'] : '')."' />";
+                                echo "<input type='hidden' id='date' name='date' value='".$dateshift['date']->format('Y-m-d')."' />";
+                                if(isset($_GET['from'])) {
+                                    echo '<input type="hidden" id="from" name="from" value="'.$_GET['from'].'" />';
+                                }
+                                if(isset($_GET['to'])) {
+                                    echo '<input type="hidden" id="to" name="to" value="'.$_GET['to'].'" />';
+                                }
+                                echo "<button type='submit' id='delete_submit' name='delete_submit' class='btn btn-outline-dark' onclick='javascript:return confirm(\"Действительно удалить?\");'><span class='font-awesome'>&#xf1f8;</span></button>";
+                                echo '</form>';
+                            }
+                            echo '</td>';
+                        }
+                            
+                        echo "</tr>";
+                    }
+                    
                     $conn->close();
                     ?>
                 </tbody>
