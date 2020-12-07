@@ -39,7 +39,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login_submit'])){
         $login_roles = '';
 
         $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-        mysqli_query($conn, 'set names cp1251');
+        mysqli_query($conn, 'set names utf8');
         $sql = "select id, username, fio from user where username='".$_POST['login_username']."' and password=password('".$_POST['login_password']."')";
         
         if($conn->connect_error) {

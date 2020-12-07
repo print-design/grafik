@@ -40,6 +40,7 @@ function ExecuteSql($sql) {
         $message = $conn->connect_error;
     }
     
+    mysqli_query($conn, 'set names utf8');
     if($conn->query($sql) != true) {
         $message = $conn->error;
     }
