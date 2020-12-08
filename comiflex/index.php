@@ -592,7 +592,6 @@ include '../include/topscripts.php';
                             }
                             echo '</td>';
                         }
-                            
                         echo "</tr>";
                     }
                     ?>
