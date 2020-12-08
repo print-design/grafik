@@ -52,7 +52,8 @@ function AddHiddenFields($dateshift, $row) {
 // Классы
 class Executer {
     public $error = '';
-    
+    public $insert_id = 0;
+            
     function __construct($sql) {
         $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
 
@@ -64,6 +65,7 @@ class Executer {
         $conn->query('set names utf8');
         $result = $conn->query($sql);
         $this->error = $conn->error;
+        $this->insert_id = $conn->insert_id;
         
         $conn->close();
     }

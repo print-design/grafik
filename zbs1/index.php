@@ -26,7 +26,7 @@ include '../include/topscripts.php';
                 $sql = "insert into zbs (date, shift, typographer_id, nn) values ('$date', '$shift', $typographer_id, $nn)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Создание нового печатника
@@ -52,7 +52,7 @@ include '../include/topscripts.php';
                         $shift = $_POST['shift'];
                         $sql = "insert into zbs (date, shift, typographer_id, nn) values ('$date', '$shift', $typographer_id, $nn)";
                     }
-                    $error_message = ExecuteSql($sql);
+                    $error_message = (new Executer($sql))->error;
                 }
             }
             else {
