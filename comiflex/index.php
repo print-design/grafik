@@ -310,68 +310,32 @@ include '../include/topscripts.php';
                 </thead>
                 <tbody id="grafik-tbody">
                     <?php
-                    $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-                    
-                    if($conn->connect_error) {
-                        die('Ошибка соединения: ' . $conn->connect_error);
-                    }
-                    
-                    mysqli_query($conn, 'set names utf8');
-                    
                     // Список печатников
                     $typographers = array();
                     
                     if(IsInRole('admin')) {
-                        $typographer_sql = "select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 3 order by u.fio";
-                        $typographer_result = mysqli_query($conn, $typographer_sql);
-                        if(is_bool($typographer_result)){
-                            die("Ошибка при запросе списка печатников");
-                        }
-                        else {
-                            $typographers = mysqli_fetch_all($typographer_result, MYSQLI_ASSOC);
-                        }
+                        $typographers = (new Grabber("select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 3 order by u.fio"))->result;
                     }
                     
                     // Список валов
                     $rollers = array();
                     
                     if(IsInRole('admin')) {
-                        $roller_sql = "select id, name from roller where machine_id=$machine_id order by name";
-                        $roller_result = mysqli_query($conn, $roller_sql);
-                        if(is_bool($roller_result)) {
-                            die("Ошибка при запросе списка валов");
-                        }
-                        else {
-                            $rollers = mysqli_fetch_all($roller_result, MYSQLI_ASSOC);
-                        }
+                        $rollers = (new Grabber("select id, name from roller where machine_id=$machine_id order by name"))->result;
                     }
                     
                     // Список ламинаций
                     $laminations = array();
                     
                     if(IsInRole('admin')) {
-                        $lamination_sql = "select id, name from lamination where common = 1 order by sort";
-                        $lamination_result = mysqli_query($conn, $lamination_sql);
-                        if(is_bool($lamination_result)) {
-                            die("Ошибка при запросе списка ламинаций");
-                        }
-                        else {
-                            $laminations = mysqli_fetch_all($lamination_result, MYSQLI_ASSOC);
-                        }
+                        $laminations = (new Grabber("select id, name from lamination where common = 1 order by sort"))->result;
                     }
                     
                     // Список менеджеров
                     $managers = array();
                     
                     if(IsInRole('admin')) {
-                        $manager_sql = "select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 2 order by u.fio";
-                        $manager_result = mysqli_query($conn, $manager_sql);
-                        if(is_bool($manager_result)){
-                            die("Ошибка при запросе списка менеджеров");
-                        }
-                        else {
-                            $managers = mysqli_fetch_all($manager_result, MYSQLI_ASSOC);
-                        }
+                        $managers = (new Grabber("select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 2 order by u.fio"))->result;
                     }
                     
                     // Список рабочих смен
@@ -385,10 +349,10 @@ include '../include/topscripts.php';
                             . "left join lamination lam on t.lamination_id = lam.id "
                             . "where t.date >= '".$date_from->format('Y-m-d')."' and t.date <= '".$date_to->format('Y-m-d')."'";
                     
-                    $result = $conn->query($sql);
                     $all = array();
+                    $fetcher = new Fetcher($sql);
                     
-                    while ($item = mysqli_fetch_array($result)) {
+                    while ($item = $fetcher->Fetch()) {
                         $all[$item['date'].$item['shift']] = $item;
                     }
 
@@ -639,8 +603,6 @@ include '../include/topscripts.php';
                             
                         echo "</tr>";
                     }
-                    
-                    $conn->close();
                     ?>
                 </tbody>
             </table>
