@@ -271,11 +271,11 @@ include '../include/topscripts.php';
                     <form class="form-inline">
                         <div class="form-group">
                             <label for="from">от&nbsp;</label>
-                            <input type="date" id="from" name="from" class="form-control" value="<?=$_GET['from'] ?>"/>
+                            <input type="date" id="from" name="from" class="form-control" value="<?= filter_input(INPUT_GET, 'from') ?>"/>
                         </div>
                         <div class="form-group">
                             <label for="to">&nbsp;до&nbsp;</label>
-                            <input type="date" id="to" name="to" class="form-control" value="<?=$_GET['to'] ?>"/>
+                            <input type="date" id="to" name="to" class="form-control" value="<?= filter_input(INPUT_GET, 'to') ?>"/>
                         </div>
                         <div class="form-group">
                             <button type="submit" class="form-control">Показать</button>
@@ -579,11 +579,13 @@ include '../include/topscripts.php';
                                 echo '<input type="hidden" id="scroll" name="scroll" />';
                                 echo "<input type='hidden' id='id' name='id' value='".(isset($row['id']) ? $row['id'] : '')."' />";
                                 echo "<input type='hidden' id='date' name='date' value='".$dateshift['date']->format('Y-m-d')."' />";
-                                if(isset($_GET['from'])) {
-                                    echo '<input type="hidden" id="from" name="from" value="'.$_GET['from'].'" />';
+                                $from = filter_input(INPUT_GET, 'from');
+                                if($from !== null) {
+                                    echo "<input type='hidden' id='from' name='from' value='$from' />";
                                 }
-                                if(isset($_GET['to'])) {
-                                    echo '<input type="hidden" id="to" name="to" value="'.$_GET['to'].'" />';
+                                $top = filter_input(INPUT_GET, 'to');
+                                if($to !== null) {
+                                    echo "<input type='hidden' id='to' name='to' value='$to' />";
                                 }
                                 echo "<button type='submit' id='delete_submit' name='delete_submit' class='btn btn-outline-dark' onclick='javascript:return confirm(\"Действительно удалить?\");'><span class='font-awesome'>&#xf1f8;</span></button>";
                                 echo '</form>';
