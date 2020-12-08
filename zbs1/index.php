@@ -178,7 +178,7 @@ include '../include/topscripts.php';
         if($manager_id !== null) {
             if($manager_id == '') $manager_id = "NULL";
             $sql = '';
-            $in = filter_input(INPUT_POST, 'id');
+            $id = filter_input(INPUT_POST, 'id');
             
             if($id !== null) {
                 $sql = "update zbs set manager_id=$manager_id where id=$id";
@@ -371,7 +371,7 @@ include '../include/topscripts.php';
                             echo '<form method="post">';
                             AddHiddenFields($dateshift, $row);
                             echo '<div class="input-group">';
-                            echo '<input type="text" id="organization" name="organization" value="'.htmlentities($row['organization']).'" class="editable" />';
+                            echo '<input type="text" id="organization" name="organization" value="'.(isset($row['organization']) ? htmlentities($row['organization']) : '').'" class="editable" />';
                             echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
                             echo '</div>';
                             echo '</form>';
@@ -387,7 +387,7 @@ include '../include/topscripts.php';
                             echo '<form method="post">';
                             AddHiddenFields($dateshift, $row);
                             echo '<div class="input-group">';
-                            echo '<input type="text" id="edition" name="edition" value="'.htmlentities($row['edition']).'" class="editable" />';
+                            echo '<input type="text" id="edition" name="edition" value="'.(isset($row['edition']) ? htmlentities($row['edition']) : '').'" class="editable" />';
                             echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
                             echo '</div>';
                             echo '</form>';
@@ -403,7 +403,7 @@ include '../include/topscripts.php';
                             echo '<form method="post">';
                             AddHiddenFields($dateshift, $row);
                             echo '<div class="input-group">';
-                            echo '<input type="number" step="1" id="length" name="length" value="'.$row['length'].'" class="editable" />';
+                            echo '<input type="number" step="1" id="length" name="length" value="'.(isset($row['length']) ? $row['length'] : '').'" class="editable" />';
                             echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
                             echo '</div>';
                             echo '</form>';
@@ -459,7 +459,7 @@ include '../include/topscripts.php';
                             echo '<form method="post">';
                             AddHiddenFields($dateshift, $row);
                             echo '<div class="input-group">';
-                            echo '<input type="number" step="1" id="coloring" name="coloring" value="'.$row['coloring'].'" class="editable" />';
+                            echo '<input type="number" step="1" id="coloring" name="coloring" value="'.(isset($row['coloring']) ? $row['coloring'] : '').'" class="editable" />';
                             echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
                             echo '</div>';
                             echo '</form>';
@@ -501,7 +501,7 @@ include '../include/topscripts.php';
                                 if($from !== null) {
                                     echo "<input type='hidden' id='from' name='from' value='$from' />";
                                 }
-                                $top = filter_input(INPUT_GET, 'to');
+                                $to = filter_input(INPUT_GET, 'to');
                                 if($to !== null) {
                                     echo "<input type='hidden' id='to' name='to' value='$to' />";
                                 }

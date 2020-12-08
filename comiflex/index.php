@@ -583,7 +583,7 @@ include '../include/topscripts.php';
                                 if($from !== null) {
                                     echo "<input type='hidden' id='from' name='from' value='$from' />";
                                 }
-                                $top = filter_input(INPUT_GET, 'to');
+                                $to = filter_input(INPUT_GET, 'to');
                                 if($to !== null) {
                                     echo "<input type='hidden' id='to' name='to' value='$to' />";
                                 }
