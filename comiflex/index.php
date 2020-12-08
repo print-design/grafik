@@ -10,18 +10,18 @@ include '../include/topscripts.php';
         $machine_id = 1;
 
         // Выбор печатника
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['typographer_id'])) {
-            $typographer_id = $_POST['typographer_id'];
-            if($_POST['typographer_id'] == '') $typographer_id = "NULL";
+        $typographer_id = filter_input(INPUT_POST, 'typographer_id');
+        if($typographer_id !== null) {
+            if($typographer_id == '') $typographer_id = "NULL";
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update comiflex set typographer_id=$typographer_id where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into comiflex (date, shift, typographer_id) values ('$date', '$shift', $typographer_id)";
             }
             
@@ -29,8 +29,9 @@ include '../include/topscripts.php';
         }
         
         // Создание нового печатника
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['typographer'])) {
-            $typographer = addslashes($_POST['typographer']);
+        $typographer = filter_input(INPUT_POST, 'typographer');
+        if($typographer !== null) {
+            $typographer = addslashes($typographer);
             $u_executer = new Executer("insert into user (fio, username) values ('$typographer', CURRENT_TIMESTAMP())");
             $error_message = $u_executer->error;
             $typographer_id = $u_executer->insert_id;
@@ -42,14 +43,14 @@ include '../include/topscripts.php';
                 
                 if($r_executer->error == '') {
                     $sql = '';
+                    $id = filter_input(INPUT_POST, 'id');
                     
-                    if(isset($_POST['id'])) {
-                        $id = $_POST['id'];
+                    if($id !== null) {
                         $sql = "update comiflex set typographer_id=$typographer_id where id=$id";
                     }
                     else {
-                        $date = $_POST['date'];
-                        $shift = $_POST['shift'];
+                        $date = filter_input(INPUT_POST, 'date');
+                        $shift = filter_input(INPUT_POST, 'shift');
                         $sql = "insert into comiflex (date, shift, typographer_id) values ('$date', '$shift', $typographer_id)";
                     }
                     $error_message = (new Executer($sql))->error;
@@ -58,25 +59,27 @@ include '../include/topscripts.php';
         }
         
         // Выбор помощника
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['assistant_id'])) {
-            $assistant_id = $_POST['assistant_id'];
-            if($_POST['assistant_id'] == '') $assistant_id = "NULL";
+        $assistant_id = filter_input(INPUT_POST, 'assistant_id');
+        if($assistant_id !== null) {
+            if($assistant_id == '') $assistant_id = "NULL";
             $sql = '';
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            $id = filter_input(INPUT_POST, 'id');
+            
+            if($id !== null) {
                 $sql = "update comiflex set assistant_id=$assistant_id where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into comiflex (date, shift, assistant_id) values ('$date', '$shift', $assistant_id)";
             }
             $error_message = (new Executer($sql))->error;
         }
         
         // Создание нового помощника
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['assistant'])) {
-            $assistant = addslashes($_POST['assistant']);
+        $assistant = filter_input(INPUT_POST, 'assistant');
+        if($assistant !== null) {
+            $assistant = addslashes($assistant);
             $u_executer = new Executer("insert into user (fio, username) values ('$assistant', CURRENT_TIMESTAMP())");
             $error_message = $u_executer->error;
             $assistant_id = $u_executer->insert_id;
@@ -88,14 +91,14 @@ include '../include/topscripts.php';
                 
                 if($r_executer->error == '') {
                     $sql = '';
+                    $id = filter_input(INPUT_POST, 'id');
                     
-                    if(isset($_POST['id'])) {
-                        $id = $_POST['id'];
+                    if($id !== null) {
                         $sql = "update comiflex set assistant_id=$assistant_id where id=$id";
                     }
                     else {
-                        $date = $_POST['date'];
-                        $shift = $_POST['shift'];
+                        $date = filter_input(INPUT_POST, 'date');
+                        $shift = filter_input(INPUT_POST, 'shift');
                         $sql = "insert into comiflex (date, shift, assistant_id) values ('$date', '$shift', $assistant_id)";
                     }
                     $error_message = (new Executer($sql))->error;
@@ -104,17 +107,18 @@ include '../include/topscripts.php';
         }
         
         // Заказчик
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['organization'])) {
-            $organization = addslashes($_POST['organization']);
+        $organization = filter_input(INPUT_POST, 'organization');
+        if($organization !== null) {
+            $organization = addslashes($organization);
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update comiflex set organization='$organization' where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into comiflex (date, shift, organization) values ('$date', '$shift', '$organization')";
             }
             
@@ -122,17 +126,18 @@ include '../include/topscripts.php';
         }
         
         // Тираж
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edition'])) {
-            $edition = addslashes($_POST['edition']);
+        $edition = filter_input(INPUT_POST, 'edition');
+        if($edition !== null) {
+            $edition = addslashes($edition);
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update comiflex set edition='$edition' where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into comiflex (date, shift, edition) values ('$date', '$shift', '$edition')";
             }
             
@@ -140,17 +145,18 @@ include '../include/topscripts.php';
         }
         
         // Метраж
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['length'])) {
-            $length = filter_var($_POST['length'], FILTER_SANITIZE_NUMBER_INT);
+        $length = filter_input(INPUT_POST, 'length');
+        if($length !== null) {
+            $length = filter_var($length, FILTER_SANITIZE_NUMBER_INT);
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update comiflex set length='$length' where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into comiflex (date, shift, length) values ('$date', '$shift', $length)";
             }
             
@@ -158,18 +164,18 @@ include '../include/topscripts.php';
         }
         
         // Выбор вала
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['roller_id'])) {
-            $roller_id = $_POST['roller_id'];
-            if($_POST['roller_id'] == '') $roller_id = "NULL";
+        $roller_id = filter_input(INPUT_POST, 'roller_id');
+        if($roller_id !== null) {
+            if($roller_id == '') $roller_id = "NULL";
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update comiflex set roller_id=$roller_id where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into comiflex (date, shift, roller_id) values ('$date', '$shift', $roller_id)";
             }
             
@@ -177,18 +183,18 @@ include '../include/topscripts.php';
         }
         
         // Выбор ламинации
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['lamination_id'])) {
-            $lamination_id = $_POST['lamination_id'];
-            if($_POST['lamination_id'] == '') $lamination_id = "NULL";
+        $lamination_id = filter_input(INPUT_POST, 'lamination_id');
+        if($lamination_id !== null) {
+            if($lamination_id == '') $lamination_id = "NULL";
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update comiflex set lamination_id=$lamination_id where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into comiflex (date, shift, lamination_id) values ('$date', '$shift', $lamination_id)";
             }
             
@@ -196,17 +202,18 @@ include '../include/topscripts.php';
         }
         
         // Красочность
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['coloring'])) {
-            $coloring = filter_var($_POST['coloring'], FILTER_SANITIZE_NUMBER_INT);
+        $coloring = filter_input(INPUT_POST, 'coloring');
+        if($coloring !== null) {
+            $coloring = filter_var($coloring, FILTER_SANITIZE_NUMBER_INT);
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update comiflex set coloring='$coloring' where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into comiflex (date, shift, coloring) values ('$date', '$shift', $coloring)";
             }
             
@@ -214,18 +221,18 @@ include '../include/topscripts.php';
         }
         
         // Менеджер
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['manager_id'])) {
-            $manager_id = $_POST['manager_id'];
-            if($_POST['manager_id'] == '') $manager_id = "NULL";
+        $manager_id = filter_input(INPUT_POST, 'manager_id');
+        if($manager_id !== null) {
+            if($manager_id == '') $manager_id = "NULL";
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update comiflex set manager_id=$manager_id where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into comiflex (date, shift, manager_id) values ('$date', '$shift', $manager_id)";
             }
             
@@ -233,8 +240,8 @@ include '../include/topscripts.php';
         }
         
         // Удаление рабочей смены
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_submit'])) {
-            $id = $_POST['id'];
+        if(filter_input(INPUT_POST, 'delete_submit') !== null) {
+            $id = filter_input(INPUT_POST, 'id');
             $sql = "delete from comiflex where id=$id";
             $error_message = (new Executer($sql))->error;
         }
@@ -304,29 +311,21 @@ include '../include/topscripts.php';
                 <tbody id="grafik-tbody">
                     <?php
                     // Список печатников
-                    $typographers = array();
-                    
                     if(IsInRole('admin')) {
                         $typographers = (new Grabber("select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 3 order by u.fio"))->result;
                     }
                     
                     // Список валов
-                    $rollers = array();
-                    
                     if(IsInRole('admin')) {
                         $rollers = (new Grabber("select id, name from roller where machine_id=$machine_id order by name"))->result;
                     }
                     
                     // Список ламинаций
-                    $laminations = array();
-                    
                     if(IsInRole('admin')) {
                         $laminations = (new Grabber("select id, name from lamination where common = 1 order by sort"))->result;
                     }
                     
                     // Список менеджеров
-                    $managers = array();
-                    
                     if(IsInRole('admin')) {
                         $managers = (new Grabber("select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 2 order by u.fio"))->result;
                     }
@@ -356,12 +355,10 @@ include '../include/topscripts.php';
                     $dateshifts = array();
                     
                     foreach ($period as $date) {
-                        $dateshift = array();
                         $dateshift['date'] = $date;
                         $dateshift['shift'] = 'day';
                         array_push($dateshifts, $dateshift);
                         
-                        $dateshift = array();
                         $dateshift['date'] = $date;
                         $dateshift['shift'] = 'night';
                         array_push($dateshifts, $dateshift);

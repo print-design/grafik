@@ -32,15 +32,16 @@ include '../include/topscripts.php';
         // Создание нового печатника
         if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['typographer'])) {
             $typographer = addslashes($_POST['typographer']);
-            $sql_user = "insert into user (fio, username) values ('$typographer', CURRENT_TIMESTAMP())";
-            $conn_user = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-            if ($conn_user->query($sql_user) === true) {
-                $typographer_id = $conn_user->insert_id;
-                
+            $u_executer = new Executer("insert into user (fio, username) values ('$typographer', CURRENT_TIMESTAMP())");
+            $error_message = $u_executer->error;
+            $typographer_id = $u_executer->insert_id;
+            
+            if($typographer_id > 0) {
                 $role_id = 3;
-                $sql_role = "insert into user_role (user_id, role_id) values ($typographer_id, $role_id)";
-                $error_message = ExecuteSql($sql_role);
-                if($error_message == ''){
+                $r_executer = new Executer("insert into user_role (user_id, role_id) values ($typographer_id, $role_id)");
+                $error_message = $r_executer->error;
+                
+                if($r_executer->error == '') {
                     $sql = '';
                     
                     if(isset($_POST['id'])) {
@@ -55,11 +56,6 @@ include '../include/topscripts.php';
                     $error_message = (new Executer($sql))->error;
                 }
             }
-            else {
-                $error_message = $conn_user->error;
-            }
-            
-            $conn_user->close();
         }
         
         // Заказчик
