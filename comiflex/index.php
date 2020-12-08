@@ -25,7 +25,7 @@ include '../include/topscripts.php';
                 $sql = "insert into comiflex (date, shift, typographer_id) values ('$date', '$shift', $typographer_id)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Создание нового печатника
@@ -38,7 +38,7 @@ include '../include/topscripts.php';
                 
                 $role_id = 3;
                 $sql_role = "insert into user_role (user_id, role_id) values ($typographer_id, $role_id)";
-                $error_message = ExecuteSql($sql_role);
+                $error_message = (new Executer($sql_role))->error;
                 if($error_message == ''){
                     $sql = '';
                     
@@ -51,7 +51,7 @@ include '../include/topscripts.php';
                         $shift = $_POST['shift'];
                         $sql = "insert into comiflex (date, shift, typographer_id) values ('$date', '$shift', $typographer_id)";
                     }
-                    $error_message = ExecuteSql($sql);
+                    $error_message = (new Executer($sql))->error;
                 }
             }
             else {
@@ -75,7 +75,7 @@ include '../include/topscripts.php';
                 $shift = $_POST['shift'];
                 $sql = "insert into comiflex (date, shift, assistant_id) values ('$date', '$shift', $assistant_id)";
             }
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Создание нового помощника
@@ -88,7 +88,7 @@ include '../include/topscripts.php';
                 
                 $role_id = 3;
                 $sql_role = "insert into user_role (user_id, role_id) values ($assistant_id, $role_id)";
-                $error_message = ExecuteSql($sql_role);
+                $error_message = (new Executer($sql_role))->error;
                 if($error_message == ''){
                     $sql = '';
                     if(isset($_POST['id'])) {
@@ -100,7 +100,7 @@ include '../include/topscripts.php';
                         $shift = $_POST['shift'];
                         $sql = "insert into comiflex (date, shift, assistant_id) values ('$date', '$shift', $assistant_id)";
                     }
-                    $error_message = ExecuteSql($sql);
+                    $error_message = (new Executer($sql))->error;
                 }
             }
             else {
@@ -125,7 +125,7 @@ include '../include/topscripts.php';
                 $sql = "insert into comiflex (date, shift, organization) values ('$date', '$shift', '$organization')";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Тираж
@@ -143,7 +143,7 @@ include '../include/topscripts.php';
                 $sql = "insert into comiflex (date, shift, edition) values ('$date', '$shift', '$edition')";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Метраж
@@ -161,7 +161,7 @@ include '../include/topscripts.php';
                 $sql = "insert into comiflex (date, shift, length) values ('$date', '$shift', $length)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Выбор вала
@@ -180,7 +180,7 @@ include '../include/topscripts.php';
                 $sql = "insert into comiflex (date, shift, roller_id) values ('$date', '$shift', $roller_id)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Выбор ламинации
@@ -199,7 +199,7 @@ include '../include/topscripts.php';
                 $sql = "insert into comiflex (date, shift, lamination_id) values ('$date', '$shift', $lamination_id)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Красочность
@@ -217,7 +217,7 @@ include '../include/topscripts.php';
                 $sql = "insert into comiflex (date, shift, coloring) values ('$date', '$shift', $coloring)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Менеджер
@@ -236,14 +236,14 @@ include '../include/topscripts.php';
                 $sql = "insert into comiflex (date, shift, manager_id) values ('$date', '$shift', $manager_id)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Удаление рабочей смены
         if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_submit'])) {
             $id = $_POST['id'];
             $sql = "delete from comiflex where id=$id";
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Получение начальной даты и конечной даты

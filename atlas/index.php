@@ -26,7 +26,7 @@ include '../include/topscripts.php';
                 $sql = "insert into zbs (date, shift, typographer_id, nn) values ('$date', '$shift', $typographer_id, $nn)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Создание нового печатника
@@ -39,7 +39,7 @@ include '../include/topscripts.php';
                 
                 $role_id = 3;
                 $sql_role = "insert into user_role (user_id, role_id) values ($typographer_id, $role_id)";
-                $error_message = ExecuteSql($sql_role);
+                $error_message = (new Executer($sql_role))->error;
                 if($error_message == ''){
                     $sql = '';
                     
@@ -52,7 +52,7 @@ include '../include/topscripts.php';
                         $shift = $_POST['shift'];
                         $sql = "insert into zbs (date, shift, typographer_id, nn) values ('$date', '$shift', $typographer_id, $nn)";
                     }
-                    $error_message = ExecuteSql($sql);
+                    $error_message = (new Executer($sql))->error;
                 }
             }
             else {
@@ -77,7 +77,7 @@ include '../include/topscripts.php';
                 $sql = "insert into zbs (date, shift, organization, nn) values ('$date', '$shift', '$organization', $nn)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Тираж
@@ -95,7 +95,7 @@ include '../include/topscripts.php';
                 $sql = "insert into zbs (date, shift, edition, nn) values ('$date', '$shift', '$edition', $nn)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Метраж
@@ -113,7 +113,7 @@ include '../include/topscripts.php';
                 $sql = "insert into zbs (date, shift, length, nn) values ('$date', '$shift', $length, $nn)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Выбор вала
@@ -132,7 +132,7 @@ include '../include/topscripts.php';
                 $sql = "insert into zbs (date, shift, roller_id, nn) values ('$date', '$shift', $roller_id, $nn)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Выбор ламинации
@@ -151,7 +151,7 @@ include '../include/topscripts.php';
                 $sql = "insert into zbs (date, shift, lamination_id, nn) values ('$date', '$shift', $lamination_id, $nn)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Красочность
@@ -169,7 +169,7 @@ include '../include/topscripts.php';
                 $sql = "insert into zbs (date, shift, coloring, nn) values ('$date', '$shift', $coloring, $nn)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Менеджер
@@ -188,14 +188,14 @@ include '../include/topscripts.php';
                 $sql = "insert into zbs (date, shift, manager_id, nn) values ('$date', '$shift', $manager_id, $nn)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Удаление рабочей смены
         if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_submit'])) {
             $id = $_POST['id'];
             $sql = "delete from zbs where id=$id";
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Получение начальной даты и конечной даты

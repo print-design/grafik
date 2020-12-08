@@ -1,17 +1,74 @@
 <?php
-define('APPLICATION', '/grafik');
+include 'define.php';
 
-define('DATABASE_HOST', 'localhost');
-define('DATABASE_USER', 'root');
-define('DATABASE_PASSWORD', '');
-define('DATABASE_NAME', 'grafik');
+$weekdays = array();
+$weekdays[0] = 'Вс';
+$weekdays[1] = 'Пн';
+$weekdays[2] = 'Вт';
+$weekdays[3] = 'Ср';
+$weekdays[4] = 'Чт';
+$weekdays[5] = 'Пт';
+$weekdays[6] = 'Сб';
 
-define('USER_ID', '543fde_fgeeferlj76_huGTF_eerrFE_er_eeWE');
-define('USERNAME', 'jjjgYY7765_kjnbhg77GGH_ijjhg__weeewZX');
-define('FIO', 'dff_juHHYG_njhq_lkoyGF_yetGBVk_iju_ssh');
-define('ROLES', 'ffe__jjHHHYff_kijUH_uytw_plOKqwvgGGFsd_kiJS');
+// Функции
+function LoggedIn() {
+    if(isset($_COOKIE[USERNAME]) && $_COOKIE[USERNAME] != '') {
+        return true;
+    }
+    else {
+        return false;   
+    }
+}
 
-define('SCROLL', 'rieu_3376gJHyt_uurygYY65ki_876gyGGTj_okki');
+function GetUserId() {
+    return $_COOKIE[USER_ID];
+}
+
+function IsInRole($role) {
+    if(isset($_COOKIE[ROLES])) {
+        $roles = unserialize($_COOKIE[ROLES]);
+        if(in_array($role, $roles))
+                return true;
+    }
+    
+    return false;
+}
+
+function AddHiddenFields($dateshift, $row) {
+    echo '<input type="hidden" id="scroll" name="scroll" />';
+    if(isset($row['id'])) {
+        echo '<input type="hidden" id="id" name="id" value="'.$row['id'].'" />';
+    }
+    echo '<input type="hidden" id="date" name="date" value="'.$dateshift['date']->format('Y-m-d').'" />';
+    echo '<input type="hidden" id="shift" name="shift" value="'.$dateshift['shift'].'" />';
+    if(isset($_GET['from'])) {
+        echo '<input type="hidden" id="from" name="from" value="'.$_GET['from'].'" />';
+    }
+    if(isset($_GET['to'])) {
+        echo '<input type="hidden" id="to" name="to" value="'.$_GET['to'].'" />';
+    }
+}
+
+// Классы
+class Executer {
+    public $error = '';
+    
+    function __construct($sql) {
+        $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
+
+        if($conn->connect_error) {
+            $this->error = 'Ошибка соединения: '.$conn->connect_error;
+            return false;
+        }
+        
+        $conn->query('set names utf8');
+        $result = $conn->query($sql);
+        $this->error = $conn->error;
+        
+        $conn->close();
+        return $result;
+    }
+}
 
 // Валидация формы логина
 define('LOGINISINVALID', ' is-invalid');
