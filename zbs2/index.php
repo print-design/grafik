@@ -11,55 +11,52 @@ include '../include/topscripts.php';
         $machine_id = 3;
         
         // Выбор печатника
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['typographer_id'])) {
-            $typographer_id = $_POST['typographer_id'];
-            if($_POST['typographer_id'] == '') $typographer_id = "NULL";
+        $typographer_id = filter_input(INPUT_POST, 'typographer_id');
+        if($typographer_id !== null) {
+            if($typographer_id == '') $typographer_id = "NULL";
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update zbs set typographer_id=$typographer_id where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into zbs (date, shift, typographer_id, nn) values ('$date', '$shift', $typographer_id, $nn)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Создание нового печатника
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['typographer'])) {
-            $typographer = addslashes($_POST['typographer']);
-            $sql_user = "insert into user (fio, username) values ('$typographer', CURRENT_TIMESTAMP())";
-            $conn_user = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-            if ($conn_user->query($sql_user) === true) {
-                $typographer_id = $conn_user->insert_id;
-                
+        $typographer = filter_input(INPUT_POST, 'typographer');
+        if($typographer !== null) {
+            $typographer = addslashes($typographer);
+            $u_executer = new Executer("insert into user (fio, username) values ('$typographer', CURRENT_TIMESTAMP())");
+            $error_message = $u_executer->error;
+            $typographer_id = $u_executer->insert_id;
+            
+            if ($typographer_id > 0) {
                 $role_id = 3;
-                $sql_role = "insert into user_role (user_id, role_id) values ($typographer_id, $role_id)";
-                $error_message = ExecuteSql($sql_role);
-                if($error_message == ''){
+                $r_executer = new Executer("insert into user_role (user_id, role_id) values ($typographer_id, $role_id)");
+                $error_message = $r_executer->error;
+                
+                if($r_executer->error == ''){
                     $sql = '';
+                    $id = filter_input(INPUT_POST, 'id');
                     
-                    if(isset($_POST['id'])) {
-                        $id = $_POST['id'];
+                    if($id !== null) {
                         $sql = "update zbs set typographer_id=$typographer_id where id=$id";
                     }
                     else {
-                        $date = $_POST['date'];
-                        $shift = $_POST['shift'];
+                        $date = filter_input(INPUT_POST, 'date');
+                        $shift = filter_input(INPUT_POST, 'shift');
                         $sql = "insert into zbs (date, shift, typographer_id, nn) values ('$date', '$shift', $typographer_id, $nn)";
                     }
-                    $error_message = ExecuteSql($sql);
+                    $error_message = (new Executer($sql))->error;
                 }
             }
-            else {
-                $error_message = $conn_user->error;
-            }
-            
-            $conn_user->close();
         }
         
         // Заказчик
