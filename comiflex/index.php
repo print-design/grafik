@@ -410,7 +410,7 @@ include '../include/topscripts.php';
                             echo '</form>';
                         }
                         else {
-                            if(isset($row['p_name'])) echo $row['p_name'];
+                            echo (isset($row['p_name']) ? $row['p_name'] : '');
                         }
                         echo '</td>';
                         
@@ -443,7 +443,7 @@ include '../include/topscripts.php';
                             echo '</form>';
                         }
                         else {
-                            if(isset($row['a_name'])) echo $row['a_name'];
+                            echo (isset($row['a_name']) ? $row['a_name'] : '');
                         }
                         echo '</td>';
                         
@@ -459,7 +459,7 @@ include '../include/topscripts.php';
                             echo '</form>';
                         }
                         else {
-                            if(isset($row['organization'])) echo $row['organization'];
+                            echo (isset($row['organization']) ? $row['organization'] : '');
                         }
                         echo '</td>';
                         
@@ -475,7 +475,7 @@ include '../include/topscripts.php';
                             echo '</form>';
                         }
                         else {
-                            if(isset($row['edition'])) echo $row['edition'];
+                            echo (isset($row['edition']) ? $row['edition'] : '');
                         }
                         echo '</td>';
                         
@@ -491,7 +491,7 @@ include '../include/topscripts.php';
                             echo '</form>';
                         }
                         else {
-                            if(isset($row['length'])) echo $row['length'];
+                            echo (isset($row['length']) ? $row['length'] : '');
                         }
                         echo '</td>';
                         
@@ -511,7 +511,7 @@ include '../include/topscripts.php';
                             echo '</form>';
                         }
                         else {
-                            if(isset($row['roller'])) echo $row['roller'];
+                            echo (isset($row['roller']) ? $row['roller'] : '');
                         }
                         echo '</td>';
                         
@@ -531,7 +531,7 @@ include '../include/topscripts.php';
                             echo '</form>';
                         }
                         else {
-                            if(isset($row['lamination'])) echo $row['lamination'];
+                            echo (isset($row['lamination']) ? $row['lamination'] : '');
                         }
                         echo '</td>';
                         
@@ -547,7 +547,7 @@ include '../include/topscripts.php';
                             echo '</form>';
                         }
                         else {
-                            if(isset($row['coloring'])) echo $row['coloring'];
+                            echo (isset($row['coloring']) ? $row['coloring'] : '');
                         }
                         echo '</td>';
                         
@@ -567,7 +567,7 @@ include '../include/topscripts.php';
                             echo '</form>';
                         }
                         else {
-                            if(isset($row['m_name'])) echo $row['m_name'];
+                            echo (isset($row['m_name']) ? $row['m_name'] : '');
                         }
                         echo '</td>';
                         
