@@ -60,139 +60,143 @@ include '../include/topscripts.php';
         }
         
         // Заказчик
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['organization'])) {
-            $organization = addslashes($_POST['organization']);
+        $organization = filter_input(INPUT_POST, 'organization');
+        if($organization !== null) {
+            $organization = addslashes($organization);
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update zbs set organization='$organization' where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into zbs (date, shift, organization, nn) values ('$date', '$shift', '$organization', $nn)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Тираж
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edition'])) {
-            $edition = addslashes($_POST['edition']);
+        $edition = filter_input(INPUT_POST, 'edition');
+        if($edition !== null) {
+            $edition = addslashes($edition);
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update zbs set edition='$edition' where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into zbs (date, shift, edition, nn) values ('$date', '$shift', '$edition', $nn)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Метраж
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['length'])) {
-            $length = filter_var($_POST['length'], FILTER_SANITIZE_NUMBER_INT);
+        $length = filter_input(INPUT_POST, 'length');
+        if($length !== null) {
+            $length = filter_var($length, FILTER_SANITIZE_NUMBER_INT);
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update zbs set length='$length' where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into zbs (date, shift, length, nn) values ('$date', '$shift', $length, $nn)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Выбор вала
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['roller_id'])) {
-            $roller_id = $_POST['roller_id'];
-            if($_POST['roller_id'] == '') $roller_id = "NULL";
+        $roller_id = filter_input(INPUT_POST, 'roller_id');
+        if($roller_id !== null) {
+            if($roller_id == '') $roller_id = "NULL";
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update zbs set roller_id=$roller_id where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into zbs (date, shift, roller_id, nn) values ('$date', '$shift', $roller_id, $nn)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Выбор ламинации
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['lamination_id'])) {
-            $lamination_id = $_POST['lamination_id'];
-            if($_POST['lamination_id'] == '') $lamination_id = "NULL";
+        $lamination_id = filter_input(INPUT_POST, 'lamination_id');
+        if($lamination_id !== null) {
+            if($lamination_id == '') $lamination_id = "NULL";
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update zbs set lamination_id=$lamination_id where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into zbs (date, shift, lamination_id, nn) values ('$date', '$shift', $lamination_id, $nn)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Красочность
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['coloring'])) {
-            $coloring = filter_var($_POST['coloring'], FILTER_SANITIZE_NUMBER_INT);
+        $coloring = filter_input(INPUT_POST, 'coloring');
+        if($coloring !== null) {
+            $coloring = filter_var($coloring, FILTER_SANITIZE_NUMBER_INT);
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id) {
                 $sql = "update zbs set coloring='$coloring' where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into zbs (date, shift, coloring, nn) values ('$date', '$shift', $coloring, $nn)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Менеджер
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['manager_id'])) {
-            $manager_id = $_POST['manager_id'];
-            if($_POST['manager_id'] == '') $manager_id = "NULL";
+        $manager_id = filter_input(INPUT_POST, 'manager_id');
+        if($manager_id !== null) {
+            if($manager_id == '') $manager_id = "NULL";
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update zbs set manager_id=$manager_id where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into zbs (date, shift, manager_id, nn) values ('$date', '$shift', $manager_id, $nn)";
             }
             
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Удаление рабочей смены
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_submit'])) {
-            $id = $_POST['id'];
+        if(filter_input(INPUT_POST, 'delete_submit') !== null) {
+            $id = filter_input(INPUT_POST, 'id');
             $sql = "delete from zbs where id=$id";
-            $error_message = ExecuteSql($sql);
+            $error_message = (new Executer($sql))->error;
         }
         
         // Получение начальной даты и конечной даты
