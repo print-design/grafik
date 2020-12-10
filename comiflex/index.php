@@ -41,7 +41,7 @@ include '../include/topscripts.php';
                 $r_executer = new Executer("insert into user_role (user_id, role_id) values ($typographer_id, $role_id)");
                 $error_message = $r_executer->error;
                 
-                if($r_executer->error == '') {
+                if($error_message == '') {
                     $sql = '';
                     $id = filter_input(INPUT_POST, 'id');
                     
