@@ -139,7 +139,7 @@ include '../include/topscripts.php';
         // Выбор ламинации
         $lamination_id = filter_input(INPUT_POST, 'lamination_id');
         if($lamination_id !== null) {
-            if($lamination_id) $lamination_id = "NULL";
+            if($lamination_id == '') $lamination_id = "NULL";
             $sql = '';
             $id = filter_input(INPUT_POST, 'id');
             
