@@ -265,7 +265,7 @@ include '../include/topscripts.php';
                     <?php
                     // Список печатников
                     if(IsInRole('admin')) {
-                        $typographers (new Grabber("select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 3 order by u.fio"))->result;
+                        $typographers = (new Grabber("select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 3 order by u.fio"))->result;
                     }
                     
                     // Список валов
