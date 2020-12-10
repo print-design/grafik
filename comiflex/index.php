@@ -378,7 +378,7 @@ include '../include/topscripts.php';
                         if($dateshift['shift'] == 'day') {
                             echo "<td$top rowspan='2'>".$weekdays[$dateshift['date']->format('w')]."</td>";
                         }
-                        echo "<td$top>".$dateshift['date']->format('Y-m-d').'</td>';
+                        echo "<td$top>".$dateshift['date']->format('d.m.Y').'</td>';
                         echo "<td$top>".($dateshift['shift'] == 'day' ? 'День' : 'Ночь').'</td>';
                         
                         // Печатник
