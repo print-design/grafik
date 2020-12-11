@@ -11,18 +11,18 @@ include '../include/topscripts.php';
         $machine_id = 5;
         
         // Выбор печатника
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['typographer_id'])) {
-            $typographer_id = $_POST['typographer_id'];
-            if($_POST['typographer_id'] == '') $typographer_id = "NULL";
+        $typographer_id = filter_input(INPUT_POST, 'typographer_id');
+        if($typographer_id !== null) {
+            if($typographer_id == '') $typographer_id = "NULL";
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update zbs set typographer_id=$typographer_id where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into zbs (date, shift, typographer_id, nn) values ('$date', '$shift', $typographer_id, $nn)";
             }
             
@@ -30,50 +30,48 @@ include '../include/topscripts.php';
         }
         
         // Создание нового печатника
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['typographer'])) {
-            $typographer = addslashes($_POST['typographer']);
-            $sql_user = "insert into user (fio, username) values ('$typographer', CURRENT_TIMESTAMP())";
-            $conn_user = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-            if ($conn_user->query($sql_user) === true) {
-                $typographer_id = $conn_user->insert_id;
-                
+        $typographer = filter_input(INPUT_POST, 'typographer');
+        if($typographer !== null) {
+            $typographer = addslashes($typographer);
+            $u_executer = new Executer("insert into user (fio, username) values ('$typographer', CURRENT_TIMESTAMP())");
+            $error_message = $u_executer->error;
+            $typographer_id = $u_executer->insert_id;
+            
+            if ($typographer_id > 0) {
                 $role_id = 3;
-                $sql_role = "insert into user_role (user_id, role_id) values ($typographer_id, $role_id)";
-                $error_message = (new Executer($sql_role))->error;
+                $r_executer = new Executer("insert into user_role (user_id, role_id) values ($typographer_id, $role_id)");
+                $error_message = $r_executer->error;
+                
                 if($error_message == ''){
                     $sql = '';
+                    $id = filter_input(INPUT_POST, 'id');
                     
-                    if(isset($_POST['id'])) {
-                        $id = $_POST['id'];
+                    if($id !== null) {
                         $sql = "update zbs set typographer_id=$typographer_id where id=$id";
                     }
                     else {
-                        $date = $_POST['date'];
-                        $shift = $_POST['shift'];
+                        $date = filter_input(INPUT_POST, 'date');
+                        $shift = filter_input(INPUT_POST, 'shift');
                         $sql = "insert into zbs (date, shift, typographer_id, nn) values ('$date', '$shift', $typographer_id, $nn)";
                     }
                     $error_message = (new Executer($sql))->error;
                 }
             }
-            else {
-                $error_message = $conn_user->error;
-            }
-            
-            $conn_user->close();
         }
         
         // Заказчик
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['organization'])) {
-            $organization = addslashes($_POST['organization']);
+        $organization = filter_input(INPUT_POST, 'organization');
+        if($organization !== null) {
+            $organization = addslashes($organization);
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update zbs set organization='$organization' where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into zbs (date, shift, organization, nn) values ('$date', '$shift', '$organization', $nn)";
             }
             
@@ -81,17 +79,18 @@ include '../include/topscripts.php';
         }
         
         // Тираж
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edition'])) {
-            $edition = addslashes($_POST['edition']);
+        $edition = filter_input(INPUT_POST, 'edition');
+        if($edition !== null) {
+            $edition = addslashes($edition);
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update zbs set edition='$edition' where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into zbs (date, shift, edition, nn) values ('$date', '$shift', '$edition', $nn)";
             }
             
@@ -99,17 +98,18 @@ include '../include/topscripts.php';
         }
         
         // Метраж
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['length'])) {
-            $length = filter_var($_POST['length'], FILTER_SANITIZE_NUMBER_INT);
+        $length = filter_input(INPUT_POST, 'length');
+        if($length !== null) {
+            $length = filter_var($length, FILTER_SANITIZE_NUMBER_INT);
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update zbs set length='$length' where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into zbs (date, shift, length, nn) values ('$date', '$shift', $length, $nn)";
             }
             
@@ -117,18 +117,18 @@ include '../include/topscripts.php';
         }
         
         // Выбор вала
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['roller_id'])) {
-            $roller_id = $_POST['roller_id'];
-            if($_POST['roller_id'] == '') $roller_id = "NULL";
+        $roller_id = filter_input(INPUT_POST, 'roller_id');
+        if($roller_id !== null) {
+            if($roller_id == '') $roller_id = "NULL";
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update zbs set roller_id=$roller_id where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into zbs (date, shift, roller_id, nn) values ('$date', '$shift', $roller_id, $nn)";
             }
             
@@ -136,18 +136,18 @@ include '../include/topscripts.php';
         }
         
         // Выбор ламинации
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['lamination_id'])) {
-            $lamination_id = $_POST['lamination_id'];
-            if($_POST['lamination_id'] == '') $lamination_id = "NULL";
+        $lamination_id = filter_input(INPUT_POST, 'lamination_id');
+        if($lamination_id !== null) {
+            if($lamination_id == '') $lamination_id = "NULL";
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update zbs set lamination_id=$lamination_id where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into zbs (date, shift, lamination_id, nn) values ('$date', '$shift', $lamination_id, $nn)";
             }
             
@@ -155,17 +155,18 @@ include '../include/topscripts.php';
         }
         
         // Красочность
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['coloring'])) {
-            $coloring = filter_var($_POST['coloring'], FILTER_SANITIZE_NUMBER_INT);
+        $coloring = filter_input(INPUT_POST, 'coloring');
+        if($coloring !== null) {
+            $coloring = filter_var($coloring, FILTER_SANITIZE_NUMBER_INT);
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update zbs set coloring='$coloring' where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into zbs (date, shift, coloring, nn) values ('$date', '$shift', $coloring, $nn)";
             }
             
@@ -173,18 +174,18 @@ include '../include/topscripts.php';
         }
         
         // Менеджер
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['manager_id'])) {
-            $manager_id = $_POST['manager_id'];
-            if($_POST['manager_id'] == '') $manager_id = "NULL";
+        $manager_id = filter_input(INPUT_POST, 'manager_id');
+        if($manager_id !== null) {
+            if($manager_id == '') $manager_id = "NULL";
             $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
             
-            if(isset($_POST['id'])) {
-                $id = $_POST['id'];
+            if($id !== null) {
                 $sql = "update zbs set manager_id=$manager_id where id=$id";
             }
             else {
-                $date = $_POST['date'];
-                $shift = $_POST['shift'];
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into zbs (date, shift, manager_id, nn) values ('$date', '$shift', $manager_id, $nn)";
             }
             
@@ -192,8 +193,8 @@ include '../include/topscripts.php';
         }
         
         // Удаление рабочей смены
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_submit'])) {
-            $id = $_POST['id'];
+        if(filter_input(INPUT_POST, 'delete_submit') !== null) {
+            $id = filter_input(INPUT_POST, 'id');
             $sql = "delete from zbs where id=$id";
             $error_message = (new Executer($sql))->error;
         }
@@ -223,11 +224,11 @@ include '../include/topscripts.php';
                     <form class="form-inline">
                         <div class="form-group">
                             <label for="from">от&nbsp;</label>
-                            <input type="date" id="from" name="from" class="form-control" value="<?=$_GET['from'] ?>"/>
+                            <input type="date" id="from" name="from" class="form-control" value="<?= filter_input(INPUT_GET, 'from') ?>"/>
                         </div>
                         <div class="form-group">
                             <label for="to">&nbsp;до&nbsp;</label>
-                            <input type="date" id="to" name="to" class="form-control" value="<?=$_GET['to'] ?>"/>
+                            <input type="date" id="to" name="to" class="form-control" value="<?= filter_input(INPUT_GET, 'to') ?>"/>
                         </div>
                         <div class="form-group">
                             <button type="submit" class="form-control">Показать</button>
@@ -261,88 +262,35 @@ include '../include/topscripts.php';
                 </thead>
                 <tbody id="grafik-tbody">
                     <?php
-                    $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-                    
-                    if($conn->connect_error) {
-                        die('Ошибка соединения: ' . $conn->connect_error);
-                    }
-                    
                     // Список печатников
-                    $typographers = array();
-                    
                     if(IsInRole('admin')) {
-                        $typographer_sql = "select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 3 order by u.fio";
-                        $typographer_result = mysqli_query($conn, $typographer_sql);
-                        if(is_bool($typographer_result)){
-                            die("Ошибка при запросе списка печатников");
-                        }
-                        else {
-                            $typographers = mysqli_fetch_all($typographer_result, MYSQLI_ASSOC);
-                        }
+                        $typographers = (new Grabber("select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 3 order by u.fio"))->result;
                     }
                     
                     // Список валов
-                    $rollers = array();
-                    
                     if(IsInRole('admin')) {
-                        $roller_sql = "select id, name from roller where machine_id=$machine_id order by name";
-                        $roller_result = mysqli_query($conn, $roller_sql);
-                        if(is_bool($roller_result)) {
-                            die("Ошибка при запросе списка валов");
-                        }
-                        else {
-                            $rollers = mysqli_fetch_all($roller_result, MYSQLI_ASSOC);
-                        }
+                        $rollers = (new Grabber("select id, name from roller where machine_id=$machine_id order by name"))->result;
                     }
                     
                     // Список ламинаций
-                    $laminations = array();
-                    
                     if(IsInRole('admin')) {
-                        $lamination_sql = "select id, name from lamination where common = 1 order by sort";
-                        $lamination_result = mysqli_query($conn, $lamination_sql);
-                        if(is_bool($lamination_result)) {
-                            die("Ошибка при запросе списка ламинаций");
-                        }
-                        else {
-                            $laminations = mysqli_fetch_all($lamination_result, MYSQLI_ASSOC);
-                        }
+                        $laminations = (new Grabber("select id, name from lamination where common = 1 order by sort"))->result;
                     }
                     
                     // Список менеджеров
-                    $managers = array();
-                    
                     if(IsInRole('admin')) {
-                        $manager_sql = "select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 2 order by u.fio";
-                        $manager_result = mysqli_query($conn, $manager_sql);
-                        if(is_bool($manager_result)){
-                            die("Ошибка при запросе списка менеджеров");
-                        }
-                        else {
-                            $managers = mysqli_fetch_all($manager_result, MYSQLI_ASSOC);
-                        }
+                        $managers = (new Grabber("select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 2 order by u.fio"))->result;
                     }
                     
                     // Список рабочих смен
-                    $sql = "with recursive date_ranges as (select '".$date_from->format('Y-m-d')."' as date union all select date + interval 1 day from date_ranges where date < '".$date_to->format('Y-m-d')."') "
-                            . "select t.id, dr.date date, date_format(dr.date, '%d.%m.%Y') fdate, 'day' shift, up.id p_id, up.fio p_name, um.id m_id, um.fio m_name, "
+                    $sql = "select t.id, t.date date, date_format(t.date, '%d.%m.%Y') fdate, t.shift, up.id p_id, up.fio p_name, um.id m_id, um.fio m_name, "
                             . "t.organization, t.edition, t.length, r.name roller, lam.name lamination, t.coloring, t.roller_id, t.lamination_id "
-                            . "from date_ranges dr left join zbs t "
+                            . "from zbs t "
                             . "left join user up on t.typographer_id = up.id "
                             . "left join user um on t.manager_id = um.id "
                             . "left join roller r on t.roller_id = r.id "
                             . "left join lamination lam on t.lamination_id = lam.id "
-                            . "on t.date = dr.date and t.shift = 'day' and t.nn = ".$nn." "
-                            . "union "
-                            . "select t.id, dr.date date, date_format(dr.date, '%d.%m.%Y') fdate, 'night' shift, up.id p_id, up.fio p_name, um.id m_id, um.fio m_name, "
-                            . "t.organization, t.edition, t.length, r.name roller, lam.name lamination, t.coloring, t.roller_id, t.lamination_id "
-                            . "from date_ranges dr left join zbs t "
-                            . "left join user up on t.typographer_id = up.id "
-                            . "left join user um on t.manager_id = um.id "
-                            . "left join roller r on t.roller_id = r.id "
-                            . "left join lamination lam on t.lamination_id = lam.id "
-                            . "on t.date = dr.date and t.shift = 'night' and t.nn = ".$nn." "
-                            . "order by date desc, shift asc;";
+                            . "where t.date >= '".$date_from->format('Y-m-d')."' and t.date <= '".$date_to->format('Y-m-d')."' and t.nn = $nn";
                     
                     $result = $conn->query($sql);
                     if ($result->num_rows > 0) {
