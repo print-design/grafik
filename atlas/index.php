@@ -1,12 +1,12 @@
 <?php
 include '../include/topscripts.php';
-include '../include/grafik.php';
+include '../include/grafik_old.php';
 include '../include/date_from_date_to.php';
 
 $nn = 99;
 $machine_id = 5;
 
-$grafik = new Grafik($date_from, $date_to);
+$grafik = new GrafikOld($date_from, $date_to);
 
 $grafik->hasTypographer = true;
 $grafik->sqlTypographers = "select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 3 order by u.fio";

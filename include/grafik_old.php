@@ -1,5 +1,5 @@
 <?php
-class Grafik {
+class GrafikOld {
     public function __construct(DateTime $from, DateTime $to) {
         $this->dateFrom = $from;
         $this->dateTo = $to;
