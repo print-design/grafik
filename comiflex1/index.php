@@ -8,6 +8,15 @@ $grafik->user1Name = 'Печатник';
 $grafik->user2Name = 'Помощник';
 $grafik->sqlUser1 = 'select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 3 order by u.fio';
 $grafik->sqlUser2 = 'select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 3 order by u.fio';
+
+$grafik->hasEdition = true;
+$grafik->hasOrganization = true;
+$grafik->hasLength = true;
+$grafik->hasRoller = true;
+$grafik->hasLamination = true;
+$grafik->hasColoring = true;
+$grafik->hasManager = true;
+
 $grafik->ProcessForms();
 ?>
 <!DOCTYPE html>

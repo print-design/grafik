@@ -15,6 +15,15 @@ class Grafik {
     public $sqlUser1 = '';
     public $sqlUser2 = '';
     
+    public $hasEdition = false;
+    public $hasOrganization = false;
+    public $hasLength = false;
+    public $hasRoller = false;
+    public $hasLamination = false;
+    public $hasColoring = false;
+    public $hasManager = false;
+    public $hasComment = false;
+            
     function ProcessForms() {
         //
     }
@@ -49,9 +58,20 @@ class Grafik {
             <th></th>
             <th>Дата</th>
             <th>Смена</th>
-            <?php if($this->user1Name != ''): ?><th><?= $this->user1Name ?></th><?php endif; ?>
-            <?php if($this->user2Name != ''): ?><th><?= $this->user2Name ?></th><?php endif; ?>
-            <?php if(IsInRole('admin')): ?><th></th><?php endif; ?>
+            <?php
+            if($this->user1Name != '') echo '<th>'.$this->user1Name.'</th>';
+            if($this->user2Name != '') echo '<th>'.$this->user2Name.'</th>';
+            if(IsInRole('admin')) echo '<th></th>';
+            if($this->hasEdition) echo '<th>Тираж</th>';
+            if($this->hasOrganization) echo '<th>Заказчик</th>';
+            if($this->hasLength) echo '<th>Метраж</th>';
+            if($this->hasRoller) echo '<th>Вал</th>';
+            if($this->hasLamination) echo '<th>Ламинация</th>';
+            if($this->hasColoring) echo '<th>Красочность</th>';
+            if($this->hasManager) echo '<th>Менеджер</th>'; 
+            if($this->hasComment) echo '<th>Комментарий</th>';
+            if(IsInRole('admin')) echo '<th></th>';
+            ?>
         </tr>
     </thead>
     <tbody id="grafik-tbody">
@@ -79,7 +99,7 @@ class Grafik {
             $all[$item['date'].$item['shift']] = $item;
         }
         
-        // Список дам и смен
+        // Список дат и смен
         $date_diff = $this->dateTo->diff($this->dateFrom);
         $interval = DateInterval::createFromDateString("-1 day");
         $period = new DatePeriod($this->dateTo, $interval, $date_diff->days);
@@ -136,7 +156,7 @@ class Grafik {
                     echo '<form method="post" class="d-none">';
                     AddHiddenFields($dateshift, $row);
                     echo '<div class="input-group">';
-                    echo '<input type="text" id="typographer" name="typographer" value="" class="editable" />';
+                    echo '<input type="text" id="user1" name="user1" value="" class="editable" />';
                     echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
                     echo '</div>';
                     echo '</form>';
@@ -146,6 +166,73 @@ class Grafik {
                 }
                 echo '</td>';
             }
+            
+            // Работник №2
+            if($this->user2Name != '') {
+                echo "<td$top title='".$this->user2Name."'>";
+                if(IsInRole('admin')) {
+                    echo "<form method='post'>";
+                    AddHiddenFields($dateshift, $row);
+                    echo "<select id='user2_id' name='user2_id'>";
+                    echo '<optgroup>';
+                    echo '<option value="">...</option>';
+                    foreach ($users2 as $value) {
+                        $selected = '';
+                        if(isset($row['p_id']) && $row['p_id'] == $value['id']) $selected = " selected = 'selected'";
+                        echo "<option$selected value='".$value['id']."'>".$value['fio']."</option>";
+                    }
+                    echo '</optgroup>';
+                    echo "<optgroup label='______________'>";
+                    echo "<option value='+'>(добавить)</option>";
+                    echo '</optgroup>';
+                    echo '</select>';
+                    echo '</form>';
+                            
+                    echo '<form method="post" class="d-none">';
+                    AddHiddenFields($dateshift, $row);
+                    echo '<div class="input-group">';
+                    echo '<input type="text" id="user2" name="user2" value="" class="editable" />';
+                    echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                    echo '</div>';
+                    echo '</form>';
+                }
+                else {
+                    echo (isset($row['p_name']) ? $row['p_name'] : '');
+                }
+                echo '</td>';
+            }
+            
+            // Добавление смены
+            if(IsInRole('admin')) {
+                echo "<td$top>";
+                echo "<form method='post'>";
+                echo '<input type="hidden" id="scroll" name="scroll" />';
+                echo "<input type='hidden' id='date' name='date' value='".$dateshift['date']->format('Y-m-d')."' />";
+                echo "<input type='hidden' id='shift' name='shifft' value='".$dateshift['shift']."' />";
+                $from = filter_input(INPUT_GET, 'from');
+                if($from !== null) {
+                    echo "<input type='hidden' id='from' name='from' value='$from' />";
+                }
+                $to = filter_input(INPUT_GET, 'to');
+                if($to !== null) {
+                    echo "<input type='hidden' id='to' name='to' value='$to' />";
+                }
+                echo "<button type='submit' id='create_shift_submit' name='create_shift_submit' class='btn btn-outline-dark' title='Добавить тираж'><span class='font-awesome'>&#xf067;</span></button>";
+                echo '</form>';
+                echo '</td>';
+            }
+            
+            // Смена
+            if($this->hasEdition) echo "<td$top></td>";
+            if($this->hasOrganization) echo "<td$top></td>";
+            if($this->hasLength) echo "<td$top></td>";
+            if($this->hasRoller) echo "<td$top></td>";
+            if($this->hasLamination) echo "<td$top></td>";
+            if($this->hasColoring) echo "<td$top></td>";
+            if($this->hasManager) echo "<td$top></td>";
+            if($this->hasComment) echo "<td$top></td>";
+            if(IsInRole('admin')) echo "<td$top></td>";
+            
             echo '</tr>';
         }
         ?>
