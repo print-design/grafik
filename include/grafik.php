@@ -12,8 +12,7 @@ class Grafik {
     
     public $user1Name = '';
     public $user2Name = '';
-    public $sqlUser1 = '';
-    public $sqlUser2 = '';
+    public $userRole = 0;
     
     public $hasEdition = false;
     public $hasOrganization = false;
@@ -23,9 +22,112 @@ class Grafik {
     public $hasColoring = false;
     public $hasManager = false;
     public $hasComment = false;
+    
+    public $error_message = '';
             
     function ProcessForms() {
-        //
+        // Выбор работника 1
+        $user1_id = filter_input(INPUT_POST, 'user1_id');
+        if($user1_id !== null) {
+            if($user1_id == '') $user1_id = "NULL";
+            $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
+            
+            if($id !== null) {
+                $sql = "update workshift set user1_id=$user1_id where id=$id";
+            }
+            else {
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
+                $sql = "insert into workshift (date, shift, user1_id) values ('$date', '$shift', $user1_id)";
+            }
+            
+            $this->error_message = (new Executer($sql))->error;
+        }
+        
+        // Создание нового работника 1
+        $user1 = filter_input(INPUT_POST, 'user1');
+        if($user1 !== null) {
+            $user1 = addslashes($user1);
+            $u_executer = new Executer("insert into user (fio, username) values ('$user1', CURRENT_TIMESTAMP())");
+            $this->error_message = $u_executer->error;
+            $user1_id = $u_executer->insert_id;
+            
+            if($user1_id > 0) {
+                $role_id = $this->userRole;
+                $r_executer = new Executer("insert into user_role (user_id, role_id) values ($user1_id, $role_id)");
+                $this->error_message = $r_executer->error;
+                
+                if($this->error_message == '') {
+                    $sql = '';
+                    $id = filter_input(INPUT_POST, 'id');
+                    
+                    if($sql != null) {
+                        $sql = "update workshift set user1_id=$user1_id where id=$id";
+                    }
+                    else {
+                        $date = filter_input(INPUT_POST, 'date');
+                        $shift = filter_input(INPUT_POST, 'shift');
+                        $sql = "insert into workshift (date, shift, user1_id) values ('$date', '$shift', $user1_id)";
+                    }
+                    $this->error_message = (new Executer($sql))->error;
+                }
+            }
+        }
+        
+        // Выбор работника 2
+        $user2_id = filter_input(INPUT_POST, 'user2_id');
+        if($user2_id !== null) {
+            if($user2_id == '') $user2_id = "NULL";
+            $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
+            
+            if($id != null) {
+                $sql = "update workshift set user2_id=$user2_id where id=$id";
+            }
+            else {
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
+                $sql = "insert into workshift (date, shift, user2_id) values ('$date', '$shift', $user2_id)";
+            }
+            $this->error_message = (new Executer($sql))->error;
+        }
+        
+        // Создание нового работника 2
+        $user2 = filter_input(INPUT_POST, 'user2');
+        if($user2 !== null) {
+            $user2 = addslashes($user2);
+            $u_executer = new Executer("insert into user (fio, username) values ('$user2', CURRENT_TIMESTAMP())");
+            $this->error_message = $u_executer->error;
+            $user2_id = $u_executer->insert_id;
+            
+            if($user2_id > 0) {
+                $role_id = $this->userRole;
+                $r_executer = new Executer("insert into user_role (user_id, role_id) values ($user2_id, $role_id)");
+                $this->error_message = $r_executer->error;
+                
+                if($r_executer->error == '') {
+                    $sql = '';
+                    $id = filter_input(INPUT_POST, 'id');
+                    
+                    if($id !== null) {
+                        $sql = "update workshift set user2_id=$user2_id where id=$id";
+                    }
+                    else {
+                        $date = filter_input(INPUT_POST, 'date');
+                        $shift = filter_input(INPUT_POST, 'shift');
+                        $sql = "insert into workshift (date, shift, user2_id) values ('$date', '$shift', $user2_id)";
+                    }
+                    $this->error_message = (new Executer($sql))->error;
+                }
+            }
+        }
+        
+        // Создание рабочей смены
+        $create_shift_submit = filter_input(INPUT_POST, 'create_shift_submit');
+        if($create_shift_submit !== null) {
+            $this->error_message = 'ТЕСТОВАЯ ОШИБКА';
+        }
     }
 
     function ShowPage() {
@@ -78,12 +180,12 @@ class Grafik {
         <?php
         // Список работников №1
         if(IsInRole('admin') && $this->user1Name != '') {
-            $users1 = (new Grabber($this->sqlUser1))->result;
+            $users1 = (new Grabber('select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = '. $this->userRole.' order by u.fio'))->result;
         }
         
         // Список работников №2
         if(IsInRole('admin') && $this->user2Name != '') {
-            $users2 = (new Grabber($this->sqlUser2))->result;
+            $users2 = (new Grabber('select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = '. $this->userRole.' order by u.fio'))->result;
         }
         
         // Список рабочих смен

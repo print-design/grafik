@@ -6,8 +6,7 @@ include '../include/date_from_date_to.php';
 $grafik = new Grafik($date_from, $date_to, 1);
 $grafik->user1Name = 'Печатник';
 $grafik->user2Name = 'Помощник';
-$grafik->sqlUser1 = 'select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 3 order by u.fio';
-$grafik->sqlUser2 = 'select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 3 order by u.fio';
+$grafik->userRole = 3;
 
 $grafik->hasEdition = true;
 $grafik->hasOrganization = true;
@@ -18,6 +17,7 @@ $grafik->hasColoring = true;
 $grafik->hasManager = true;
 
 $grafik->ProcessForms();
+$error_message = $grafik->error_message;
 ?>
 <!DOCTYPE html>
 <html>
