@@ -34,15 +34,20 @@ class Grafik {
             $id = filter_input(INPUT_POST, 'id');
             
             if($id !== null) {
-                $sql = "update workshift set user1_id=$user1_id where id=$id";
+                $this->error_message = (new Executer("update workshift set user1_id=$user1_id where id=$id"))->error;
             }
             else {
                 $date = filter_input(INPUT_POST, 'date');
                 $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into workshift (date, machine_id, shift, user1_id) values ('$date', $this->machineId, '$shift', $user1_id)";
+                $ws_executer = new Executer($sql);
+                $this->error_message = $ws_executer->error;
+                $workshift_id = $ws_executer->insert_id;
+                
+                if($workshift_id > 0) {
+                    $this->error_message = (new Executer("insert into edition (workshift_id) values ($workshift_id)"))->error;
+                }
             }
-            
-            $this->error_message = (new Executer($sql))->error;
         }
         
         // Создание нового работника 1
@@ -63,14 +68,20 @@ class Grafik {
                     $id = filter_input(INPUT_POST, 'id');
                     
                     if($sql != null) {
-                        $sql = "update workshift set user1_id=$user1_id where id=$id";
+                        $this->error_message = (new Executer("update workshift set user1_id=$user1_id where id=$id"))->error;
                     }
                     else {
                         $date = filter_input(INPUT_POST, 'date');
                         $shift = filter_input(INPUT_POST, 'shift');
                         $sql = "insert into workshift (date, machine_id, shift, user1_id) values ('$date', $this->machineId, '$shift', $user1_id)";
+                        $ws_executer = new Executer($sql);
+                        $this->error_message = $ws_executer->error;
+                        $workshift_id = $ws_executer->insert_id;
+                        
+                        if($workshift_id > 0) {
+                            $this->error_message = (new Executer("insert into edition (workshift_id) values ($workshift_id)"))->error;
+                        }
                     }
-                    $this->error_message = (new Executer($sql))->error;
                 }
             }
         }
@@ -83,14 +94,20 @@ class Grafik {
             $id = filter_input(INPUT_POST, 'id');
             
             if($id != null) {
-                $sql = "update workshift set user2_id=$user2_id where id=$id";
+                $this->error_message = (new Executer("update workshift set user2_id=$user2_id where id=$id"))->error;
             }
             else {
                 $date = filter_input(INPUT_POST, 'date');
                 $shift = filter_input(INPUT_POST, 'shift');
                 $sql = "insert into workshift (date, machine_id, shift, user2_id) values ('$date', $this->machineId, '$shift', $user2_id)";
+                $ws_executer = new Executer($sql);
+                $this->error_message = $ws_executer->error;
+                $workshift_id = $ws_executer->insert_id;
+                
+                if($workshift_id > 0) {
+                    $this->error_message = (new Executer("insert into edition (workshift_id) values ($workshift_id)"))->error;
+                }
             }
-            $this->error_message = (new Executer($sql))->error;
         }
         
         // Создание нового работника 2
@@ -111,14 +128,20 @@ class Grafik {
                     $id = filter_input(INPUT_POST, 'id');
                     
                     if($id !== null) {
-                        $sql = "update workshift set user2_id=$user2_id where id=$id";
+                        $this->error_message = (new Executer("update workshift set user2_id=$user2_id where id=$id"))->error;
                     }
                     else {
                         $date = filter_input(INPUT_POST, 'date');
                         $shift = filter_input(INPUT_POST, 'shift');
                         $sql = "insert into workshift (date, machine_id, shift, user2_id) values ('$date', $this->machineId, '$shift', $user2_id)";
+                        $ws_executer = new Executer($sql);
+                        $this->error_message = $ws_executer->error;
+                        $workshift_id = $ws_executer->insert_id;
+                        
+                        if($workshift_id > 0) {
+                            $this->error_message = (new Executer("insert into edition (workshift_id) values ($workshift_id)"))->error;
+                        }
                     }
-                    $this->error_message = (new Executer($sql))->error;
                 }
             }
         }
@@ -190,7 +213,8 @@ class Grafik {
         
         // Список рабочих смен
         $all = array();
-        $sql = "select ws.id, ws.date date, date_format(ws.date, '%d.%m.%Y') fdate, ws.shift, u1.id u1_id, u1.fio u1_fio, u2.id u2_id, u2.fio u2_fio "
+        $sql = "select ws.id, ws.date date, date_format(ws.date, '%d.%m.%Y') fdate, ws.shift, u1.id u1_id, u1.fio u1_fio, u2.id u2_id, u2.fio u2_fio, "
+                . "(select count(id) from edition where workshift_id=ws.id) editions_count "
                 . "from workshift ws "
                 . "left join user u1 on ws.user1_id = u1.id "
                 . "left join user u2 on ws.user2_id = u2.id "
