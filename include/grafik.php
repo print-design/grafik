@@ -149,7 +149,8 @@ class Grafik {
         // Создание рабочей смены
         $create_shift_submit = filter_input(INPUT_POST, 'create_shift_submit');
         if($create_shift_submit !== null) {
-            $this->error_message = 'ТЕСТОВАЯ ОШИБКА';
+            $workshift_id = filter_input(INPUT_POST, 'workshift_id');
+            $this->error_message = (new Executer("insert into edition (workshift_id) values ($workshift_id)"))->error;
         }
     }
 
@@ -241,19 +242,9 @@ class Grafik {
         $fetcher = new Fetcher($sql);
         
         while ($item = $fetcher->Fetch()) {
-            if(!array_key_exists($item['date'], $all_editions) || !array_key_exists($item['shift'], $all_editions['date'])) $all_editions[$item['date']][$item['shift']] = [];
+            if(!array_key_exists($item['date'], $all_editions) || !array_key_exists($item['shift'], $all_editions[$item['date']])) $all_editions[$item['date']][$item['shift']] = [];
             array_push($all_editions[$item['date']][$item['shift']], $item);
         }
-        
-        foreach ($all_editions as $dates) {
-            if(!array_key_exists('day', $dates)) {
-                $dates['day'] = array();
-            }
-            if(!array_key_exists('night', $dates)) $dates['night'] = array();
-        }
-        
-        print_r($all_editions['day']);
-        print_r($all_editions['night']);
         
         // Список дат и смен
         $date_diff = $this->dateTo->diff($this->dateFrom);
@@ -276,10 +267,29 @@ class Grafik {
             $row = array();
             if(isset($all[$key])) $row = $all[$key];
             
+            $str_date = $dateshift['date']->format('Y-m-d');
+            
             $editions = array();
-            if(isset($row['id']) && array_key_exists($row['id'], $all_editions)) {
-                $editions = $all_editions[$row['id']];
+            if(array_key_exists($str_date, $all_editions) && array_key_exists($dateshift['shift'], $all_editions[$str_date])) {
+                $editions = $all_editions[$str_date][$dateshift['shift']];
             }
+            
+            $day_editions = array();
+            if(array_key_exists($str_date, $all_editions) && array_key_exists('day', $all_editions[$str_date])) {
+                $day_editions = $all_editions[$str_date]['day'];
+            }
+            
+            $night_editions = array();
+            if(array_key_exists($str_date, $all_editions) && array_key_exists('night', $all_editions[$str_date])) {
+                $night_editions = $all_editions[$str_date]['night'];
+            }
+            
+            $day_rowspan = count($day_editions);
+            if($day_rowspan == 0) $day_rowspan = 1;
+            $night_rowspan = count($night_editions);
+            if($night_rowspan == 0) $night_rowspan = 1;
+            $rowspan = $day_rowspan + $night_rowspan;
+            $my_rowspan = $dateshift['shift'] == 'day' ? $day_rowspan : $night_rowspan;
             
             $top = "";
             if($dateshift['shift'] == 'day') {
@@ -288,22 +298,15 @@ class Grafik {
             
             echo '<tr>';
             if($dateshift['shift'] == 'day') {
-                echo "<td$top rowspan='2'>".$GLOBALS['weekdays'][$dateshift['date']->format('w')].'</td>';
-                echo "<td$top rowspan='2'>".$dateshift['date']->format('d.m.Y')."</td>";
+                echo "<td$top rowspan='$rowspan'>".$GLOBALS['weekdays'][$dateshift['date']->format('w')].'</td>';
+                echo "<td$top rowspan='$rowspan'>".$dateshift['date']->format('d.m.Y')."</td>";
             }
-            echo "<td$top>".($dateshift['shift'] == 'day' ? 'День' : 'Ночь')."</td>";
+            echo "<td$top rowspan='$my_rowspan'>".($dateshift['shift'] == 'day' ? 'День' : 'Ночь')."</td>";
             
             // Работник №1
             if($this->user1Name != '') {
-                echo "<td$top title='".$this->user1Name."'>";
+                echo "<td$top rowspan='$my_rowspan' title='".$this->user1Name."'>";
                 if(IsInRole('admin')) {
-                    
-                    
-                    if(isset($row['id']) && array_key_exists($row['id'], $all_editions)) {
-                        print_r($all_editions[$row['id']]);
-                    }
-                    
-                    
                     echo "<form method='post'>";
                     AddHiddenFields($dateshift, $row);
                     echo "<select id='user1_id' name='user1_id'>";
@@ -337,7 +340,7 @@ class Grafik {
             
             // Работник №2
             if($this->user2Name != '') {
-                echo "<td$top title='".$this->user2Name."'>";
+                echo "<td$top rowspan='$my_rowspan' title='".$this->user2Name."'>";
                 if(IsInRole('admin')) {
                     echo "<form method='post'>";
                     AddHiddenFields($dateshift, $row);
@@ -372,36 +375,67 @@ class Grafik {
             
             // Добавление смены
             if(IsInRole('admin')) {
-                echo "<td$top>";
-                echo "<form method='post'>";
-                echo '<input type="hidden" id="scroll" name="scroll" />';
-                echo "<input type='hidden' id='date' name='date' value='".$dateshift['date']->format('Y-m-d')."' />";
-                echo "<input type='hidden' id='shift' name='shifft' value='".$dateshift['shift']."' />";
-                $from = filter_input(INPUT_GET, 'from');
-                if($from !== null) {
-                    echo "<input type='hidden' id='from' name='from' value='$from' />";
+                echo "<td$top rowspan='$my_rowspan'>";
+                if(isset($row['id'])) {
+                    echo "<form method='post'>";
+                    AddHiddenFields($dateshift, $row);
+                    echo "<input type='hidden' id='workshift_id' name='workshift_id' value='".$row['id']."' />";
+                    echo "<button type='submit' id='create_shift_submit' name='create_shift_submit' class='btn btn-outline-dark' title='Добавить тираж'><span class='font-awesome'>&#xf067;</span></button>";
+                    echo '</form>';
                 }
-                $to = filter_input(INPUT_GET, 'to');
-                if($to !== null) {
-                    echo "<input type='hidden' id='to' name='to' value='$to' />";
-                }
-                echo "<button type='submit' id='create_shift_submit' name='create_shift_submit' class='btn btn-outline-dark' title='Добавить тираж'><span class='font-awesome'>&#xf067;</span></button>";
-                echo '</form>';
                 echo '</td>';
             }
             
             // Смены
-            if($this->hasEdition) echo "<td$top></td>";
-            if($this->hasOrganization) echo "<td$top></td>";
-            if($this->hasLength) echo "<td$top></td>";
-            if($this->hasRoller) echo "<td$top></td>";
-            if($this->hasLamination) echo "<td$top></td>";
-            if($this->hasColoring) echo "<td$top></td>";
-            if($this->hasManager) echo "<td$top></td>";
-            if($this->hasComment) echo "<td$top></td>";
-            if(IsInRole('admin')) echo "<td$top></td>";
+            $edition = null;
+            
+            if(count($editions) == 0) {
+                if($this->hasEdition) echo "<td$top></td>";
+                if($this->hasOrganization) echo "<td$top></td>";
+                if($this->hasLength) echo "<td$top></td>";
+                if($this->hasRoller) echo "<td$top></td>";
+                if($this->hasLamination) echo "<td$top></td>";
+                if($this->hasColoring) echo "<td$top></td>";
+                if($this->hasManager) echo "<td$top></td>";
+                if($this->hasComment) echo "<td$top></td>";
+                if(IsInRole('admin')) echo "<td$top></td>";
+            }
+            else {
+                $edition = array_shift($editions);
+                
+                if($this->hasEdition) echo "<td$top>".$edition['id']."</td>";
+                if($this->hasOrganization) echo "<td$top>".$edition['id']."</td>";
+                if($this->hasLength) echo "<td$top>".$edition['id']."</td>";
+                if($this->hasRoller) echo "<td$top>".$edition['id']."</td>";
+                if($this->hasLamination) echo "<td$top>".$edition['id']."</td>";
+                if($this->hasColoring) echo "<td$top>".$edition['id']."</td>";
+                if($this->hasManager) echo "<td$top>".$edition['id']."</td>";
+                if($this->hasComment) echo "<td$top>".$edition['id']."</td>";
+                if(IsInRole('admin')) echo "<td$top>".$edition['id']."</td>";
+            }
             
             echo '</tr>';
+            
+            // Дополнительные смены
+            $edition = array_shift($editions);
+            
+            while ($edition != null) {
+                echo '<tr>';
+                
+                if($this->hasEdition) echo "<td>".$edition['id']."</td>";
+                if($this->hasOrganization) echo "<td>".$edition['id']."</td>";
+                if($this->hasLength) echo "<td>".$edition['id']."</td>";
+                if($this->hasRoller) echo "<td>".$edition['id']."</td>";
+                if($this->hasLamination) echo "<td>".$edition['id']."</td>";
+                if($this->hasColoring) echo "<td>".$edition['id']."</td>";
+                if($this->hasManager) echo "<td>".$edition['id']."</td>";
+                if($this->hasComment) echo "<td>".$edition['id']."</td>";
+                if(IsInRole('admin')) echo "<td>".$edition['id']."</td>";
+                
+                echo '</tr>';
+                
+                $edition = array_shift($editions);
+            }
         }
         ?>
     </tbody>
