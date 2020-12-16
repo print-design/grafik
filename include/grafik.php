@@ -153,6 +153,25 @@ class Grafik {
             $this->error_message = (new Executer("insert into edition (workshift_id) values ($workshift_id)"))->error;
         }
         
+        // Название тиража
+        $name = filter_input(INPUT_POST, 'name');
+        if($name !== null) {
+            $name = addslashes($name);
+            $sql = '';
+            $id = filter_input(INPUT_POST, 'id');
+            
+            if($id !== null) {
+                $sql = "update edition set name='$name' where id=$id";
+            }
+            else {
+                $date = filter_input(INPUT_POST, 'date');
+                $shift = filter_input(INPUT_POST, 'shift');
+                $sql = "insert into comiflex (date, shift, edition) values ('$date', '$shift', '$edition')";
+            }
+            
+            $error_message = (new Executer($sql))->error;
+        }
+        
         // Удаление тиража
         $delete_edition_submit = filter_input(INPUT_POST, 'delete_edition_submit');
         if($delete_edition_submit !== null) {
@@ -324,7 +343,12 @@ class Grafik {
                 echo "<td class='$top $shift' rowspan='$my_rowspan' title='".$this->user1Name."'>";
                 if(IsInRole('admin')) {
                     echo "<form method='post'>";
-                    AddHiddenFields($dateshift, $row);
+                    echo '<input type="hidden" id="scroll" name="scroll" />';
+                    if(isset($row['id'])) {
+                        echo '<input type="hidden" id="id" name="id" value="'.$row['id'].'" />';
+                    }
+                    echo '<input type="hidden" id="date" name="date" value="'.$dateshift['date']->format('Y-m-d').'" />';
+                    echo '<input type="hidden" id="shift" name="shift" value="'.$dateshift['shift'].'" />';
                     echo "<select id='user1_id' name='user1_id'>";
                     echo '<optgroup>';
                     echo '<option value="">...</option>';
@@ -341,7 +365,12 @@ class Grafik {
                     echo '</form>';
                             
                     echo '<form method="post" class="d-none">';
-                    AddHiddenFields($dateshift, $row);
+                    echo '<input type="hidden" id="scroll" name="scroll" />';
+                    if(isset($row['id'])) {
+                        echo '<input type="hidden" id="id" name="id" value="'.$row['id'].'" />';
+                    }
+                    echo '<input type="hidden" id="date" name="date" value="'.$dateshift['date']->format('Y-m-d').'" />';
+                    echo '<input type="hidden" id="shift" name="shift" value="'.$dateshift['shift'].'" />';
                     echo '<div class="input-group">';
                     echo '<input type="text" id="user1" name="user1" value="" class="editable" />';
                     echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
@@ -359,7 +388,12 @@ class Grafik {
                 echo "<td class='$top $shift' rowspan='$my_rowspan' title='".$this->user2Name."'>";
                 if(IsInRole('admin')) {
                     echo "<form method='post'>";
-                    AddHiddenFields($dateshift, $row);
+                    echo '<input type="hidden" id="scroll" name="scroll" />';
+                    if(isset($row['id'])) {
+                        echo '<input type="hidden" id="id" name="id" value="'.$row['id'].'" />';
+                    }
+                    echo '<input type="hidden" id="date" name="date" value="'.$dateshift['date']->format('Y-m-d').'" />';
+                    echo '<input type="hidden" id="shift" name="shift" value="'.$dateshift['shift'].'" />';
                     echo "<select id='user2_id' name='user2_id'>";
                     echo '<optgroup>';
                     echo '<option value="">...</option>';
@@ -376,7 +410,12 @@ class Grafik {
                     echo '</form>';
                             
                     echo '<form method="post" class="d-none">';
-                    AddHiddenFields($dateshift, $row);
+                    echo '<input type="hidden" id="scroll" name="scroll" />';
+                    if(isset($row['id'])) {
+                        echo '<input type="hidden" id="id" name="id" value="'.$row['id'].'" />';
+                    }
+                    echo '<input type="hidden" id="date" name="date" value="'.$dateshift['date']->format('Y-m-d').'" />';
+                    echo '<input type="hidden" id="shift" name="shift" value="'.$dateshift['shift'].'" />';
                     echo '<div class="input-group">';
                     echo '<input type="text" id="user2" name="user2" value="" class="editable" />';
                     echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
@@ -394,7 +433,7 @@ class Grafik {
                 echo "<td class='$top $shift' rowspan='$my_rowspan'>";
                 if(isset($row['id'])) {
                     echo "<form method='post'>";
-                    AddHiddenFields($dateshift, $row);
+                    echo '<input type="hidden" id="scroll" name="scroll" />';
                     echo "<input type='hidden' id='workshift_id' name='workshift_id' value='".$row['id']."' />";
                     echo "<button type='submit' id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark' title='Добавить тираж'><span class='font-awesome'>&#xf067;</span></button>";
                     echo '</form>';
@@ -406,6 +445,7 @@ class Grafik {
             $edition = null;
             
             if(count($editions) == 0) {
+                // Название тиража
                 if($this->hasEdition) echo "<td class='$top $shift'></td>";
                 if($this->hasOrganization) echo "<td class='$top $shift'></td>";
                 if($this->hasLength) echo "<td class='$top $shift'></td>";
@@ -418,7 +458,7 @@ class Grafik {
                     echo "<td class='$top $shift'>";
                     if(isset($row['id'])) {
                         echo "<form method='post'>";
-                        AddHiddenFields($dateshift, $row);
+                        echo '<input type="hidden" id="scroll" name="scroll" />';
                         echo "<input type='hidden' id='id' name='id' value='".$row['id']."' />";
                         echo "<button type='submit' id='delete_shift_submit' name='delete_shift_submit' class='btn btn-outline-dark' title='Удалить смену'><span class='font-awesome'>&#xf1f8;</span></button>";
                         echo "</form>";
@@ -428,7 +468,7 @@ class Grafik {
             }
             else {
                 $edition = array_shift($editions);
-                $this->ShowEditon($edition, $top, $dateshift, $row);
+                $this->ShowEditon($edition, $top, $shift);
             }
             
             echo '</tr>';
@@ -438,7 +478,7 @@ class Grafik {
             
             while ($edition != null) {
                 echo '<tr>';
-                $this->ShowEditon($edition, '', $dateshift, $row);
+                $this->ShowEditon($edition, 'nottop', $shift);
                 echo '</tr>';
                 $edition = array_shift($editions);
             }
@@ -449,9 +489,24 @@ class Grafik {
 <?php
     }
     
-    private function ShowEditon($edition, $top, $dateshift, $row) {
-        $shift = $dateshift['shift'];
-        if($this->hasEdition) echo "<td class='$top $shift'>".$edition['id']."</td>";
+    private function ShowEditon($edition, $top, $shift) {
+        if($this->hasEdition){
+            echo "<td class='$top $shift'>";
+            if(IsInRole('admin')) {
+                echo '<form method="post">';
+                echo '<input type="hidden" id="scroll" name="scroll" />';
+                echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
+                echo '<div class="input-group">';
+                echo '<input type="text" id="name" name="name" value="'.(isset($edition['name']) ? htmlentities($edition['name']) : '').'" class="editable" />';
+                echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                echo '</div>';
+                echo '</form>';
+            }
+            else {
+                echo (isset($edition['name']) ? $edition['name'] : '');
+            }
+            echo "</td>";
+        }
         if($this->hasOrganization) echo "<td class='$top $shift'>".$edition['id']."</td>";
         if($this->hasLength) echo "<td class='$top $shift'>".$edition['id']."</td>";
         if($this->hasRoller) echo "<td class='$top $shift'>".$edition['id']."</td>";
@@ -462,7 +517,7 @@ class Grafik {
         if(IsInRole('admin')) {
             echo "<td class='$top $shift'>";
             echo "<form method='post'>";
-            AddHiddenFields($dateshift, $row);
+            echo '<input type="hidden" id="scroll" name="scroll" />';
             echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
             echo "<button type='submit' id='delete_edition_submit' name='delete_edition_submit' class='btn btn-outline-dark' title='Удалить тираж'><span class='font-awesome'>&#xf1f8;</span></button>";
             echo "</form>";

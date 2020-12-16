@@ -36,21 +36,6 @@ function IsInRole($role) {
     return false;
 }
 
-function AddHiddenFields($dateshift, $row) {
-    echo '<input type="hidden" id="scroll" name="scroll" />';
-    if(isset($row['id'])) {
-        echo '<input type="hidden" id="id" name="id" value="'.$row['id'].'" />';
-    }
-    echo '<input type="hidden" id="date" name="date" value="'.$dateshift['date']->format('Y-m-d').'" />';
-    echo '<input type="hidden" id="shift" name="shift" value="'.$dateshift['shift'].'" />';
-    if(isset($_GET['from'])) {
-        echo '<input type="hidden" id="from" name="from" value="'.$_GET['from'].'" />';
-    }
-    if(isset($_GET['to'])) {
-        echo '<input type="hidden" id="to" name="to" value="'.$_GET['to'].'" />';
-    }
-}
-
 // Классы
 class Executer {
     public $error = '';
