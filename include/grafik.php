@@ -39,7 +39,7 @@ class Grafik {
             else {
                 $date = filter_input(INPUT_POST, 'date');
                 $shift = filter_input(INPUT_POST, 'shift');
-                $sql = "insert into workshift (date, shift, user1_id) values ('$date', '$shift', $user1_id)";
+                $sql = "insert into workshift (date, machine_id, shift, user1_id) values ('$date', $this->machineId, '$shift', $user1_id)";
             }
             
             $this->error_message = (new Executer($sql))->error;
@@ -68,7 +68,7 @@ class Grafik {
                     else {
                         $date = filter_input(INPUT_POST, 'date');
                         $shift = filter_input(INPUT_POST, 'shift');
-                        $sql = "insert into workshift (date, shift, user1_id) values ('$date', '$shift', $user1_id)";
+                        $sql = "insert into workshift (date, machine_id, shift, user1_id) values ('$date', $this->machineId, '$shift', $user1_id)";
                     }
                     $this->error_message = (new Executer($sql))->error;
                 }
@@ -88,7 +88,7 @@ class Grafik {
             else {
                 $date = filter_input(INPUT_POST, 'date');
                 $shift = filter_input(INPUT_POST, 'shift');
-                $sql = "insert into workshift (date, shift, user2_id) values ('$date', '$shift', $user2_id)";
+                $sql = "insert into workshift (date, machine_id, shift, user2_id) values ('$date', $this->machineId, '$shift', $user2_id)";
             }
             $this->error_message = (new Executer($sql))->error;
         }
@@ -116,7 +116,7 @@ class Grafik {
                     else {
                         $date = filter_input(INPUT_POST, 'date');
                         $shift = filter_input(INPUT_POST, 'shift');
-                        $sql = "insert into workshift (date, shift, user2_id) values ('$date', '$shift', $user2_id)";
+                        $sql = "insert into workshift (date, machine_id, shift, user2_id) values ('$date', $this->machineId, '$shift', $user2_id)";
                     }
                     $this->error_message = (new Executer($sql))->error;
                 }
@@ -245,7 +245,7 @@ class Grafik {
                     echo '<option value="">...</option>';
                     foreach ($users1 as $value) {
                         $selected = '';
-                        if(isset($row['p_id']) && $row['p_id'] == $value['id']) $selected = " selected = 'selected'";
+                        if(isset($row['u1_id']) && $row['u1_id'] == $value['id']) $selected = " selected = 'selected'";
                         echo "<option$selected value='".$value['id']."'>".$value['fio']."</option>";
                     }
                     echo '</optgroup>';
@@ -264,7 +264,7 @@ class Grafik {
                     echo '</form>';
                 }
                 else {
-                    echo (isset($row['p_name']) ? $row['p_name'] : '');
+                    echo (isset($row['u1_fio']) ? $row['u1_fio'] : '');
                 }
                 echo '</td>';
             }
@@ -280,7 +280,7 @@ class Grafik {
                     echo '<option value="">...</option>';
                     foreach ($users2 as $value) {
                         $selected = '';
-                        if(isset($row['p_id']) && $row['p_id'] == $value['id']) $selected = " selected = 'selected'";
+                        if(isset($row['u2_id']) && $row['u2_id'] == $value['id']) $selected = " selected = 'selected'";
                         echo "<option$selected value='".$value['id']."'>".$value['fio']."</option>";
                     }
                     echo '</optgroup>';
@@ -299,7 +299,7 @@ class Grafik {
                     echo '</form>';
                 }
                 else {
-                    echo (isset($row['p_name']) ? $row['p_name'] : '');
+                    echo (isset($row['u2_fio']) ? $row['u2_fio'] : '');
                 }
                 echo '</td>';
             }
