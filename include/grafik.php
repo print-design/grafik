@@ -305,21 +305,23 @@ class Grafik {
             $rowspan = $day_rowspan + $night_rowspan;
             $my_rowspan = $dateshift['shift'] == 'day' ? $day_rowspan : $night_rowspan;
             
-            $top = "";
+            $top = "nottop";
             if($dateshift['shift'] == 'day') {
-                $top = " class='top'";
+                $top = "top";
             }
+            
+            $shift = $dateshift['shift'];
             
             echo '<tr>';
             if($dateshift['shift'] == 'day') {
-                echo "<td$top rowspan='$rowspan'>".$GLOBALS['weekdays'][$dateshift['date']->format('w')].'</td>';
-                echo "<td$top rowspan='$rowspan'>".$dateshift['date']->format('d.m.Y')."</td>";
+                echo "<td class='$top $shift' rowspan='$rowspan'>".$GLOBALS['weekdays'][$dateshift['date']->format('w')].'</td>';
+                echo "<td class='$top $shift' rowspan='$rowspan'>".$dateshift['date']->format('d.m.Y')."</td>";
             }
-            echo "<td$top rowspan='$my_rowspan'>".($dateshift['shift'] == 'day' ? 'День' : 'Ночь')."</td>";
+            echo "<td class='$top $shift' rowspan='$my_rowspan'>".($dateshift['shift'] == 'day' ? 'День' : 'Ночь')."</td>";
             
             // Работник №1
             if($this->user1Name != '') {
-                echo "<td$top rowspan='$my_rowspan' title='".$this->user1Name."'>";
+                echo "<td class='$top $shift' rowspan='$my_rowspan' title='".$this->user1Name."'>";
                 if(IsInRole('admin')) {
                     echo "<form method='post'>";
                     AddHiddenFields($dateshift, $row);
@@ -354,7 +356,7 @@ class Grafik {
             
             // Работник №2
             if($this->user2Name != '') {
-                echo "<td$top rowspan='$my_rowspan' title='".$this->user2Name."'>";
+                echo "<td class='$top $shift' rowspan='$my_rowspan' title='".$this->user2Name."'>";
                 if(IsInRole('admin')) {
                     echo "<form method='post'>";
                     AddHiddenFields($dateshift, $row);
@@ -389,7 +391,7 @@ class Grafik {
             
             // Добавление смены
             if(IsInRole('admin')) {
-                echo "<td$top rowspan='$my_rowspan'>";
+                echo "<td class='$top $shift' rowspan='$my_rowspan'>";
                 if(isset($row['id'])) {
                     echo "<form method='post'>";
                     AddHiddenFields($dateshift, $row);
@@ -404,16 +406,16 @@ class Grafik {
             $edition = null;
             
             if(count($editions) == 0) {
-                if($this->hasEdition) echo "<td$top></td>";
-                if($this->hasOrganization) echo "<td$top></td>";
-                if($this->hasLength) echo "<td$top></td>";
-                if($this->hasRoller) echo "<td$top></td>";
-                if($this->hasLamination) echo "<td$top></td>";
-                if($this->hasColoring) echo "<td$top></td>";
-                if($this->hasManager) echo "<td$top></td>";
-                if($this->hasComment) echo "<td$top></td>";
+                if($this->hasEdition) echo "<td class='$top $shift'></td>";
+                if($this->hasOrganization) echo "<td class='$top $shift'></td>";
+                if($this->hasLength) echo "<td class='$top $shift'></td>";
+                if($this->hasRoller) echo "<td class='$top $shift'></td>";
+                if($this->hasLamination) echo "<td class='$top $shift'></td>";
+                if($this->hasColoring) echo "<td class='$top $shift'></td>";
+                if($this->hasManager) echo "<td class='$top $shift'></td>";
+                if($this->hasComment) echo "<td class='$top $shift'></td>";
                 if(IsInRole('admin')) {
-                    echo "<td$top>";
+                    echo "<td class='$top $shift'>";
                     if(isset($row['id'])) {
                         echo "<form method='post'>";
                         AddHiddenFields($dateshift, $row);
@@ -448,16 +450,17 @@ class Grafik {
     }
     
     private function ShowEditon($edition, $top, $dateshift, $row) {
-        if($this->hasEdition) echo "<td$top>".$edition['id']."</td>";
-        if($this->hasOrganization) echo "<td$top>".$edition['id']."</td>";
-        if($this->hasLength) echo "<td$top>".$edition['id']."</td>";
-        if($this->hasRoller) echo "<td$top>".$edition['id']."</td>";
-        if($this->hasLamination) echo "<td$top>".$edition['id']."</td>";
-        if($this->hasColoring) echo "<td$top>".$edition['id']."</td>";
-        if($this->hasManager) echo "<td$top>".$edition['id']."</td>";
-        if($this->hasComment) echo "<td$top>".$edition['id']."</td>";
+        $shift = $dateshift['shift'];
+        if($this->hasEdition) echo "<td class='$top $shift'>".$edition['id']."</td>";
+        if($this->hasOrganization) echo "<td class='$top $shift'>".$edition['id']."</td>";
+        if($this->hasLength) echo "<td class='$top $shift'>".$edition['id']."</td>";
+        if($this->hasRoller) echo "<td class='$top $shift'>".$edition['id']."</td>";
+        if($this->hasLamination) echo "<td class='$top $shift'>".$edition['id']."</td>";
+        if($this->hasColoring) echo "<td class='$top $shift'>".$edition['id']."</td>";
+        if($this->hasManager) echo "<td class='$top $shift'>".$edition['id']."</td>";
+        if($this->hasComment) echo "<td class='$top $shift'>".$edition['id']."</td>";
         if(IsInRole('admin')) {
-            echo "<td$top>";
+            echo "<td class='$top $shift'>";
             echo "<form method='post'>";
             AddHiddenFields($dateshift, $row);
             echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";

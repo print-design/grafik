@@ -28,6 +28,10 @@ table.typography tbody tr td.top {
     border-top: solid 2px darkgray;
 }
 
+table.typography tbody tr td.night {
+    background-color: #F2F2F2;
+}
+
 thead#grafik-thead {
     background-color: lightcyan;
 }
