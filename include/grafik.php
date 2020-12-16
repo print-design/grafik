@@ -146,11 +146,25 @@ class Grafik {
             }
         }
         
-        // Создание рабочей смены
-        $create_shift_submit = filter_input(INPUT_POST, 'create_shift_submit');
+        // Добавление тиража
+        $create_shift_submit = filter_input(INPUT_POST, 'create_edition_submit');
         if($create_shift_submit !== null) {
             $workshift_id = filter_input(INPUT_POST, 'workshift_id');
             $this->error_message = (new Executer("insert into edition (workshift_id) values ($workshift_id)"))->error;
+        }
+        
+        // Удаление тиража
+        $delete_edition_submit = filter_input(INPUT_POST, 'delete_edition_submit');
+        if($delete_edition_submit !== null) {
+            $id = filter_input(INPUT_POST, 'id');
+            $this->error_message = (new Executer("delete from edition where id=$id"))->error;
+        }
+        
+        // Удаление смены
+        $delete_shift_submit = filter_input(INPUT_POST, 'delete_shift_submit');
+        if($delete_shift_submit !== null) {
+            $id = filter_input(INPUT_POST, 'id');
+            $this->error_message = (new Executer("delete from workshift where id=$id"))->error;
         }
     }
 
@@ -380,7 +394,7 @@ class Grafik {
                     echo "<form method='post'>";
                     AddHiddenFields($dateshift, $row);
                     echo "<input type='hidden' id='workshift_id' name='workshift_id' value='".$row['id']."' />";
-                    echo "<button type='submit' id='create_shift_submit' name='create_shift_submit' class='btn btn-outline-dark' title='Добавить тираж'><span class='font-awesome'>&#xf067;</span></button>";
+                    echo "<button type='submit' id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark' title='Добавить тираж'><span class='font-awesome'>&#xf067;</span></button>";
                     echo '</form>';
                 }
                 echo '</td>';
@@ -398,20 +412,21 @@ class Grafik {
                 if($this->hasColoring) echo "<td$top></td>";
                 if($this->hasManager) echo "<td$top></td>";
                 if($this->hasComment) echo "<td$top></td>";
-                if(IsInRole('admin')) echo "<td$top></td>";
+                if(IsInRole('admin')) {
+                    echo "<td$top>";
+                    if(isset($row['id'])) {
+                        echo "<form method='post'>";
+                        AddHiddenFields($dateshift, $row);
+                        echo "<input type='hidden' id='id' name='id' value='".$row['id']."' />";
+                        echo "<button type='submit' id='delete_shift_submit' name='delete_shift_submit' class='btn btn-outline-dark' title='Удалить смену'><span class='font-awesome'>&#xf1f8;</span></button>";
+                        echo "</form>";
+                    }
+                    echo "</td>";
+                }
             }
             else {
                 $edition = array_shift($editions);
-                
-                if($this->hasEdition) echo "<td$top>".$edition['id']."</td>";
-                if($this->hasOrganization) echo "<td$top>".$edition['id']."</td>";
-                if($this->hasLength) echo "<td$top>".$edition['id']."</td>";
-                if($this->hasRoller) echo "<td$top>".$edition['id']."</td>";
-                if($this->hasLamination) echo "<td$top>".$edition['id']."</td>";
-                if($this->hasColoring) echo "<td$top>".$edition['id']."</td>";
-                if($this->hasManager) echo "<td$top>".$edition['id']."</td>";
-                if($this->hasComment) echo "<td$top>".$edition['id']."</td>";
-                if(IsInRole('admin')) echo "<td$top>".$edition['id']."</td>";
+                $this->ShowEditon($edition, $top, $dateshift, $row);
             }
             
             echo '</tr>';
@@ -421,19 +436,8 @@ class Grafik {
             
             while ($edition != null) {
                 echo '<tr>';
-                
-                if($this->hasEdition) echo "<td>".$edition['id']."</td>";
-                if($this->hasOrganization) echo "<td>".$edition['id']."</td>";
-                if($this->hasLength) echo "<td>".$edition['id']."</td>";
-                if($this->hasRoller) echo "<td>".$edition['id']."</td>";
-                if($this->hasLamination) echo "<td>".$edition['id']."</td>";
-                if($this->hasColoring) echo "<td>".$edition['id']."</td>";
-                if($this->hasManager) echo "<td>".$edition['id']."</td>";
-                if($this->hasComment) echo "<td>".$edition['id']."</td>";
-                if(IsInRole('admin')) echo "<td>".$edition['id']."</td>";
-                
+                $this->ShowEditon($edition, '', $dateshift, $row);
                 echo '</tr>';
-                
                 $edition = array_shift($editions);
             }
         }
@@ -441,6 +445,26 @@ class Grafik {
     </tbody>
 </table>
 <?php
+    }
+    
+    private function ShowEditon($edition, $top, $dateshift, $row) {
+        if($this->hasEdition) echo "<td$top>".$edition['id']."</td>";
+        if($this->hasOrganization) echo "<td$top>".$edition['id']."</td>";
+        if($this->hasLength) echo "<td$top>".$edition['id']."</td>";
+        if($this->hasRoller) echo "<td$top>".$edition['id']."</td>";
+        if($this->hasLamination) echo "<td$top>".$edition['id']."</td>";
+        if($this->hasColoring) echo "<td$top>".$edition['id']."</td>";
+        if($this->hasManager) echo "<td$top>".$edition['id']."</td>";
+        if($this->hasComment) echo "<td$top>".$edition['id']."</td>";
+        if(IsInRole('admin')) {
+            echo "<td$top>";
+            echo "<form method='post'>";
+            AddHiddenFields($dateshift, $row);
+            echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
+            echo "<button type='submit' id='delete_edition_submit' name='delete_edition_submit' class='btn btn-outline-dark' title='Удалить тираж'><span class='font-awesome'>&#xf1f8;</span></button>";
+            echo "</form>";
+            echo "</td>";
+        };
     }
 }
 ?>
