@@ -225,6 +225,36 @@ class Grafik {
             $all[$item['date'].$item['shift']] = $item;
         }
         
+        // Список тиражей
+        $all_editions = [];
+        $sql = "select ws.date, ws.shift, e.id, e.workshift_id, e.name, e.organization, e.length, e.coloring, "
+                . "e.roller_id, r.name roller, "
+                . "e.lamination_id, lam.name lamination, "
+                . "e.manager_id, m.fio manager "
+                . "from edition e "
+                . "left join roller r on e.roller_id = r.id "
+                . "left join lamination lam on e.lamination_id = lam.id "
+                . "left join user m on e.manager_id = m.id "
+                . "inner join workshift ws on e.workshift_id = ws.id "
+                . "where ws.date >= '".$this->dateFrom->format('Y-m-d')."' and ws.date <= '".$this->dateTo->format('Y-m-d')."' and ws.machine_id = ". $this->machineId;
+        
+        $fetcher = new Fetcher($sql);
+        
+        while ($item = $fetcher->Fetch()) {
+            if(!array_key_exists($item['date'], $all_editions) || !array_key_exists($item['shift'], $all_editions['date'])) $all_editions[$item['date']][$item['shift']] = [];
+            array_push($all_editions[$item['date']][$item['shift']], $item);
+        }
+        
+        foreach ($all_editions as $dates) {
+            if(!array_key_exists('day', $dates)) {
+                $dates['day'] = array();
+            }
+            if(!array_key_exists('night', $dates)) $dates['night'] = array();
+        }
+        
+        print_r($all_editions['day']);
+        print_r($all_editions['night']);
+        
         // Список дат и смен
         $date_diff = $this->dateTo->diff($this->dateFrom);
         $interval = DateInterval::createFromDateString("-1 day");
@@ -246,6 +276,11 @@ class Grafik {
             $row = array();
             if(isset($all[$key])) $row = $all[$key];
             
+            $editions = array();
+            if(isset($row['id']) && array_key_exists($row['id'], $all_editions)) {
+                $editions = $all_editions[$row['id']];
+            }
+            
             $top = "";
             if($dateshift['shift'] == 'day') {
                 $top = " class='top'";
@@ -262,6 +297,13 @@ class Grafik {
             if($this->user1Name != '') {
                 echo "<td$top title='".$this->user1Name."'>";
                 if(IsInRole('admin')) {
+                    
+                    
+                    if(isset($row['id']) && array_key_exists($row['id'], $all_editions)) {
+                        print_r($all_editions[$row['id']]);
+                    }
+                    
+                    
                     echo "<form method='post'>";
                     AddHiddenFields($dateshift, $row);
                     echo "<select id='user1_id' name='user1_id'>";
@@ -348,7 +390,7 @@ class Grafik {
                 echo '</td>';
             }
             
-            // Смена
+            // Смены
             if($this->hasEdition) echo "<td$top></td>";
             if($this->hasOrganization) echo "<td$top></td>";
             if($this->hasLength) echo "<td$top></td>";
