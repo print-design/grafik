@@ -42,10 +42,10 @@
                 <a class="nav-link<?=$atlas_status ?>" href="<?=APPLICATION ?>/atlas/<?=$query_string ?>">Атлас</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link<?=$laminators_status ?>" href="<?=APPLICATION ?>/laminators/<?=$query_string ?>">Ламинаторщики</a>
+                <a class="nav-link<?=$laminators_status ?>" href="<?=APPLICATION ?>/laminators/<?=$query_string ?>">Ламинатор</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link<?=$cutters_status ?>" href="<?=APPLICATION ?>/cutters/<?=$query_string ?>">Резчики</a>
+                <a class="nav-link<?=$cutters_status ?>" href="<?=APPLICATION ?>/cutters/<?=$query_string ?>">Резка</a>
             </li>
             <?php
             if(LoggedIn()) {

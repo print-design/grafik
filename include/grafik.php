@@ -10,6 +10,7 @@ class Grafik {
     private DateTime $dateTo;
     private $machineId;
     
+    public $name = '';
     public $user1Name = '';
     public $user2Name = '';
     public $userRole = 0;
@@ -239,7 +240,7 @@ class Grafik {
         ?>
 <div class="d-flex justify-content-between mb-2">
     <div class="p-1">
-        <h1>Comiflex</h1>
+        <h1><?= $this->name ?></h1>
     </div>
     <div class="p-1">
         <?php if(IsInRole('admin')): ?>
@@ -329,7 +330,7 @@ class Grafik {
         
         // Список тиражей
         $all_editions = [];
-        $sql = "select ws.date, ws.shift, e.id, e.workshift_id, e.name, e.organization, e.length, e.coloring, "
+        $sql = "select ws.date, ws.shift, e.id, e.workshift_id, e.name, e.organization, e.length, e.coloring, e.comment, "
                 . "e.roller_id, r.name roller, "
                 . "e.lamination_id, lam.name lamination, "
                 . "e.manager_id, m.fio manager "

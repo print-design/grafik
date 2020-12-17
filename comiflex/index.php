@@ -4,6 +4,7 @@ include '../include/grafik.php';
 include '../include/date_from_date_to.php';
 
 $grafik = new Grafik($date_from, $date_to, 1);
+$grafik->name = 'Comiflex';
 $grafik->user1Name = 'Печатник';
 $grafik->user2Name = 'Помощник';
 $grafik->userRole = 3;
