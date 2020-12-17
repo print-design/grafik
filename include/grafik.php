@@ -6,8 +6,8 @@ class Grafik {
         $this->machineId = $machine_id;
     }
     
-    private DateTime $dateFrom;
-    private DateTime $dateTo;
+    private $dateFrom;
+    private $dateTo;
     private $machineId;
     
     public $name = '';
