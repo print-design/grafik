@@ -349,9 +349,9 @@ class Grafik {
         }
         
         // Список дат и смен
-        $date_diff = $this->dateTo->diff($this->dateFrom);
-        $interval = DateInterval::createFromDateString("-1 day");
-        $period = new DatePeriod($this->dateTo, $interval, $date_diff->days);
+        $date_diff = $this->dateFrom->diff($this->dateTo);
+        $interval = DateInterval::createFromDateString("1 day");
+        $period = new DatePeriod($this->dateFrom, $interval, $date_diff->days);
         $dateshifts = array();
         
         foreach ($period as $date) {
