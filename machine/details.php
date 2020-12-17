@@ -1,58 +1,46 @@
 <?php
 include '../include/topscripts.php';
+include '../include/restrict_admin.php';
+        
+// Валидация формы
+define('ISINVALID', ' is-invalid');
+$form_valid = true;
+$error_message = '';
+        
+$name_valid = '';
+        
+// Обработка отправки формы
+$add_roller_submit = filter_input(INPUT_POST, 'add_roller_submit');
+if($add_roller_submit !== null) {
+    $name = filter_input(INPUT_POST, 'name');
+    if($name == '') {
+        $name_valid = ISINVALID;
+        $form_valid = false;
+    }
+    
+    if($form_valid) {
+        $name = addslashes($name);
+        $machine_id = filter_input(INPUT_POST, 'machine_id');
+        $error_message = (new Executer("insert into roller (name, machine_id) values ('$name', $machine_id)"))->error;
+    }
+}
+        
+// Если нет параметра id, переход к списку
+$id = filter_input(INPUT_GET, 'id');
+if($id === null) {
+    header('Location: '.APPLICATION.'/machine/');
+}
+        
+// Получение объекта
+$row = (new Fetcher("select name from machine where id=$id"))->Fetch();
+$name = htmlentities($row['name']);
 ?>
 <!DOCTYPE html>
 <html>
     <head>
         <?php
         include '../include/head.php';
-        include '../include/restrict_admin.php';
         
-        // Валидация формы
-        define('ISINVALID', ' is-invalid');
-        $form_valid = true;
-        $error_message = '';
-        
-        $name_valid = '';
-        
-        // Обработка отправки формы
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_roller_submit'])) {
-            if($_POST['name'] == '') {
-                $name_valid = ISINVALID;
-                $form_valid = false;
-            }
-            
-            if($form_valid) {
-                $name = addslashes($_POST['name']);
-                $machine_id = $_POST['machine_id'];
-                $sql = "insert into roller (name, machine_id) values ('$name', $machine_id)";
-                $error_message = ExecuteSql($sql);
-                
-                if($error_message == '') {
-                    header('Location: '.APPLICATION.'/machine/details.php?id='.$machine_id);
-                }
-            }
-        }
-        
-        // Если нет параметра id, переход к списку
-        if(!isset($_GET['id'])) {
-            header('Location: '.APPLICATION.'/machine/');
-        }
-        
-        // Получение объекта
-        $name = '';
-        
-        $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-        $sql = "select name from machine where id=".$_GET['id'];
-        
-        if($conn->connect_error) {
-            die('Ошибка соединения: ' . $conn->connect_error);
-        }
-        $result = $conn->query($sql);
-        if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
-            $name = htmlentities($row['name']);
-        }
-        $conn->close();
         ?>
     </head>
     <body>
@@ -62,9 +50,7 @@ include '../include/topscripts.php';
         <div class="container-fluid">
             <?php
             if(isset($error_message) && $error_message != '') {
-               echo <<<ERROR
-               <div class="alert alert-danger">$error_message</div>
-               ERROR;
+               echo "<div class='alert alert-danger'>$error_message</div>";
             }
             ?>
             <div class="row">
@@ -76,7 +62,7 @@ include '../include/topscripts.php';
                         <div class="p-1">
                             <div class="btn-group">
                                 <a href="<?=APPLICATION ?>/machine/" class="btn btn-outline-dark"><span class="font-awesome">&#xf0e2;</span>&nbsp;К списку</a>
-                                <a href="<?=APPLICATION ?>/machine/edit.php?id=<?=$_GET['id'] ?>" class="btn btn-outline-dark"><span class="font-awesome">&#xf044;</span>&nbsp;Редактировать</a>
+                                <a href="<?=APPLICATION ?>/machine/edit.php?id=<?=$id ?>" class="btn btn-outline-dark"><span class="font-awesome">&#xf044;</span>&nbsp;Редактировать</a>
                             </div>
                         </div>
                     </div>
@@ -88,7 +74,7 @@ include '../include/topscripts.php';
                         <div class="p-1">
                             <form class="form-inline" method="post">
                                 <div class="input-group">
-                                    <input type="hidden" id="machine_id" name="machine_id" value="<?=$_GET['id'] ?>"/>
+                                    <input type="hidden" id="machine_id" name="machine_id" value="<?=$id ?>"/>
                                     <input type="name" class="form-control<?=$name_valid ?>" placeholder="Наименование вала" id="name" name="name" required="required" />
                                     <div class="input-group-append">
                                         <button type="submit" class="btn btn-outline-dark" id="add_roller_submit" name="add_roller_submit">
@@ -102,26 +88,16 @@ include '../include/topscripts.php';
                     <table class="table table-striped table-bordered">
                         <tbody>
                             <?php
+                            $rollers = (new Grabber("select id, name from roller where machine_id=$id"))->result;
                             $roller_num = 0;
                             
-                            $roller_conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-                            $roller_sql = "select id, name from roller where machine_id=".$_GET['id'];
-                            
-                            if($roller_conn->connect_error) {
-                                die('Ошибка соединения: ' . $roller_conn->connect_error);
-                            }
-                            
-                            $roller_result = $roller_conn->query($roller_sql);
-                            if ($roller_result->num_rows > 0) {
-                                while($roller_row = $roller_result->fetch_assoc()) {
-                                    echo "<tr>"
+                            foreach ($rollers as $row) {
+                                echo "<tr>"
                                             ."<td>".(++$roller_num)."</td>"
-                                            ."<td>".htmlentities($roller_row['name'])."</td>"
-                                            ."<td><a title='Редактировать' href='edit_roller.php?id=".$roller_row['id']."'><span class='font-awesome'>&#xf044;</span></a></td>"
+                                            ."<td>".htmlentities($row['name'])."</td>"
+                                            ."<td><a title='Редактировать' href='edit_roller.php?id=".$row['id']."'><span class='font-awesome'>&#xf044;</span></a></td>"
                                             ."</tr>";
-                                }
                             }
-                            $roller_conn->close();
                             ?>
                         </tbody>
                     </table>

@@ -1,61 +1,52 @@
 <?php
 include '../include/topscripts.php';
+include '../include/restrict_admin.php';
+        
+// Валидация формы
+define('ISINVALID', ' is-invalid');
+$form_valid = true;
+$error_message = '';
+        
+$name_valid = '';
+        
+// Обработка отправки формы
+$roller_edit_submit = filter_input(INPUT_POST, 'roller_edit_submit');
+if($roller_edit_submit !== null) {
+    $name = filter_input(INPUT_POST, 'name');
+    if($name == '') {
+        $name_valid = ISINVALID;
+        $form_valid = false;
+    }
+    
+    if($form_valid) {
+        $id = filter_input(INPUT_POST, 'id');
+        $name = addslashes($name);
+        $machine_id = filter_input(INPUT_POST, 'machine_id');
+        $error_message = (new Executer("update roller set name='$name' where id=$id"))->error;
+                
+        if($error_message == '') {
+            header('Location: '.APPLICATION.'/machine/details.php?id='.$machine_id);
+        }
+    }
+}
+        
+
+// Если нет параметра id, переход к списку
+if(!isset($_GET['id'])) {
+    header('Location: '.APPLICATION.'/machine/');
+}
+        
+// Получение объекта
+$id = filter_input(INPUT_GET, 'id');
+$row = (new Fetcher("select name, machine_id from roller where id=$id"))->Fetch();
+$name = htmlentities($row['name']);
+$machine_id = $row['machine_id'];
 ?>
 <!DOCTYPE html>
 <html>
     <head>
         <?php
         include '../include/head.php';
-        include '../include/restrict_admin.php';
-        
-        // Валидация формы
-        define('ISINVALID', ' is-invalid');
-        $form_valid = true;
-        $error_message = '';
-        
-        $name_valid = '';
-        
-        // Обработка отправки формы
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['roller_edit_submit'])) {
-            if($_POST['name'] == '') {
-                $name_valid = ISINVALID;
-                $form_valid = false;
-            }
-            
-            if($form_valid) {
-                $id = $_POST['id'];
-                $name = addslashes($_POST['name']);
-                $machine_id = $_POST['machine_id'];
-                $sql = "update roller set name='$name' where id=$id";
-                $error_message = ExecuteSql($sql);
-                
-                if($error_message == '') {
-                    header('Location: '.APPLICATION.'/machine/details.php?id='.$machine_id);
-                }
-            }
-        }
-        
-        // Если нет параметра id, переход к списку
-        if(!isset($_GET['id'])) {
-            header('Location: '.APPLICATION.'/machine/');
-        }
-        
-        // Получение объекта
-        $name = '';
-        $machine_id = '';
-        
-        $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-        $sql = "select name, machine_id from roller where id=".$_GET['id'];
-        
-        if($conn->connect_error) {
-            die('Ошибка соединения: ' . $conn->connect_error);
-        }
-        $result = $conn->query($sql);
-        if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
-            $name = htmlentities($row['name']);
-            $machine_id = $row['machine_id'];
-        }
-        $conn->close();
         ?>
     </head>
     <body>
@@ -65,9 +56,7 @@ include '../include/topscripts.php';
         <div class="container-fluid">
             <?php
             if(isset($error_message) && $error_message != '') {
-               echo <<<ERROR
-               <div class="alert alert-danger">$error_message</div>
-               ERROR;
+               echo "<div class='alert alert-danger'>$error_message</div>";
             }
             ?>
             <div class="row">
@@ -86,7 +75,7 @@ include '../include/topscripts.php';
                         <input type="hidden" id="machine_id" name="machine_id" value="<?=$machine_id ?>"/>
                         <div class="form-group">
                             <label for="name">Наименование</label>
-                            <input type="text" id="name" name="name" class="form-control<?=$name_valid ?>" value="<?=$_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name']) ? $_POST['name'] : $name ?>" required="required" autocomplete="off" />
+                            <input type="text" id="name" name="name" class="form-control<?=$name_valid ?>" value="<?=$name ?>" required="required" autocomplete="off" />
                             <div class="invalid-feedback">Наименование обязательно</div>
                         </div>
                         <div class="form-group">
