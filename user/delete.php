@@ -1,53 +1,38 @@
 <?php
 include '../include/topscripts.php';
+include '../include/restrict_admin.php';
+
+// Обработка отправки формы
+$delete_user_submit = filter_input(INPUT_POST, 'delete_user_submit');
+if($delete_user_submit !== null) {
+    $user_id = filter_input(INPUT_POST, 'id');
+    $error_message = (new Executer("delete from user_role where user_id=$user_id"))->error;
+    
+    if($error_message == '') {
+        $error_message = (new Executer("delete from user where id=$user_id"))->error;
+        
+        if($error_message == '') {
+            header('Location: '.APPLICATION.'/user/');
+        }
+    }
+}
+        
+// Если нет параметра id, переход к списку
+$id = filter_input(INPUT_GET, 'id');
+if($id === null) {
+    header('Location: '.APPLICATION.'/user/');
+}
+        
+// Получение объекта
+$row = (new Fetcher("select username, fio from user where id=$id"))->Fetch();
+$username = $row['username'];
+$fio = $row['fio'];
 ?>
 <!DOCTYPE html>
 <html>
     <head>
         <?php
         include '../include/head.php';
-        include '../include/restrict_admin.php';
-        
-        // Обработка отправки формы
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_user_submit'])) {
-            $user_id = $_POST['id'];
-            $user_role_sql = "delete from user_role where user_id=$user_id";
-            $error_message = ExecuteSql($user_role_sql);
-            
-            if($error_message == '') {
-                $user_sql = "delete from user where id=$user_id";
-                $error_message = ExecuteSql($user_sql);
-                
-                if($error_message == '') {
-                    header('Location: '.APPLICATION.'/user/');
-                }
-            }
-        }
-        
-        // Если нет параметра id, переход к списку
-        if(!isset($_GET['id'])) {
-            header('Location: '.APPLICATION.'/user/');
-        }
-        
-        // Получение объекта
-        $id = $_GET['id'];
-        $username = '';
-        $fio = '';
-        
-        $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-        $sql = "select username, fio from user where id=$id";
-        
-        if($conn->connect_error) {
-            die('Ошибка соединения: ' . $conn->connect_error);
-        }
-        
-        mysqli_query($conn, 'set names utf8');
-        $result = $conn->query($sql);
-        if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
-            $username = $row['username'];
-            $fio = $row['fio'];
-        }
-        $conn->close();
         ?>
     </head>
     <body>
@@ -57,9 +42,7 @@ include '../include/topscripts.php';
         <div class="container-fluid">
             <?php
             if(isset($error_message) && $error_message != '') {
-               echo <<<ERROR
-               <div class="alert alert-danger">$error_message</div>
-               ERROR;
+               echo "<div class='alert alert-danger'>$error_message</div>";
             }
             ?>
             <div class="row">

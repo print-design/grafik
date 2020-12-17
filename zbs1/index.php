@@ -1,5 +1,10 @@
 <?php
 include '../include/topscripts.php';
+include '../include/grafik.php';
+include '../include/date_from_date_to.php';
+
+$grafik = new Grafik($date_from, $date_to, 2);
+$grafik->user1Name = "Печатник";
 ?>
 <!DOCTYPE html>
 <html>

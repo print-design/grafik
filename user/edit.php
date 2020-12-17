@@ -1,80 +1,62 @@
 <?php
 include '../include/topscripts.php';
+include '../include/restrict_admin.php';
+
+// Валидация формы
+define('ISINVALID', ' is-invalid');
+$form_valid = true;
+$error_message = '';
+        
+$fio_valid = '';
+$username_valid = '';
+        
+// Обработка отправки формы
+$user_edit_submit = filter_input(INPUT_POST, 'user_edit_submit');
+if($user_edit_submit !== null) {
+    $id = filter_input(INPUT_POST, 'id');
+    $fio = filter_input(INPUT_POST, 'fio');
+    
+    if($fio == '') {
+        $fio_valid = ISINVALID;
+        $form_valid = false;
+    }
+    
+    $username = filter_input(INPUT_POST, 'username');
+    if($username == '') {
+        $username_valid = ISINVALID;
+        $form_valid = false;
+    }
+
+    if($form_valid) {
+        $fio = addslashes($fio);
+        $username = addslashes($username);
+        $error_message = (new Executer("update user set fio='$fio', username='$username' where id=$id"))->error;
+        if($error_message == '') {
+            header('Location: '.APPLICATION."/user/details.php?id=$id");
+        }
+    }
+}
+
+// Если нет параметра id, переход к списку
+$id = filter_input(INPUT_GET, 'id');
+if ($id === null) {
+    header('Location: '.APPLICATION.'/user/');
+}
+
+// Получение объекта
+$fio = '';
+$username = '';
+
+if ($row = (new Fetcher("select fio, username from user where id=$id"))->Fetch()) {
+    $fio = $row['fio'];
+    $username = $row['username'];
+}
 ?>
 <!DOCTYPE html>
 <html>
     <head>
         <?php
         include '../include/head.php';
-        include '../include/restrict_admin.php';
-        
-        // Валидация формы
-        define('ISINVALID', ' is-invalid');
-        $form_valid = true;
-        $error_message = '';
-        
-        $fio_valid = '';
-        $username_valid = '';
-        
-        // Обработка отправки формы
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_edit_submit'])) {
-            if($_POST['fio'] == '') {
-                $fio_valid = ISINVALID;
-                $form_valid = false;
-            }
-            
-            if($_POST['username'] == '') {
-                $username_valid = ISINVALID;
-                $form_valid = false;
-            }
-            
-            if($form_valid) {
-                $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-                if($conn->connect_error) {
-                    die('Ошибка соединения: '.$conn->connect_error);
-                }
-                
-                $id = $_POST['id'];
-                $fio = addslashes($_POST['fio']);
-                $username = addslashes($_POST['username']);
-                
-                $sql = "update user set fio='$fio', username='$username' where id=$id";
-                
-                mysqli_query($conn, 'set names utf8');
-                if ($conn->query($sql) === true) {
-                    header('Location: '.APPLICATION.'/user/details.php?id='.$id);
-                }
-                else {
-                    $error_message = $conn->error;
-                }
-                
-                $conn->close();
-            }
-        }
-        
-        // Если нет параметра id, переход к списку
-        if(!isset($_GET['id'])) {
-            header('Location: '.APPLICATION.'/user/');
-        }
-        
-        // Получение объекта
-        $fio = '';
-        $username = '';
-        
-        $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-        $sql = "select fio, username from user where id=".$_GET['id'];
-        
-        if($conn->connect_error) {
-            die('Ошибка соединения: ' . $conn->connect_error);
-        }
-        
-        mysqli_query($conn, 'set names utf8');
-        $result = $conn->query($sql);
-        if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
-            $fio = $row['fio'];
-            $username = $row['username'];
-        }
-        $conn->close();
         ?>
     </head>
     <body>
@@ -82,6 +64,11 @@ include '../include/topscripts.php';
         include '../include/header.php';
         ?>
         <div class="container-fluid">
+            <?php
+            if(isset($error_message) && $error_message != '') {
+               echo "<div class='alert alert-danger'>$error_message</div>";
+            }
+            ?>
             <div class="row">
                 <div class="col-12 col-md-6">
                     <div class="d-flex justify-content-between mb-2">
@@ -97,12 +84,12 @@ include '../include/topscripts.php';
                         <input type="hidden" id="id" name="id" value="<?=$_GET['id'] ?>"/>
                         <div class="form-group">
                             <label for="name">ФИО</label>
-                            <input type="text" id="fio" name="fio" class="form-control<?=$fio_valid ?>" value="<?=$_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['fio']) ? htmlentities($_POST['fio']) : htmlentities($fio) ?>" autocomplete="off" required="required"/>
+                            <input type="text" id="fio" name="fio" class="form-control<?=$fio_valid ?>" value="<?=htmlentities($fio) ?>" autocomplete="off" required="required"/>
                             <div class="invalid-feedback">ФИО обязательно</div>
                         </div>
                         <div class="form-group">
                             <label for="username">Логин</label>
-                            <input type="text" id="username" name="username" class="form-control<?=$username_valid ?>" value="<?=$_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) ? htmlentities($_POST['username']) : htmlentities($username) ?>" autocomplete="off" required="required"/>
+                            <input type="text" id="username" name="username" class="form-control<?=$username_valid ?>" value="<?=htmlentities($username) ?>" autocomplete="off" required="required"/>
                             <div class="invalid-feedback">Логин обязательно</div>
                         </div>
                         <div class="form-group">

@@ -1,63 +1,57 @@
 <?php
 include '../include/topscripts.php';
+include '../include/restrict_admin.php';
+
+// Валидация формы
+define('ISINVALID', ' is-invalid');
+$form_valid = true;
+$error_message = '';
+        
+$fio_valid = '';
+$username_valid = '';
+$password_valid = '';
+        
+// Обработка отправки формы
+$user_create_submit = filter_input(INPUT_POST, 'user_create_submit');
+if($user_create_submit !== null) {
+    $fio = filter_input(INPUT_POST, 'fio');
+    if($fio == '') {
+        $fio_valid = ISINVALID;
+        $form_valid = false;
+    }
+    
+    $username = filter_input(INPUT_POST, 'username');
+    if($username == '') {
+        $username_valid = ISINVALID;
+        $form_valid = false;
+    }
+    
+    $password = filter_input(INPUT_POST, 'password');
+    if($password == '') {
+        $password_valid = ISINVALID;
+        $form_valid = false;
+    }
+    
+    if($form_valid) {
+        $executer = new Executer("insert into user (fio, username, password) values ('$fio', '$username', password('$password'))");
+        $error_message = $executer->error;
+        $id = $executer->insert_id;
+        
+        if($error_message == '') {
+            header('Location: '.APPLICATION."/user/details.php?id=$id");
+        }
+    }
+    
+    $fio = filter_input(INPUT_POST, 'fio');
+    $username = filter_input(INPUT_POST, 'username');
+    $password = filter_input(INPUT_POST, 'password');
+}
 ?>
 <!DOCTYPE html>
 <html>
     <head>
         <?php
         include '../include/head.php';
-        include '../include/restrict_admin.php';
-        
-        // Валидация формы
-        define('ISINVALID', ' is-invalid');
-        $form_valid = true;
-        $error_message = '';
-        
-        $fio_valid = '';
-        $username_valid = '';
-        $password_valid = '';
-        
-        // Обработка отправки формы
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_create_submit'])) {
-            if($_POST['fio'] == '') {
-                $fio_valid = ISINVALID;
-                $form_valid = false;
-            }
-            
-            if($_POST['username'] == '') {
-                $username_valid = ISINVALID;
-                $form_valid = false;
-            }
-            
-            if($_POST['password'] == '') {
-                $password_valid = ISINVALID;
-                $form_valid = false;
-            }
-            
-            if($form_valid) {
-                $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-                if($conn->connect_error) {
-                    die('Ошибка соединения: '.$conn->connect_error);
-                }
-                
-                mysqli_query($conn, 'set names utf8');
-                
-                $fio = addslashes($_POST['fio']);
-                $username = addslashes($_POST['username']);
-                $password = addslashes($_POST['password']);
-                
-                $sql = "insert into user (fio, username, password) values ('$fio', '$username', password('$password'))";
-                
-                if ($conn->query($sql) === true) {
-                    header('Location: '.APPLICATION.'/user/');
-                }
-                else {
-                    $error_message = $conn->error;
-                }
-                
-                $conn->close();
-            }
-        }
         ?>
     </head>
     <body>
@@ -67,9 +61,7 @@ include '../include/topscripts.php';
         <div class="container-fluid">
             <?php
             if(isset($error_message) && $error_message != '') {
-               echo <<<ERROR
-               <div class="alert alert-danger">$error_message</div>
-               ERROR;
+               echo "<div class='alert alert-danger'>$error_message</div>";
             }
             ?>
             <div class="row">
@@ -86,12 +78,12 @@ include '../include/topscripts.php';
                     <form method="post">
                         <div class="form-group">
                             <label for="name">ФИО</label>
-                            <input type="text" id="fio" name="fio" class="form-control<?=$fio_valid ?>" value="<?=$_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['fio']) ? $_POST['fio'] : '' ?>" autocomplete="off" required="required"/>
+                            <input type="text" id="fio" name="fio" class="form-control<?=$fio_valid ?>" value="<?= isset($fio) ? htmlentities($fio) : '' ?>" autocomplete="off" required="required"/>
                             <div class="invalid-feedback">ФИО обязательно</div>
                         </div>
                         <div class="form-group">
                             <label for="username">Логин</label>
-                            <input type="text" id="username" name="username" class="form-control<?=$username_valid ?>" value="<?=$_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username']) ? $_POST['username'] : '' ?>" required="required" autocomplete="off"/>
+                            <input type="text" id="username" name="username" class="form-control<?=$username_valid ?>" value="<?= isset($username) ? $username : '' ?>" required="required" autocomplete="off"/>
                             <div class="invalid-feedback">Логин обязательно</div>
                         </div>
                         <div class="form-group">

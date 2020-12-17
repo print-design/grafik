@@ -1,115 +1,113 @@
 <?php
 include '../include/topscripts.php';
+include '../include/restrict_admin.php';
+
+// Валидация формы
+define('ISINVALID', ' is-invalid');
+$form_valid = true;
+$error_message = '';
+        
+$role_id_valid = '';
+        
+// Обработка отправки формы
+$create_user_role_submit = filter_input(INPUT_POST, 'create_user_role_submit');
+if($create_user_role_submit !== null) {
+    $role_id = filter_input(INPUT_POST, 'role_id');
+    if($role_id == '') {
+        $role_id_valid = ISINVALID;
+        $form_valid = false;
+    }
+    
+    if($form_valid) {
+        $user_id = filter_input(INPUT_POST, 'user_id');
+        $error_message = (new Executer("insert into user_role (user_id, role_id) values ($user_id, $role_id)"))->error;
+    }
+}
+
+$delete_user_role_submit = filter_input(INPUT_POST, 'delete_user_role_submit');
+if($delete_user_role_submit !== null) {
+    $user_id = filter_input(INPUT_POST, 'user_id');
+    $role_id = filter_input(INPUT_POST, 'role_id');
+    $error_message = (new Executer("delete from user_role where user_id = $user_id and role_id = $role_id"))->error;
+}
+
+// Если нет параметра id, переход к списку
+$id = filter_input(INPUT_GET, 'id');
+if($id === null) {
+    header('Location: '.APPLICATION.'/user/');
+}
+        
+// Получение объекта
+$username = '';
+$fio = '';
+        
+$comiflex_typographer = 0;
+$comiflex_assistant = 0;
+$comiflex_manager = 0;
+$zbs1_typographer = 0;
+$zbs1_manager = 0;
+$zbs2_typographer = 0;
+$zbs2_manager = 0;
+$zbs3_typographer = 0;
+$zbs3_manager = 0;
+$atlas_typographer = 0;
+$atlas_manager = 0;
+$lamination_laminator1 = 0;
+$lamination_laminator2 = 0;
+$lamination_manager = 0;
+$cutting_cutter = 0;
+$cutting_manager = 0;
+        
+$sql = "select u.username, u.fio, "
+        . "(select count(id) from workshift where machine_id = 1 and user1_id = u.id) comiflex_typographer, "
+        . "(select count(id) from workshift where machine_id = 1 and user2_id = u.id) comiflex_assistant, "
+        . "(select count(e.id) from workshift ws inner join edition e on e.workshift_id = ws.id where ws.machine_id = 1 and e.manager_id = u.id) comiflex_manager, "
+        . "(select count(id) from workshift where machine_id = 2 and user1_id = u.id) zbs1_typographer, "
+        . "(select count(e.id) from workshift ws inner join edition e on e.workshift_id = ws.id  where ws.machine_id = 2 and e.manager_id = u.id) zbs1_manager, "
+        . "(select count(id) from workshift where machine_id = 3 and user1_id = u.id) zbs2_typographer, "
+        . "(select count(e.id) from workshift ws inner join edition e on e.workshift_id = ws.id  where ws.machine_id = 3 and e.manager_id = u.id) zbs2_manager, "
+        . "(select count(id) from workshift where machine_id = 4 and user1_id = u.id) zbs3_typographer, "
+        . "(select count(e.id) from workshift ws inner join edition e on e.workshift_id = ws.id  where ws.machine_id = 4 and e.manager_id = u.id) zbs3_manager, "
+        . "(select count(id) from workshift where machine_id = 5 and user1_id = u.id) atlas_typographer, "
+        . "(select count(e.id) from workshift ws inner join edition e on e.workshift_id = ws.id  where ws.machine_id = 5 and e.manager_id = u.id) atlas_manager, "
+        . "(select count(id) from workshift where machine_id = 6 and user1_id = u.id) lamination_laminator1, "
+        . "(select count(id) from workshift where machine_id = 6 and user2_id = u.id) lamination_laminator2, "
+        . "(select count(e.id) from workshift ws inner join edition e on e.workshift_id = ws.id  where ws.machine_id = 6 and e.manager_id = u.id) lamination_manager, "
+        . "(select count(id) from workshift where machine_id = 7 and user1_id = u.id) cutting_cutter, "
+        . "(select count(e.id) from workshift ws inner join edition e on e.workshift_id = ws.id  where ws.machine_id = 7 and e.manager_id = u.id) cutting_manager "
+        . "from user u where u.id = $id";
+
+$fetcher = new Fetcher($sql);
+$error_message = $fetcher->error;
+
+$row = $fetcher->Fetch();
+$username = $row['username'];
+$fio = $row['fio'];
+$comiflex_typographer = $row['comiflex_typographer'];
+$comiflex_assistant = $row['comiflex_assistant'];
+$comiflex_manager = $row['comiflex_manager'];
+$zbs1_typographer = $row['zbs1_typographer'];
+$zbs1_manager = $row['zbs1_manager'];
+$zbs2_typographer = $row['zbs2_typographer'];
+$zbs2_manager = $row['zbs2_manager'];
+$zbs3_typographer = $row['zbs3_typographer'];
+$zbs3_manager = $row['zbs3_manager'];
+$atlas_typographer = $row['atlas_typographer'];
+$atlas_manager = $row['atlas_manager'];
+$lamination_laminator1 = $row['lamination_laminator1'];
+$lamination_laminator2 = $row['lamination_laminator2'];
+$lamination_manager = $row['lamination_manager'];
+$cutting_cutter = $row['cutting_cutter'];
+$cutting_manager = $row['cutting_manager'];
+
+$roles = (new Grabber("select id, local_name from role where id not in (select role_id from user_role where user_id = $id) order by local_name"))->result;
+$myroles = (new Grabber("select ur.user_id, ur.role_id, r.local_name from role r inner join user_role ur on r.id = ur.role_id where ur.user_id = $id order by local_name"))->result;
 ?>
 <!DOCTYPE html>
 <html>
     <head>
         <?php
         include '../include/head.php';
-        include '../include/restrict_admin.php';
-        
-        // Валидация формы
-        define('ISINVALID', ' is-invalid');
-        $form_valid = true;
-        $error_message = '';
-        
-        $role_id_valid = '';
-        
-        // Обработка отправки формы
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['create_user_role_submit'])) {
-            if($_POST['role_id'] == '') {
-                $role_id_valid = ISINVALID;
-                $form_valid = false;
-            }
-            
-            if($form_valid) {
-                $user_id = $_POST['user_id'];
-                $role_id = $_POST['role_id'];
-                $sql = "insert into user_role (user_id, role_id) values ($user_id, $role_id)";
-                $error_message = ExecuteSql($sql);
-            }
-        }
-        
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_user_role_submit'])) {
-            $user_id = $_POST['user_id'];
-            $role_id = $_POST['role_id'];
-            $sql = "delete from user_role where user_id = $user_id and role_id = $role_id";
-            $error_message = ExecuteSql($sql);
-        }
-        
-        // Если нет параметра id, переход к списку
-        if(!isset($_GET['id'])) {
-            header('Location: '.APPLICATION.'/user/');
-        }
-        
-        // Получение объекта
-        $username = '';
-        $fio = '';
-        
-        $comiflex_typographer = 0;
-        $comiflex_assistant = 0;
-        $comiflex_manager = 0;
-        $zbs1_typographer = 0;
-        $zbs1_manager = 0;
-        $zbs2_typographer = 0;
-        $zbs2_manager = 0;
-        $zbs3_typographer = 0;
-        $zbs3_manager = 0;
-        $atlas_typographer = 0;
-        $atlas_manager = 0;
-        $lamination_laminator1 = 0;
-        $lamination_laminator2 = 0;
-        $lamination_manager = 0;
-        $cutting_cutter = 0;
-        $cutting_manager = 0;
-        
-        $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-        $sql = "select u.username, u.fio, "
-                . "(select count(id) from comiflex where typographer_id = u.id) comiflex_typographer, "
-                . "(select count(id) from comiflex where assistant_id = u.id) comiflex_assistant, "
-                . "(select count(id) from comiflex where manager_id = u.id) comiflex_manager, "
-                . "(select count(id) from zbs where nn = 1 and typographer_id = u.id) zbs1_typographer, "
-                . "(select count(id) from zbs where nn = 1 and manager_id = u.id) zbs1_manager, "
-                . "(select count(id) from zbs where nn = 2 and typographer_id = u.id) zbs2_typographer, "
-                . "(select count(id) from zbs where nn = 2 and manager_id = u.id) zbs2_manager, "
-                . "(select count(id) from zbs where nn = 3 and typographer_id = u.id) zbs3_typographer, "
-                . "(select count(id) from zbs where nn = 3 and manager_id = u.id) zbs3_manager, "
-                . "(select count(id) from zbs where nn = 99 and typographer_id = u.id) atlas_typographer, "
-                . "(select count(id) from zbs where nn = 99 and manager_id = u.id) atlas_manager, "
-                . "(select count(id) from laminators where laminator1_id = u.id) lamination_laminator1, "
-                . "(select count(id) from laminators where laminator2_id = u.id) lamination_laminator2, "
-                . "(select count(id) from laminators where manager_id = u.id) lamination_manager, "
-                . "(select count(id) from cutters where cutter_id = u.id) cutting_cutter, "
-                . "(select count(id) from cutters where manager_id = u.id) cutting_manager "
-                . "from user u where u.id = ".$_GET['id'];
-        
-        if($conn->connect_error) {
-            die('Ошибка соединения: ' . $conn->connect_error);
-        }
-        
-        mysqli_query($conn, 'set names utf8');
-        $result = $conn->query($sql);
-        if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
-            $username = $row['username'];
-            $fio = $row['fio'];
-            $comiflex_typographer = $row['comiflex_typographer'];
-            $comiflex_assistant = $row['comiflex_assistant'];
-            $comiflex_manager = $row['comiflex_manager'];
-            $zbs1_typographer = $row['zbs1_typographer'];
-            $zbs1_manager = $row['zbs1_manager'];
-            $zbs2_typographer = $row['zbs2_typographer'];
-            $zbs2_manager = $row['zbs2_manager'];
-            $zbs3_typographer = $row['zbs3_typographer'];
-            $zbs3_manager = $row['zbs3_manager'];
-            $atlas_typographer = $row['atlas_typographer'];
-            $atlas_manager = $row['atlas_manager'];
-            $lamination_laminator1 = $row['lamination_laminator1'];
-            $lamination_laminator2 = $row['lamination_laminator2'];
-            $lamination_manager = $row['lamination_manager'];
-            $cutting_cutter = $row['cutting_cutter'];
-            $cutting_manager = $row['cutting_manager'];
-        }
-        $conn->close();
         ?>
     </head>
     <body>
@@ -119,9 +117,7 @@ include '../include/topscripts.php';
         <div class="container-fluid">
             <?php
             if(isset($error_message) && $error_message != '') {
-               echo <<<ERROR
-               <div class="alert alert-danger">$error_message</div>
-               ERROR;
+               echo "<div class='alert alert-danger'>$error_message</div>";
             }
             ?>
             <div class="row">
@@ -133,7 +129,7 @@ include '../include/topscripts.php';
                         <div class="p-1">
                             <div class="btn-group">
                                 <a href="<?=APPLICATION ?>/user/" class="btn btn-outline-dark"><span class="font-awesome">&#xf0e2;</span>&nbsp;К списку</a>
-                                <a href="<?=APPLICATION ?>/user/edit.php?id=<?=$_GET['id'] ?>" class="btn btn-outline-dark"><span class="font-awesome">&#xf044;</span>&nbsp;Редактировать</a>
+                                <a href="<?=APPLICATION ?>/user/edit.php?id=<?=$id ?>" class="btn btn-outline-dark"><span class="font-awesome">&#xf044;</span>&nbsp;Редактировать</a>
                                 <?php
                                 $shifts_count = intval($comiflex_typographer) +
                                         intval($comiflex_assistant) +
@@ -151,9 +147,9 @@ include '../include/topscripts.php';
                                         intval($lamination_manager) +
                                         intval($cutting_cutter) +
                                         intval($cutting_manager);
-                                if($shifts_count === 0 && $_COOKIE[USERNAME] != $username) :
+                                if($shifts_count === 0 && filter_input(INPUT_COOKIE, USERNAME) != $username) :
                                 ?>
-                                <a href="<?=APPLICATION ?>/user/delete.php?id=<?=$_GET['id'] ?>" class="btn btn-outline-dark"><span class="font-awesome">&#xf1f8;</span>&nbsp;Удалить</a>
+                                <a href="<?=APPLICATION ?>/user/delete.php?id=<?=$id ?>" class="btn btn-outline-dark"><span class="font-awesome">&#xf1f8;</span>&nbsp;Удалить</a>
                                 <?php
                                 endif;
                                 ?>
@@ -247,22 +243,11 @@ include '../include/topscripts.php';
                                     <select id="role_id" name="role_id" class="form-control<?=$role_id_valid ?>" required="required">
                                         <option value="">...</option>
                                         <?php
-                                        $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-                                        
-                                        if($conn->connect_error) {
-                                            die('Ошибка соединения: ' . $conn->connect_error);
+                                        foreach ($roles as $row) {
+                                            $id = $row['id'];
+                                            $local_name = $row['local_name'];
+                                            echo "<option value='$id'>$local_name</option>";
                                         }
-                                        
-                                        $sql = "select id, local_name from role where id not in (select role_id from user_role where user_id = ".$_GET['id'].") ";
-                                        $result = $conn->query($sql);
-                                        if ($result->num_rows > 0) {
-                                            while($row = $result->fetch_assoc()) {
-                                                $id = $row['id'];
-                                                $local_name = $row['local_name'];
-                                                echo "<option value='$id'>$local_name</option>";
-                                            }
-                                        }
-                                        $conn->close();
                                         ?>
                                     </select>
                                     <div class="invalid-feedback">*</div>
@@ -278,34 +263,22 @@ include '../include/topscripts.php';
                     <table class="table table-bordered">
                         <tbody>
                             <?php
-                            $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-                            $sql = "select ur.user_id, ur.role_id, r.local_name from role r inner join user_role ur on r.id = ur.role_id where ur.user_id = ".$_GET['id'];
-                            
-                            if($conn->connect_error) {
-                                die('Ошибка соединения: ' . $conn->connect_error);
+                            foreach ($myroles as $row) {
+                                $user_id = $row['user_id'];
+                                $role_id = $row['role_id'];
+                                $local_name = $row['local_name'];
+                                echo <<<ROLE
+                                <tr>
+                                    <td>$local_name</td><td style='width:10%';>
+                                        <form method='post'>
+                                            <input type='hidden' id='user_id' name='user_id' value='$user_id' />
+                                            <input type='hidden' id='role_id' name='role_id' value='$role_id' />
+                                            <button type='submit' id='delete_user_role_submit' name='delete_user_role_submit' class='form-control'><span class='font-awesome'>&#xf1f8;</span>&nbsp;Удалить</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                ROLE;
                             }
-                            
-                            $result = $conn->query($sql);
-                            if ($result->num_rows > 0) {
-                                while($row = $result->fetch_assoc()) {
-                                    $user_id = $row['user_id'];
-                                    $role_id = $row['role_id'];
-                                    $local_name = $row['local_name'];
-                                    echo <<<ROLE
-                                    <tr>
-                                        <td>$local_name</td>
-                                        <td style='width:10%';>
-                                            <form method='post'>
-                                                <input type='hidden' id='user_id' name='user_id' value='$user_id' />
-                                                <input type='hidden' id='role_id' name='role_id' value='$role_id' />
-                                                <button type='submit' id='delete_user_role_submit' name='delete_user_role_submit' class='form-control'><span class='font-awesome'>&#xf1f8;</span>&nbsp;Удалить</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                    ROLE;
-                                }
-                            }
-                            $conn->close();
                             ?>
                         </tbody>
                     </table>
