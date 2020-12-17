@@ -14,6 +14,7 @@ $grafik->hasLength = true;
 $grafik->hasRoller = true;
 $grafik->hasLamination = true;
 $grafik->hasColoring = true;
+$grafik->coloring = 8;
 $grafik->hasManager = true;
 
 $grafik->ProcessForms();
@@ -42,15 +43,5 @@ $error_message = $grafik->error_message;
         <?php
             include '../include/footer.php';
         ?>
-        <script>
-            $('select[id=user1_id],select[id=user2_id],select[id=manager_id]').change(function(){
-                if(this.value == '+') {
-                    $(this).parent().next().removeClass('d-none');
-                    $(this).parent().addClass('d-none');
-                    return;
-                }
-                this.form.submit();
-            });
-        </script>
     </body>
 </html>

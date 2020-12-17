@@ -36,6 +36,15 @@
             $(this).next('.d-none').removeClass('d-none');
         });
         
+        $('select[id=user1_id],select[id=user2_id],select[id=roller_id],select[id=lamination_id],select[id=manager_id]').change(function(){
+                if(this.value == '+') {
+                    $(this).parent().next().removeClass('d-none');
+                    $(this).parent().addClass('d-none');
+                    return;
+                }
+                this.form.submit();
+            });
+        
         <?php if (!empty($_REQUEST['scroll'])): ?>
         window.scrollTo(0, <?php echo intval($_REQUEST['scroll']); ?>);
         <?php endif; ?>

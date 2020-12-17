@@ -20,10 +20,18 @@ class Grafik {
     public $hasRoller = false;
     public $hasLamination = false;
     public $hasColoring = false;
+    public $coloring = 0;
     public $hasManager = false;
     public $hasComment = false;
-    
+    public $isCutter = false;
+
     public $error_message = '';
+    
+    private $users1 = [];
+    private $users2 = [];
+    private $rollers = [];
+    private $laminations = [];
+    private $managers = [];
             
     function ProcessForms() {
         // Выбор работника 1
@@ -157,19 +165,59 @@ class Grafik {
         $name = filter_input(INPUT_POST, 'name');
         if($name !== null) {
             $name = addslashes($name);
-            $sql = '';
             $id = filter_input(INPUT_POST, 'id');
-            
-            if($id !== null) {
-                $sql = "update edition set name='$name' where id=$id";
-            }
-            else {
-                $date = filter_input(INPUT_POST, 'date');
-                $shift = filter_input(INPUT_POST, 'shift');
-                $sql = "insert into comiflex (date, shift, edition) values ('$date', '$shift', '$edition')";
-            }
-            
-            $error_message = (new Executer($sql))->error;
+            $this->error_message = (new Executer("update edition set name='$name' where id=$id"))->error;
+        }
+        
+        // Заказчик
+        $organization = filter_input(INPUT_POST, 'organization');
+        if($organization !== null) {
+            $organization = addslashes($organization);
+            $id = filter_input(INPUT_POST, 'id');
+            $this->error_message = (new Executer("update edition set organization='$organization' where id=$id"))->error;
+        }
+        
+        // Метраж
+        $length = filter_input(INPUT_POST, 'length');
+        if($length !== null) {
+            $id = filter_input(INPUT_POST, 'id');
+            $this->error_message = (new Executer("update edition set length=$length where id=$id"))->error;
+        }
+        
+        // Вал
+        $roller_id = filter_input(INPUT_POST, 'roller_id');
+        if($roller_id !== null) {
+            $id = filter_input(INPUT_POST, 'id');
+            $this->error_message = (new Executer("update edition set roller_id=$roller_id where id=$id"))->error;
+        }
+        
+        // Ламинация
+        $lamination_id = filter_input(INPUT_POST, 'lamination_id');
+        if($lamination_id !== null) {
+            $id = filter_input(INPUT_POST, 'id');
+            $this->error_message = (new Executer("update edition set lamination_id=$lamination_id where id=$id"))->error;
+        }
+        
+        // Красочность
+        $coloring = filter_input(INPUT_POST, 'coloring');
+        if($coloring !== null) {
+            $id = filter_input(INPUT_POST, 'id');
+            $this->error_message = (new Executer("update edition set coloring=$coloring where id=$id"))->error;
+        }
+        
+        // Менеджер
+        $manager_id = filter_input(INPUT_POST, 'manager_id');
+        if($manager_id !== null) {
+            $id = filter_input(INPUT_POST, 'id');
+            $this->error_message = (new Executer("update edition set manager_id=$manager_id where id=$id"))->error;
+        }
+        
+        // Комментарий
+        $comment = filter_input(INPUT_POST, 'comment');
+        if($comment !== null) {
+            $id = filter_input(INPUT_POST, 'id');
+            $comment = addslashes($comment);
+            $this->error_message = (new Executer("update edition set comment='$comment' where id=$id"))->error;
         }
         
         // Удаление тиража
@@ -237,12 +285,32 @@ class Grafik {
         <?php
         // Список работников №1
         if(IsInRole('admin') && $this->user1Name != '') {
-            $users1 = (new Grabber('select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = '. $this->userRole.' order by u.fio'))->result;
+            $this->users1 = (new Grabber('select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = '. $this->userRole.' order by u.fio'))->result;
         }
         
         // Список работников №2
         if(IsInRole('admin') && $this->user2Name != '') {
-            $users2 = (new Grabber('select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = '. $this->userRole.' order by u.fio'))->result;
+            $this->users2 = (new Grabber('select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = '. $this->userRole.' order by u.fio'))->result;
+        }
+        
+        // Список валов
+        if(IsInRole('admin')) {
+            $machine_id = $this->machineId;
+            $this->rollers = (new Grabber("select id, name from roller where machine_id=$machine_id order by name"))->result;
+        }
+        
+        // Список ламинаций
+        if(IsInRole('admin')) {
+            $sql = "select id, name from lamination where common = 1 order by sort";
+            if($this->isCutter) {
+                $sql = "select id, name from lamination where cutter = 1 order by sort";
+            }
+            $this->laminations = (new Grabber($sql))->result;
+        }
+                    
+        // Список менеджеров
+        if(IsInRole('admin')) {
+            $this->managers = (new Grabber("select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = 2 order by u.fio"))->result;
         }
         
         // Список рабочих смен
@@ -352,7 +420,7 @@ class Grafik {
                     echo "<select id='user1_id' name='user1_id'>";
                     echo '<optgroup>';
                     echo '<option value="">...</option>';
-                    foreach ($users1 as $value) {
+                    foreach ($this->users1 as $value) {
                         $selected = '';
                         if(isset($row['u1_id']) && $row['u1_id'] == $value['id']) $selected = " selected = 'selected'";
                         echo "<option$selected value='".$value['id']."'>".$value['fio']."</option>";
@@ -397,7 +465,7 @@ class Grafik {
                     echo "<select id='user2_id' name='user2_id'>";
                     echo '<optgroup>';
                     echo '<option value="">...</option>';
-                    foreach ($users2 as $value) {
+                    foreach ($this->users2 as $value) {
                         $selected = '';
                         if(isset($row['u2_id']) && $row['u2_id'] == $value['id']) $selected = " selected = 'selected'";
                         echo "<option$selected value='".$value['id']."'>".$value['fio']."</option>";
@@ -445,7 +513,6 @@ class Grafik {
             $edition = null;
             
             if(count($editions) == 0) {
-                // Название тиража
                 if($this->hasEdition) echo "<td class='$top $shift'></td>";
                 if($this->hasOrganization) echo "<td class='$top $shift'></td>";
                 if($this->hasLength) echo "<td class='$top $shift'></td>";
@@ -490,6 +557,7 @@ class Grafik {
     }
     
     private function ShowEditon($edition, $top, $shift) {
+        // Название тиража
         if($this->hasEdition){
             echo "<td class='$top $shift'>";
             if(IsInRole('admin')) {
@@ -503,17 +571,163 @@ class Grafik {
                 echo '</form>';
             }
             else {
-                echo (isset($edition['name']) ? $edition['name'] : '');
+                echo (isset($edition['name']) ? htmlentities($edition['name']) : '');
             }
             echo "</td>";
         }
-        if($this->hasOrganization) echo "<td class='$top $shift'>".$edition['id']."</td>";
-        if($this->hasLength) echo "<td class='$top $shift'>".$edition['id']."</td>";
-        if($this->hasRoller) echo "<td class='$top $shift'>".$edition['id']."</td>";
-        if($this->hasLamination) echo "<td class='$top $shift'>".$edition['id']."</td>";
-        if($this->hasColoring) echo "<td class='$top $shift'>".$edition['id']."</td>";
-        if($this->hasManager) echo "<td class='$top $shift'>".$edition['id']."</td>";
-        if($this->hasComment) echo "<td class='$top $shift'>".$edition['id']."</td>";
+        
+        // Заказчик
+        if($this->hasOrganization) {
+            echo "<td class='$top $shift'>";
+            if(IsInRole('admin')) {
+                echo '<form method="post">';
+                echo '<input type="hidden" id="scroll" name="scroll" />';
+                echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
+                echo '<div class="input-group">';
+                echo '<input type="text" id="organization" name="organization" value="'.(isset($edition['organization']) ? htmlentities($edition['organization']) : '').'" class="editable" />';
+                echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                echo '</div>';
+                echo '</form>';
+            }
+            else {
+                echo (isset($edition['organization']) ? htmlentities($edition['organization']) : '');
+            }
+            echo "</td>";
+        }
+        
+        // Метраж
+        if($this->hasLength) {
+            echo "<td class='$top $shift'>";
+            if(IsInRole('admin')) {
+                echo '<form method="post">';
+                echo '<input type="hidden" id="scroll" name="scroll" />';
+                echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
+                echo '<div class="input-group">';
+                echo '<input type="number" min="0" pattern="\d*" id="length" name="length" value="'.(isset($edition['length']) ? $edition['length'] : '').'" class="editable" />';
+                echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                echo '</div>';
+                echo '</form>';
+            }
+            else {
+                echo (isset($edition['length']) ? $edition['length'] : '');
+            }
+            echo "</td>";
+        };
+        
+        // Вал
+        if($this->hasRoller) {
+            echo "<td class='$top $shift'>";
+            if(IsInRole('admin')) {
+                echo "<form method='post'>";
+                echo '<input type="hidden" id="scroll" name="scroll" />';
+                echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
+                echo "<select id='roller_id' name='roller_id'>";
+                echo '<optgroup>';
+                echo '<option value="">...</option>';
+                foreach ($this->rollers as $value) {
+                    $selected = '';
+                    if(isset($edition['roller_id']) && $edition['roller_id'] == $value['id']) $selected = " selected = 'selected'";
+                    echo "<option$selected value='".$value['id']."'>".$value['name']."</option>";
+                }
+                echo '</optgroup>';
+                echo '</select>';
+                echo '</form>';
+            }
+            else {
+                echo (isset($edition['roller']) ? $edition['roller'] : '');
+            }
+            echo "</td>";
+        };
+        
+        // Ламинация
+        if($this->hasLamination) {
+            echo "<td class='$top $shift'>";
+            if(IsInRole('admin')) {
+                echo "<form method='post'>";
+                echo '<input type="hidden" id="scroll" name="scroll" />';
+                echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
+                echo "<select id='lamination_id' name='lamination_id'>";
+                echo '<optgroup>';
+                echo '<option value="">...</option>';
+                foreach ($this->laminations as $value) {
+                    $selected = '';
+                    if(isset($edition['lamination_id']) && $edition['lamination_id'] == $value['id']) $selected = " selected = 'selected'";
+                    echo "<option$selected value='".$value['id']."'>".$value['name']."</option>";
+                }
+                echo '</optgroup>';
+                echo '</select>';
+                echo '</form>';
+            }
+            else {
+                echo (isset($edition['lamination']) ? $edition['lamination'] : '');
+            }
+            echo "</td>";
+        }
+        
+        // Красочность
+        if($this->hasColoring) {
+            echo "<td class='$top $shift'>";
+            if(IsInRole('admin')) {
+                echo '<form method="post">';
+                echo '<input type="hidden" id="scroll" name="scroll" />';
+                echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
+                echo '<div class="input-group">';
+                echo '<input type="number" min="0" max="'.$this->coloring.'" pattern="\d*" id="coloring" name="coloring" value="'.(isset($edition['coloring']) ? $edition['coloring'] : '').'" class="editable" />';
+                echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                echo '</div>';
+                echo '</form>';
+            }
+            else {
+                echo (isset($edition['coloring']) ? $edition['coloring'] : '');
+            }
+            echo "</td>";
+        }
+        
+        // Менеджер
+        if($this->hasManager) {
+            echo "<td class='$top $shift'>";
+            if(IsInRole('admin')) {
+                echo "<form method='post'>";
+                echo '<input type="hidden" id="scroll" name="scroll" />';
+                echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
+                echo "<select id='manager_id' name='manager_id'>";
+                echo '<optgroup>';
+                echo '<option value="">...</option>';
+                foreach ($this->managers as $value) {
+                    $selected = '';
+                    if(isset($edition['manager_id']) && $edition['manager_id'] == $value['id']) $selected = " selected = 'selected'";
+                    echo "<option$selected value='".$value['id']."'>".$value['fio']."</option>";
+                }
+                echo '</optgroup>';
+                echo '</select>';
+                echo '</form>';
+            }
+            else {
+                echo (isset($edition['manager']) ? $edition['manager'] : '');
+            }
+            echo "</td>";
+        }
+        
+        // Комментарий
+        if($this->hasComment) {
+            echo "<td class='$top $shift'>";
+            if(IsInRole('admin')) {
+                echo '<form method="post">';
+                echo '<input type="hidden" id="scroll" name="scroll" />';
+                echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
+                echo '<div class="input-group">';
+                echo '<input type="text" id="comment" name="comment" value="'.(isset($edition['comment']) ? htmlentities($edition['comment']) : '').'" class="editable" />';
+                echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                echo '</div>';
+                echo '</form>';
+            }
+            else {
+                echo (isset($edition['comment']) ? $edition['comment'] : '');
+            }
+            echo "</td>";
+        }
+        
+        // Удаление
         if(IsInRole('admin')) {
             echo "<td class='$top $shift'>";
             echo "<form method='post'>";
