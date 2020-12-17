@@ -6,7 +6,6 @@
         <ul class="navbar-nav mr-auto">
             <?php
             $comiflex_status = $_SERVER['PHP_SELF'] == APPLICATION.'/comiflex/index.php' ? ' disabled' : '';
-            $comiflex1_status = $_SERVER['PHP_SELF'] == APPLICATION.'/comiflex1/index.php' ? ' disabled' : '';
             $zbs1_status = $_SERVER['PHP_SELF'] == APPLICATION.'/zbs1/index.php' ? ' disabled' : '';
             $zbs2_status = $_SERVER['PHP_SELF'] == APPLICATION.'/zbs2/index.php' ? ' disabled' : '';
             $zbs3_status = $_SERVER['PHP_SELF'] == APPLICATION.'/zbs3/index.php' ? ' disabled' : '';
@@ -29,9 +28,6 @@
             ?>
             <li class="nav-item">
                 <a class="nav-link<?=$comiflex_status ?>" href="<?=APPLICATION ?>/comiflex/<?=$query_string ?>">Comiflex</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link<?=$comiflex1_status ?>" href="<?=APPLICATION ?>/comiflex1/<?=$query_string ?>">Comiflex1</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link<?=$zbs1_status ?>" href="<?=APPLICATION ?>/zbs1/<?=$query_string ?>">ZBS-1</a>
