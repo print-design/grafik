@@ -24,6 +24,12 @@ if($add_roller_submit !== null) {
         $error_message = (new Executer("insert into roller (name, machine_id) values ('$name', $machine_id)"))->error;
     }
 }
+
+$delete_roller_submit = filter_input(INPUT_POST, 'delete_roller_submit');
+if($delete_roller_submit !== null) {
+    $roller_id = filter_input(INPUT_POST, 'roller_id');
+    $error_message = (new Executer("delete from roller where id=$roller_id"))->error;
+}
         
 // Если нет параметра id, переход к списку
 $id = filter_input(INPUT_GET, 'id');
@@ -63,6 +69,7 @@ $name = htmlentities($row['name']);
                             <div class="btn-group">
                                 <a href="<?=APPLICATION ?>/machine/" class="btn btn-outline-dark"><span class="font-awesome">&#xf0e2;</span>&nbsp;К списку</a>
                                 <a href="<?=APPLICATION ?>/machine/edit.php?id=<?=$id ?>" class="btn btn-outline-dark"><span class="font-awesome">&#xf044;</span>&nbsp;Редактировать</a>
+                                <a href="<?=APPLICATION ?>/machine/delete.php?id=<?=$id ?>" class="btn btn-outline-dark"><span class="font-awesome">&#xf044;</span>&nbsp;Удалить</a>
                             </div>
                         </div>
                     </div>
@@ -92,11 +99,20 @@ $name = htmlentities($row['name']);
                             $roller_num = 0;
                             
                             foreach ($rollers as $row) {
+                                $roller_id = $row['id'];
                                 echo "<tr>"
-                                            ."<td>".(++$roller_num)."</td>"
-                                            ."<td>".htmlentities($row['name'])."</td>"
-                                            ."<td><a title='Редактировать' href='edit_roller.php?id=".$row['id']."'><span class='font-awesome'>&#xf044;</span></a></td>"
-                                            ."</tr>";
+                                        ."<td>".(++$roller_num)."</td>"
+                                        ."<td class='w-50'>".htmlentities($row['name'])."</td>"
+                                        ."<td class='text-right'>"
+                                        . "<a class='btn btn-outline-dark' title='Редактировать' href='edit_roller.php?id=".$row['id']."'><span class='font-awesome'>&#xf044;</span>&nbsp;Редактировать</a>"
+                                        . "</td>"
+                                        . "<td class='text-right'>"
+                                        . "<form method='post'>"
+                                        . "<input type='hidden' id='roller_id' name='roller_id' value='$roller_id' />"
+                                        . "<button type='submit' class='btn btn-outline-dark' id='delete_roller_submit' name='delete_roller_submit'><span class='font-awesome'>&#xf044;</span>&nbsp;Удалить</button>"
+                                        . "</form>"
+                                        . "</td>"
+                                        ."</tr>";
                             }
                             ?>
                         </tbody>
