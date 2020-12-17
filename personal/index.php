@@ -1,29 +1,17 @@
 <?php
 include '../include/topscripts.php';
+include '../include/restrict_logged_in.php';
+        
+// Получение личных данных
+$row = (new Fetcher("select fio, username from user where id=".GetUserId()))->Fetch();
+$fio = $row['fio'];
+$username = $row['username'];
 ?>
 <!DOCTYPE html>
 <html>
     <head>
         <?php
         include '../include/head.php';
-        include '../include/restrict_logged_in.php';
-        
-        // Получение личных данных
-        $fio = '';
-        $username = '';
-        
-        $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-        $sql = "select fio, username from user where id=".GetUserId();
-        
-        if($conn->connect_error) {
-            die('Ошибка соединения: ' . $conn->connect_error);
-        }
-        $result = $conn->query($sql);
-        if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
-            $fio = $row['fio'];
-            $username = $row['username'];
-        }
-        $conn->close();
         ?>
     </head>
     <body>
@@ -33,15 +21,13 @@ include '../include/topscripts.php';
         <div class="container-fluid">
             <?php
             if(isset($error_message) && $error_message != '') {
-               echo <<<ERROR
-               <div class="alert alert-danger">$error_message</div>
-               ERROR;
+               echo "<div class='alert alert-danger'>$error_message</div>";
             }
                
-            if(isset($_GET['password']) && $_GET['password'] == 'true') {
-                echo <<<PASSWORD
-                <div class="alert alert-info">Пароль успешно изменён</div>
-                PASSWORD;
+            $password = filter_input(INPUT_GET, 'password');
+            
+            if($password == 'true') {
+                echo "<div class='alert alert-info'>Пароль успешно изменён</div>";
             }
             ?>
             <div class="row">

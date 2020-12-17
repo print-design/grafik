@@ -1,67 +1,57 @@
 <?php
 include '../include/topscripts.php';
+include '../include/restrict_logged_in.php';
+        
+// Валидация формы
+define('ISINVALID', ' is-invalid');
+$form_valid = true;
+$error_message = '';
+        
+$old_password_valid = '';
+$new_password_valid = '';
+$confirm_valid = '';
+        
+// Обработка отправки формы
+$password_change_submit = filter_input(INPUT_POST, 'password_change_submit');
+if($password_change_submit !== null) {
+    $old_password = filter_input(INPUT_POST, 'old_password');
+    if($old_password == '') {
+        $old_password_valid = ISINVALID;
+        $form_valid = false;
+    }
+    
+    $new_password = filter_input(INPUT_POST, 'new_password');
+    if($new_password == '') {
+        $new_password_valid = ISINVALID;
+        $form_valid = false;
+    }
+            
+    $confirm = filter_input(INPUT_POST, 'confirm');
+    if($new_password != $confirm) {
+        $confirm_valid = ISINVALID;
+        $form_valid = false;
+    }
+                        
+    if($form_valid) {
+        $row = (new Fetcher("select count(*) count from user where id=".GetUserId()." and password=password('$old_password')"))->Fetch();
+        if($row['count'] == 0){
+            $error_message = "Неправильный текущий пароль";
+        }
+        else {
+            $error_message = (new Executer("update user set password=password('$new_password') where id=".GetUserId()))->error;
+            
+            if($error_message == '') {
+                header('Location: '.APPLICATION.'/personal/index.php?password=true');
+            }
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html>
     <head>
         <?php
         include '../include/head.php';
-        include '../include/restrict_logged_in.php';
-        
-        // Валидация формы
-        define('ISINVALID', ' is-invalid');
-        $form_valid = true;
-        $error_message = '';
-        
-        $old_password_valid = '';
-        $new_password_valid = '';
-        $confirm_valid = '';
-        
-        // Обработка отправки формы
-        if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['password_change_submit'])) {
-            if($_POST['old_password'] == '') {
-                $old_password_valid = ISINVALID;
-                $form_valid = false;
-            }
-            
-            if($_POST['new_password'] == '') {
-                $new_password_valid = ISINVALID;
-                $form_valid = false;
-            }
-            
-            if($_POST['new_password'] != $_POST['confirm']) {
-                $confirm_valid = ISINVALID;
-                $form_valid = false;
-            }
-                        
-            if($form_valid) {
-                $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-                if($conn->connect_error) {
-                    die('Ошибка соединения: '.$conn->connect_error);
-                }
-
-                $sql = "select count(*) count from user where id=".GetUserId()." and password=password('".$_POST['old_password']."')";
-                $result = $conn->query($sql);
-                if ($result->num_rows > 0) {
-                    if($row = $result->fetch_assoc()) {
-                        if($row['count'] == 0){
-                            $error_message = "Неправильный текущий пароль";
-                        }
-                        else {
-                            $new_password = $_POST['new_password'];
-                            $update_sql="update user set password=password('$new_password') where id=".GetUserId();
-                            if ($conn->query($update_sql) === true) {
-                                header('Location: '.APPLICATION.'/personal/index.php?password=true');
-                            }
-                            else {
-                                $error_message = $conn->error;
-                            }
-                        }
-                    }
-                }
-                $conn->close();
-            }
-        }
         ?>
     </head>
     <body>
@@ -71,9 +61,7 @@ include '../include/topscripts.php';
         <div class="container-fluid">
             <?php
             if(isset($error_message) && $error_message != '') {
-               echo <<<ERROR
-               <div class="alert alert-danger">$error_message</div>
-               ERROR;
+               echo "<div class='alert alert-danger'>$error_message</div>";
             }
             ?>
             <div class="row">
