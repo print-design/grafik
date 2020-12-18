@@ -318,18 +318,18 @@ class Grafik {
         <?php
         // Список работников №1
         if(IsInRole('admin') && $this->user1Name != '') {
-            $this->users1 = (new Grabber('select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = '. $this->userRole.' order by u.fio'))->result;
+            $this->users1 = (new Grabber('select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where quit = 0 and ur.role_id = '. $this->userRole.' order by u.fio'))->result;
         }
         
         // Список работников №2
         if(IsInRole('admin') && $this->user2Name != '') {
-            $this->users2 = (new Grabber('select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where ur.role_id = '. $this->userRole.' order by u.fio'))->result;
+            $this->users2 = (new Grabber('select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where quit = 0 and ur.role_id = '. $this->userRole.' order by u.fio'))->result;
         }
         
         // Список валов
         if(IsInRole('admin')) {
             $machine_id = $this->machineId;
-            $this->rollers = (new Grabber("select id, name from roller where machine_id=$machine_id order by name"))->result;
+            $this->rollers = (new Grabber("select id, name from roller where machine_id=$machine_id order by position, name"))->result;
         }
         
         // Список ламинаций

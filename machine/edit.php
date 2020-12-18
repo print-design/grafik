@@ -57,7 +57,7 @@ $name = htmlentities($row['name']);
             }
             ?>
             <div class="row">
-                <div class="col-12 col-md-6">
+                <div class="col-12 col-md-4">
                     <div class="d-flex justify-content-between mb-2">
                         <div class="p-1">
                             <h1>Редактирования машины</h1>
@@ -68,7 +68,7 @@ $name = htmlentities($row['name']);
                     </div>
                     <hr />
                     <form method="post">
-                        <input type="hidden" id="id" name="id" value="<?=$_GET['id'] ?>"/>
+                        <input type="hidden" id="id" name="id" value="<?=$id ?>"/>
                         <div class="form-group">
                             <label for="name">Наименование</label>
                             <input type="text" id="name" name="name" class="form-control<?=$name_valid ?>" value="<?=$name ?>" required="required" autocomplete="off" />

@@ -30,7 +30,8 @@ if($user_edit_submit !== null) {
     if($form_valid) {
         $fio = addslashes($fio);
         $username = addslashes($username);
-        $error_message = (new Executer("update user set fio='$fio', username='$username' where id=$id"))->error;
+        $quit = filter_input(INPUT_POST, 'quit') == 'on' ? 1 : 0;
+        $error_message = (new Executer("update user set fio='$fio', quit=$quit, username='$username' where id=$id"))->error;
         if($error_message == '') {
             header('Location: '.APPLICATION."/user/details.php?id=$id");
         }
@@ -47,8 +48,9 @@ if ($id === null) {
 $fio = '';
 $username = '';
 
-if ($row = (new Fetcher("select fio, username from user where id=$id"))->Fetch()) {
+if ($row = (new Fetcher("select fio, quit, username from user where id=$id"))->Fetch()) {
     $fio = $row['fio'];
+    $checked = ($row['quit'] == 0 ? "" : " checked='checked'");
     $username = $row['username'];
 }
 ?>
@@ -92,6 +94,11 @@ if ($row = (new Fetcher("select fio, username from user where id=$id"))->Fetch()
                             <input type="text" id="username" name="username" class="form-control<?=$username_valid ?>" value="<?=htmlentities($username) ?>" autocomplete="off" required="required"/>
                             <div class="invalid-feedback">Логин обязательно</div>
                         </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="quit" name="quit"<?=$checked ?> />
+                            <label class="form-check-label" for="quit">Уволился</label>
+                        </div>
+                        <br/>
                         <div class="form-group">
                             <button type="submit" class="btn btn-outline-dark" id="user_edit_submit" name="user_edit_submit">Сохранить</button>
                         </div>

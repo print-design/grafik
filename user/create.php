@@ -33,7 +33,7 @@ if($user_create_submit !== null) {
     }
     
     if($form_valid) {
-        $executer = new Executer("insert into user (fio, username, password) values ('$fio', '$username', password('$password'))");
+        $executer = new Executer("insert into user (fio, quit, username, password) values ('$fio', 0, '$username', password('$password'))");
         $error_message = $executer->error;
         $id = $executer->insert_id;
         

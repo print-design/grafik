@@ -20,8 +20,12 @@ if($add_roller_submit !== null) {
     
     if($form_valid) {
         $name = addslashes($name);
+        $position = filter_input(INPUT_POST, 'position');
+        if($position == '') {
+            $position = 0;
+        }
         $machine_id = filter_input(INPUT_POST, 'machine_id');
-        $error_message = (new Executer("insert into roller (name, machine_id) values ('$name', $machine_id)"))->error;
+        $error_message = (new Executer("insert into roller (name, position, machine_id) values ('$name', '$position', $machine_id)"))->error;
     }
 }
 
@@ -82,7 +86,8 @@ $name = htmlentities($row['name']);
                             <form class="form-inline" method="post">
                                 <div class="input-group">
                                     <input type="hidden" id="machine_id" name="machine_id" value="<?=$id ?>"/>
-                                    <input type="name" class="form-control<?=$name_valid ?>" placeholder="Наименование вала" id="name" name="name" required="required" />
+                                    <input type="text" class="form-control<?=$name_valid ?>" placeholder="Наименование вала" id="name" name="name" required="required" />
+                                    <input type="number" class="form-control<?=$name_valid ?>" placeholder="Позиция" id="position" name="position" />
                                     <div class="input-group-append">
                                         <button type="submit" class="btn btn-outline-dark" id="add_roller_submit" name="add_roller_submit">
                                             <span class="font-awesome">&#xf067;</span>&nbsp;Добавить
@@ -94,22 +99,30 @@ $name = htmlentities($row['name']);
                     </div>
                     <table class="table table-striped table-bordered">
                         <tbody>
+                            <tr>
+                                <th></th>
+                                <th class="w-25">Наименование</th>
+                                <th class="w-25">Позиция</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
                             <?php
-                            $rollers = (new Grabber("select id, name from roller where machine_id=$id"))->result;
+                            $rollers = (new Grabber("select id, name, position from roller where machine_id=$id order by position, name"))->result;
                             $roller_num = 0;
                             
                             foreach ($rollers as $row) {
                                 $roller_id = $row['id'];
                                 echo "<tr>"
                                         ."<td>".(++$roller_num)."</td>"
-                                        ."<td class='w-50'>".htmlentities($row['name'])."</td>"
+                                        ."<td>".htmlentities($row['name'])."</td>"
+                                        . "<td>".$row['position']."</td>"
                                         ."<td class='text-right'>"
                                         . "<a class='btn btn-outline-dark' title='Редактировать' href='edit_roller.php?id=".$row['id']."'><span class='font-awesome'>&#xf044;</span>&nbsp;Редактировать</a>"
                                         . "</td>"
                                         . "<td class='text-right'>"
                                         . "<form method='post'>"
                                         . "<input type='hidden' id='roller_id' name='roller_id' value='$roller_id' />"
-                                        . "<button type='submit' class='btn btn-outline-dark' id='delete_roller_submit' name='delete_roller_submit'><span class='font-awesome'>&#xf044;</span>&nbsp;Удалить</button>"
+                                        . "<button type='submit' class='btn btn-outline-dark confirmable' id='delete_roller_submit' name='delete_roller_submit'><span class='font-awesome'>&#xf044;</span>&nbsp;Удалить</button>"
                                         . "</form>"
                                         . "</td>"
                                         ."</tr>";

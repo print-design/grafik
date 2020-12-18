@@ -58,7 +58,7 @@ $lamination_manager = 0;
 $cutting_cutter = 0;
 $cutting_manager = 0;
         
-$sql = "select u.username, u.fio, "
+$sql = "select u.username, u.fio, u.quit, "
         . "(select count(id) from workshift where machine_id = 1 and user1_id = u.id) comiflex_typographer, "
         . "(select count(id) from workshift where machine_id = 1 and user2_id = u.id) comiflex_assistant, "
         . "(select count(e.id) from workshift ws inner join edition e on e.workshift_id = ws.id where ws.machine_id = 1 and e.manager_id = u.id) comiflex_manager, "
@@ -83,6 +83,7 @@ $error_message = $fetcher->error;
 $row = $fetcher->Fetch();
 $username = $row['username'];
 $fio = $row['fio'];
+$quit = $row['quit'];
 $comiflex_typographer = $row['comiflex_typographer'];
 $comiflex_assistant = $row['comiflex_assistant'];
 $comiflex_manager = $row['comiflex_manager'];
@@ -164,6 +165,10 @@ $myroles = (new Grabber("select ur.user_id, ur.role_id, r.local_name from role r
                         <tr>
                             <th>Логин</th>
                             <td><?=$username ?></td>
+                        </tr>
+                        <tr>
+                            <th>Уволился</th>
+                            <td><?=($quit == 0 ? 'Нет' : 'Да') ?></td>
                         </tr>
                         <tr>
                             <th>Comiflex, печатник</th>
@@ -273,7 +278,7 @@ $myroles = (new Grabber("select ur.user_id, ur.role_id, r.local_name from role r
                                         <form method='post'>
                                             <input type='hidden' id='user_id' name='user_id' value='$user_id' />
                                             <input type='hidden' id='role_id' name='role_id' value='$role_id' />
-                                            <button type='submit' id='delete_user_role_submit' name='delete_user_role_submit' class='form-control'><span class='font-awesome'>&#xf1f8;</span>&nbsp;Удалить</button>
+                                            <button type='submit' id='delete_user_role_submit' name='delete_user_role_submit' class='form-control confirmable'><span class='font-awesome'>&#xf1f8;</span>&nbsp;Удалить</button>
                                         </form>
                                     </td>
                                 </tr>
