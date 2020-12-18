@@ -560,7 +560,7 @@ class Grafik {
                         echo "<form method='post'>";
                         echo '<input type="hidden" id="scroll" name="scroll" />';
                         echo "<input type='hidden' id='id' name='id' value='".$row['id']."' />";
-                        echo "<button type='submit' id='delete_shift_submit' name='delete_shift_submit' class='btn btn-outline-dark' title='Удалить смену'><span class='font-awesome'>&#xf1f8;</span></button>";
+                        echo "<button type='submit' id='delete_shift_submit' name='delete_shift_submit' class='btn btn-outline-dark confirmable' title='Удалить смену'><span class='font-awesome'>&#xf1f8;</span></button>";
                         echo "</form>";
                     }
                     echo "</td>";
@@ -783,7 +783,7 @@ class Grafik {
             echo "<form method='post'>";
             echo '<input type="hidden" id="scroll" name="scroll" />';
             echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
-            echo "<button type='submit' id='delete_edition_submit' name='delete_edition_submit' class='btn btn-outline-dark' title='Удалить тираж'><span class='font-awesome'>&#xf1f8;</span></button>";
+            echo "<button type='submit' id='delete_edition_submit' name='delete_edition_submit' class='btn btn-outline-dark confirmable' title='Удалить тираж'><span class='font-awesome'>&#xf1f8;</span></button>";
             echo "</form>";
             echo "</td>";
         };
