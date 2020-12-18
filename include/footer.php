@@ -36,7 +36,7 @@
             $(this).next('.d-none').removeClass('d-none');
         });
         
-        $('input#name').focusout(function(){
+        $('input#name.editable').focusout(function(){
             var name = $(this).val();
             var id = $(this).parent().prev('#id').val();
             $(this).val('000');
@@ -50,7 +50,7 @@
             });
         });
         
-        $('input#organization').focusout(function(){
+        $('input#organization.editable').focusout(function(){
             var organization = $(this).val();
             var id = $(this).parent().prev('#id').val();
             $(this).val('000');
@@ -64,7 +64,7 @@
             });
         });
         
-        $('input#length').focusout(function(){
+        $('input#length.editable').focusout(function(){
             var length = $(this).val();
             var id = $(this).parent().prev('#id').val();
             $(this).val('000');
@@ -78,7 +78,7 @@
             });
         });
         
-        $('input#coloring').focusout(function(){
+        $('input#coloring.editable').focusout(function(){
             var coloring = $(this).val();
             var id = $(this).parent().prev('#id').val();
             $(this).val('000');
@@ -92,7 +92,7 @@
             });
         });
         
-        $('input#comment').focusout(function(){
+        $('input#comment.editable').focusout(function(){
             var comment = $(this).val();
             var id = $(this).parent().prev('#id').val();
             $(this).val('000');
