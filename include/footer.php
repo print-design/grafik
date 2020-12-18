@@ -37,13 +37,72 @@
         });
         
         $('input#name').focusout(function(){
-            $.ajax({url:"../ajax/name.php",context:$(this)})
+            var name = $(this).val();
+            var id = $(this).parent().prev('#id').val();
+            $(this).val('000');
+            $.ajax({ url: "../ajax/edition.php?name=" + name + "&id=" + id, context: $(this) })
                     .done(function(data) {
                         $(this).val(data);
                 $(this).next('.input-group-append').addClass('d-none');
             })
                     .fail(function() {
-                        $(this).val('000');
+                        $(this).val('70773');
+            });
+        });
+        
+        $('input#organization').focusout(function(){
+            var organization = $(this).val();
+            var id = $(this).parent().prev('#id').val();
+            $(this).val('000');
+            $.ajax({ url: "../ajax/edition.php?organization=" + organization + "&id=" + id, context: $(this) })
+                    .done(function(data) {
+                        $(this).val(data);
+                $(this).next('.input-group-append').addClass('d-none');
+            })
+                    .fail(function() {
+                        $(this).val('70773');
+            });
+        });
+        
+        $('input#length').focusout(function(){
+            var length = $(this).val();
+            var id = $(this).parent().prev('#id').val();
+            $(this).val('000');
+            $.ajax({ url: "../ajax/edition.php?length=" + length + "&id=" + id, context: $(this) })
+                    .done(function(data) {
+                        $(this).val(data);
+                $(this).next('.input-group-append').addClass('d-none');
+            })
+                    .fail(function() {
+                        $(this).val('70773');
+            });
+        });
+        
+        $('input#coloring').focusout(function(){
+            var coloring = $(this).val();
+            var id = $(this).parent().prev('#id').val();
+            $(this).val('000');
+            $.ajax({ url: "../ajax/edition.php?coloring=" + coloring + "&id=" + id, context: $(this) })
+                    .done(function(data) {
+                        $(this).val(data);
+                $(this).next('.input-group-append').addClass('d-none');
+            })
+                    .fail(function() {
+                        $(this).val('70773');
+            });
+        });
+        
+        $('input#comment').focusout(function(){
+            var comment = $(this).val();
+            var id = $(this).parent().prev('#id').val();
+            $(this).val('000');
+            $.ajax({ url: "../ajax/edition.php?comment=" + comment + "&id=" + id, context: $(this) })
+                    .done(function(data) {
+                        $(this).val(data);
+                $(this).next('.input-group-append').addClass('d-none');
+            })
+                    .fail(function() {
+                        $(this).val('70773');
             });
         });
         

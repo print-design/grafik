@@ -1,19 +1,86 @@
-<option value="">...</option>
 <?php
-include '../include/defines.php';
+include '../include/topscripts.php';
 
-if(isset($_GET['organization_id'])){
-    $organization_id = $_GET['organization_id'];
-    $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-    if($conn->connect_error) {
-        die('Ошибка соединения: ' . $conn->connect_error);
-    }
-    $result = $conn->query("select id, name from edition where organization_id = $organization_id order by name");
-    if ($result->num_rows > 0) {
-        while($row = $result->fetch_assoc()) {
-            echo "<option value='".$row['id']."'>".$row["name"]."</option>";
+$error_message = '';
+$id = filter_input(INPUT_GET, 'id');
+
+$name = filter_input(INPUT_GET, 'name');
+if($name !== null) {
+    $error_message = (new Executer("update edition set name='$name' where id=$id"))->error;
+    
+    if($error_message == '') {
+        $fetcher = new Fetcher("select name from edition where id=$id");
+        $row = $fetcher->Fetch();
+        $error_message = $fetcher->error;
+        
+        if($error_message == '') {
+            echo $row['name'];
         }
     }
-    $conn->close();
+}
+
+$organization = filter_input(INPUT_GET, 'organization');
+if($organization !== null) {
+    $error_message = (new Executer("update edition set organization='$organization' where id=$id"))->error;
+    
+    if($error_message == '') {
+        $fetcher = new Fetcher("select organization from edition where id=$id");
+        $row = $fetcher->Fetch();
+        $error_message = $fetcher->error;
+        
+        if($error_message == '') {
+            echo $row['organization'];
+        }
+    }
+}
+
+$length = filter_input(INPUT_GET, 'length');
+if($length !== null) {
+    $error_message = (new Executer("update edition set length='$length' where id=$id"))->error;
+    
+    if($error_message == '') {
+        $fetcher = new Fetcher("select length from edition where id=$id");
+        $row = $fetcher->Fetch();
+        $error_message = $fetcher->error;
+        
+        if($error_message == '') {
+            echo $row['length'];
+        }
+    }
+}
+
+$coloring = filter_input(INPUT_GET, 'coloring');
+if($coloring !== null) {
+    $error_message = (new Executer("update edition set coloring='$coloring' where id=$id"))->error;
+    
+    if($error_message == '') {
+        $fetcher = new Fetcher("select coloring from edition where id=$id");
+        $row = $fetcher->Fetch();
+        $error_message = $fetcher->error;
+        
+        if($error_message == '') {
+            echo $row['coloring'];
+        }
+    }
+}
+
+$comment = filter_input(INPUT_GET, 'comment');
+if($comment !== null) {
+    $comment = addslashes($comment);
+    $error_message = (new Executer("update edition set comment='$comment' where id=$id"))->error;
+    
+    if($error_message == '') {
+        $fetcher = new Fetcher("select comment from edition where id=$id");
+        $row = $fetcher->Fetch();
+        $error_message = $fetcher->error;
+        
+        if($error_message == '') {
+            echo $row['comment'];
+        }
+    }
+}
+
+if($error_message != '') {
+    echo $error_message;
 }
 ?>
