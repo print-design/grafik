@@ -36,6 +36,17 @@
             $(this).next('.d-none').removeClass('d-none');
         });
         
+        $('input#name').focusout(function(){
+            $.ajax({url:"../ajax/name.php",context:$(this)})
+                    .done(function(data) {
+                        $(this).val(data);
+                $(this).next('.input-group-append').addClass('d-none');
+            })
+                    .fail(function() {
+                        $(this).val('000');
+            });
+        });
+        
         $('select[id=user1_id],select[id=user2_id],select[id=roller_id],select[id=lamination_id],select[id=manager_id]').change(function(){
             if(this.value == '+') {
                 $(this).parent().next().removeClass('d-none');
