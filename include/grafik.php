@@ -227,9 +227,10 @@ class Grafik {
             $id = filter_input(INPUT_POST, 'id');
             $date = filter_input(INPUT_POST, 'date');
             $shift = filter_input(INPUT_POST, 'shift');
+            $machine_id = filter_input(INPUT_POST, 'machine_id');
             
             if($date != null && $shift != '') {
-                if($row = (new Fetcher("select id from workshift where date='$date' and shift='$shift'"))->Fetch()) {
+                if($row = (new Fetcher("select id from workshift where date='$date' and shift='$shift' and machine_id=$machine_id"))->Fetch()) {
                     // Если в этой дате и в этом времени суток есть смена, то тираж добавляется к ней
                     $sql = "insert into edition (name, organization, length, lamination_id, coloring, roller_id, manager_id, comment, workshift_id) "
                             . "select name, organization, length, lamination_id, coloring, roller_id, manager_id, comment, ".$row['id']." from edition where id=$id";
@@ -766,6 +767,7 @@ class Grafik {
             echo "<form method='post'>";
             echo '<input type="hidden" id="scroll" name="scroll" />';
             echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
+            echo "<input type='hidden' id='machine_id' name='machine_id' value='". $this->machineId."' />";
             echo "<table class='in-cell'>";
             echo "<tr>";
             echo "<td class='$shift'><input type='date' id='date' name='date' /></td>";
