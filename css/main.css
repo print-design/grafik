@@ -35,3 +35,13 @@ table.typography tbody tr td.night {
 thead#grafik-thead {
     background-color: lightcyan;
 }
+
+table.in-cell {
+    margin: 0;
+}
+
+table.in-cell tr td {
+    border: 0;
+    padding: 0;
+    vertical-align: middle;
+}

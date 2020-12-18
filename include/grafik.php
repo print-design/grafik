@@ -221,6 +221,34 @@ class Grafik {
             $this->error_message = (new Executer("update edition set comment='$comment' where id=$id"))->error;
         }
         
+        // Копирование тиража
+        $copy_edition_submit = filter_input(INPUT_POST, 'copy_edition_submit');
+        if($copy_edition_submit !== null) {
+            $id = filter_input(INPUT_POST, 'id');
+            $date = filter_input(INPUT_POST, 'date');
+            $shift = filter_input(INPUT_POST, 'shift');
+            
+            if($date != null && $shift != '') {
+                if($row = (new Fetcher("select id from workshift where date='$date' and shift='$shift'"))->Fetch()) {
+                    // Если в этой дате и в этом времени суток есть смена, то тираж добавляется к ней
+                    $sql = "insert into edition (name, organization, length, lamination_id, coloring, roller_id, manager_id, comment, workshift_id) "
+                            . "select name, organization, length, lamination_id, coloring, roller_id, manager_id, comment, ".$row['id']." from edition where id=$id";
+                    $this->error_message = (new Executer($sql))->error;
+                }
+                else {
+                    // Если смены нет, то она копируется из текущей смены
+                    $sql = "insert into workshift (date, shift, user1_id, user2_id, machine_id) "
+                            . "select '$date', '$shift', user1_id, user2_id, machine_id from workshift where id=(select workshift_id from edition where id=$id)";
+                    $executer = new Executer($sql);
+                    $this->error_message = $executer->error;
+                    $insert_id = $executer->insert_id;
+                    $sql = "insert into edition (name, organization, length, lamination_id, coloring, roller_id, manager_id, comment, workshift_id) "
+                            . "select name, organization, length, lamination_id, coloring, roller_id, manager_id, comment, $insert_id from edition where id=$id";
+                    $this->error_message = (new Executer($sql))->error;
+                }
+            }
+        }
+        
         // Удаление тиража
         $delete_edition_submit = filter_input(INPUT_POST, 'delete_edition_submit');
         if($delete_edition_submit !== null) {
@@ -278,7 +306,10 @@ class Grafik {
             if($this->hasColoring) echo '<th>Красочность</th>';
             if($this->hasManager) echo '<th>Менеджер</th>'; 
             if($this->hasComment) echo '<th>Комментарий</th>';
-            if(IsInRole('admin')) echo '<th></th>';
+            if(IsInRole('admin')) {
+                echo '<th></th>';
+                echo '<th></th>';
+            }
             ?>
         </tr>
     </thead>
@@ -499,7 +530,7 @@ class Grafik {
             
             // Добавление смены
             if(IsInRole('admin')) {
-                echo "<td class='$top $shift' rowspan='$my_rowspan'>";
+                echo "<td class='$top $shift align-bottom' rowspan='$my_rowspan'>";
                 if(isset($row['id'])) {
                     echo "<form method='post'>";
                     echo '<input type="hidden" id="scroll" name="scroll" />';
@@ -523,6 +554,7 @@ class Grafik {
                 if($this->hasManager) echo "<td class='$top $shift'></td>";
                 if($this->hasComment) echo "<td class='$top $shift'></td>";
                 if(IsInRole('admin')) {
+                    echo "<td class='$top $shift'></td>";
                     echo "<td class='$top $shift'>";
                     if(isset($row['id'])) {
                         echo "<form method='post'>";
@@ -725,6 +757,23 @@ class Grafik {
             else {
                 echo (isset($edition['comment']) ? $edition['comment'] : '');
             }
+            echo "</td>";
+        }
+        
+        // Копирование
+        if(IsInRole('admin')) {
+            echo "<td class='$top $shift'>";
+            echo "<form method='post'>";
+            echo '<input type="hidden" id="scroll" name="scroll" />';
+            echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
+            echo "<table class='in-cell'>";
+            echo "<tr>";
+            echo "<td class='$shift'><input type='date' id='date' name='date' /></td>";
+            echo "<td><select id='shift' name='shift'><option value=''>...</option><option value='day'>День</option><option value='night'>Ночь</option></select></td>";
+            echo "<td><button type='submit' id='copy_edition_submit' name='copy_edition_submit' class='btn btn-outline-dark' title='Копировать тираж'><span class='font-awesome'>&#xf0c5;</span></button></td>";
+            echo "</tr>";
+            echo "</table>";
+            echo "</form>";
             echo "</td>";
         }
         
