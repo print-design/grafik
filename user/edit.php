@@ -31,7 +31,14 @@ if($user_edit_submit !== null) {
         $fio = addslashes($fio);
         $username = addslashes($username);
         $quit = filter_input(INPUT_POST, 'quit') == 'on' ? 1 : 0;
-        $error_message = (new Executer("update user set fio='$fio', quit=$quit, username='$username' where id=$id"))->error;
+        $sql = "update user set fio='$fio', quit=$quit, username='$username' where id=$id";
+        
+        $password = filter_input(INPUT_POST, 'password');
+        if($password !== '') {
+            $sql = "update user set fio='$fio', quit=$quit, username='$username', password=password('$password') where id=$id";
+        }
+        
+        $error_message = (new Executer($sql))->error;
         if($error_message == '') {
             header('Location: '.APPLICATION."/user/details.php?id=$id");
         }
@@ -72,7 +79,7 @@ if ($row = (new Fetcher("select fio, quit, username from user where id=$id"))->F
             }
             ?>
             <div class="row">
-                <div class="col-12 col-md-6">
+                <div class="col-12 col-md-6 col-lg-4">
                     <div class="d-flex justify-content-between mb-2">
                         <div class="p-1">
                             <h1>Редактирование пользователя</h1>
@@ -93,6 +100,10 @@ if ($row = (new Fetcher("select fio, quit, username from user where id=$id"))->F
                             <label for="username">Логин</label>
                             <input type="text" id="username" name="username" class="form-control<?=$username_valid ?>" value="<?=htmlentities($username) ?>" autocomplete="off" required="required"/>
                             <div class="invalid-feedback">Логин обязательно</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Пароль <span class="text-danger">(Если оставить поле пустым, пароль останется прежним)</span></label>
+                            <input type="password" id="password" name="password" class="form-control" />
                         </div>
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="quit" name="quit"<?=$checked ?> />
