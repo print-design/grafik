@@ -304,7 +304,7 @@ class Grafik {
             if($this->hasLength) echo '<th>Метраж</th>';
             if($this->hasRoller) echo '<th>Вал</th>';
             if($this->hasLamination) echo '<th>Ламинация</th>';
-            if($this->hasColoring) echo '<th>Красочность</th>';
+            if($this->hasColoring) echo '<th>Кр-ть</th>';
             if($this->hasManager) echo '<th>Менеджер</th>'; 
             if($this->hasComment) echo '<th>Комментарий</th>';
             if(IsInRole('admin')) {
@@ -435,7 +435,7 @@ class Grafik {
             echo '<tr>';
             if($dateshift['shift'] == 'day') {
                 echo "<td class='$top $shift' rowspan='$rowspan'>".$GLOBALS['weekdays'][$dateshift['date']->format('w')].'</td>';
-                echo "<td class='$top $shift' rowspan='$rowspan'>".$dateshift['date']->format('d.m.Y')."</td>";
+                echo "<td class='$top $shift' rowspan='$rowspan'>".$dateshift['date']->format('d.m').". ".$dateshift['date']->format('Y')."</td>";
             }
             echo "<td class='$top $shift' rowspan='$my_rowspan'>".($dateshift['shift'] == 'day' ? 'День' : 'Ночь')."</td>";
             
@@ -450,7 +450,7 @@ class Grafik {
                     }
                     echo '<input type="hidden" id="date" name="date" value="'.$dateshift['date']->format('Y-m-d').'" />';
                     echo '<input type="hidden" id="shift" name="shift" value="'.$dateshift['shift'].'" />';
-                    echo "<select id='user1_id' name='user1_id'>";
+                    echo "<select id='user1_id' name='user1_id' style='width:120px;'>";
                     echo '<optgroup>';
                     echo '<option value="">...</option>';
                     foreach ($this->users1 as $value) {
@@ -495,7 +495,7 @@ class Grafik {
                     }
                     echo '<input type="hidden" id="date" name="date" value="'.$dateshift['date']->format('Y-m-d').'" />';
                     echo '<input type="hidden" id="shift" name="shift" value="'.$dateshift['shift'].'" />';
-                    echo "<select id='user2_id' name='user2_id'>";
+                    echo "<select id='user2_id' name='user2_id' style='width:120px;'>";
                     echo '<optgroup>';
                     echo '<option value="">...</option>';
                     foreach ($this->users2 as $value) {
@@ -536,7 +536,7 @@ class Grafik {
                     echo "<form method='post'>";
                     echo '<input type="hidden" id="scroll" name="scroll" />';
                     echo "<input type='hidden' id='workshift_id' name='workshift_id' value='".$row['id']."' />";
-                    echo "<button type='submit' id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark' title='Добавить тираж'><span class='font-awesome'>&#xf067;</span></button>";
+                    echo "<button type='submit' id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark btn-sm' title='Добавить тираж'><span class='font-awesome'>&#xf067;</span></button>";
                     echo '</form>';
                 }
                 echo '</td>';
@@ -561,7 +561,7 @@ class Grafik {
                         echo "<form method='post'>";
                         echo '<input type="hidden" id="scroll" name="scroll" />';
                         echo "<input type='hidden' id='id' name='id' value='".$row['id']."' />";
-                        echo "<button type='submit' id='delete_shift_submit' name='delete_shift_submit' class='btn btn-outline-dark confirmable' title='Удалить смену'><span class='font-awesome'>&#xf1f8;</span></button>";
+                        echo "<button type='submit' id='delete_shift_submit' name='delete_shift_submit' class='btn btn-outline-dark btn-sm confirmable' title='Удалить смену'><span class='font-awesome'>&#xf1f8;</span></button>";
                         echo "</form>";
                     }
                     echo "</td>";
@@ -637,7 +637,7 @@ class Grafik {
                 echo '<input type="hidden" id="scroll" name="scroll" />';
                 echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
                 echo '<div class="input-group">';
-                echo '<input type="number" min="0" pattern="\d*" id="length" name="length" value="'.(isset($edition['length']) ? $edition['length'] : '').'" class="editable" />';
+                echo '<input type="number" min="0" pattern="\d*" id="length" name="length" value="'.(isset($edition['length']) ? $edition['length'] : '').'" class="editable" style="width:80px;" />';
                 echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
                 echo '</div>';
                 echo '</form>';
@@ -706,7 +706,7 @@ class Grafik {
                 echo '<input type="hidden" id="scroll" name="scroll" />';
                 echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
                 echo '<div class="input-group">';
-                echo '<input type="number" min="0" max="'.$this->coloring.'" pattern="\d*" id="coloring" name="coloring" value="'.(isset($edition['coloring']) ? $edition['coloring'] : '').'" class="editable" />';
+                echo '<input type="number" min="0" max="'.$this->coloring.'" pattern="\d*" id="coloring" name="coloring" value="'.(isset($edition['coloring']) ? $edition['coloring'] : '').'" class="editable" style="width:50px;" />';
                 echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
                 echo '</div>';
                 echo '</form>';
@@ -724,7 +724,7 @@ class Grafik {
                 echo "<form method='post'>";
                 echo '<input type="hidden" id="scroll" name="scroll" />';
                 echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
-                echo "<select id='manager_id' name='manager_id'>";
+                echo "<select id='manager_id' name='manager_id' style='width:120px;'>";
                 echo '<optgroup>';
                 echo '<option value="">...</option>';
                 foreach ($this->managers as $value) {
@@ -772,7 +772,7 @@ class Grafik {
             echo "<tr>";
             echo "<td class='$shift'><input type='date' id='date' name='date' /></td>";
             echo "<td><select id='shift' name='shift'><option value=''>...</option><option value='day'>День</option><option value='night'>Ночь</option></select></td>";
-            echo "<td><button type='submit' id='copy_edition_submit' name='copy_edition_submit' class='btn btn-outline-dark' title='Копировать тираж'><span class='font-awesome'>&#xf0c5;</span></button></td>";
+            echo "<td><button type='submit' id='copy_edition_submit' name='copy_edition_submit' class='btn btn-outline-dark btn-sm' title='Копировать тираж'><span class='font-awesome'>&#xf0c5;</span></button></td>";
             echo "</tr>";
             echo "</table>";
             echo "</form>";
@@ -785,7 +785,7 @@ class Grafik {
             echo "<form method='post'>";
             echo '<input type="hidden" id="scroll" name="scroll" />';
             echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
-            echo "<button type='submit' id='delete_edition_submit' name='delete_edition_submit' class='btn btn-outline-dark confirmable' title='Удалить тираж'><span class='font-awesome'>&#xf1f8;</span></button>";
+            echo "<button type='submit' id='delete_edition_submit' name='delete_edition_submit' class='btn btn-outline-dark btn-sm confirmable' title='Удалить тираж'><span class='font-awesome'>&#xf1f8;</span></button>";
             echo "</form>";
             echo "</td>";
         };
