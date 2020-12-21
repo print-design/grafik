@@ -967,7 +967,7 @@ class Grafik {
             
             while ($edition != null) {
                 echo '<tr>';
-                $this->PrintEditon($edition, 'nottop');
+                $this->PrintEdition($edition, 'nottop');
                 echo '</tr>';
                 $edition = array_shift($editions);
             }
