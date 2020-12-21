@@ -273,19 +273,47 @@ class Grafik {
     </div>
     <div class="p-1">
         <?php if(IsInRole('admin')): ?>
-        <form class="form-inline">
-            <div class="form-group">
-                <label for="from">от&nbsp;</label>
-                <input type="date" id="from" name="from" class="form-control" value="<?= filter_input(INPUT_GET, 'from') ?>"/>
+        <div class="d-flex justify-content-end mb-2">
+            <div class="p-1">
+                <form class="form-inline">
+                    <div class="form-group">
+                        <label for="from">от&nbsp;</label>
+                        <input type="date" id="from" name="from" class="form-control" value="<?= filter_input(INPUT_GET, 'from') ?>"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="to">&nbsp;до&nbsp;</label>
+                        <input type="date" id="to" name="to" class="form-control" value="<?= filter_input(INPUT_GET, 'to') ?>"/>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="form-control btn btn-light">Показать<span class='font-awesome'>&nbsp;&#xf108;</span></button>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label for="to">&nbsp;до&nbsp;</label>
-                <input type="date" id="to" name="to" class="form-control" value="<?= filter_input(INPUT_GET, 'to') ?>"/>
+            <div class="p-1 ml-5">
+                <form class="form-inline" action="<?=APPLICATION ?>/print.php" target="_blank" method="post">
+                    <input type="hidden" id="machine" name="machine" value="<?= $this->machineId ?>"/>
+                    <input type="hidden" id="name" name="name" value="<?= $this->name ?>"/>
+                    <input type="hidden" id="user1Name" name="user1Name" value="<?= $this->user1Name ?>"/>
+                    <input type="hidden" id="user2Name" name="user2Name" value="<?= $this->user2Name ?>"/>
+                    <input type="hidden" id="userRole" name="userRole" value="<?= $this->userRole ?>"/>
+                    <input type="hidden" id="hasEdition" name="hasEdition" value="<?= $this->hasEdition ?>"/>
+                    <input type="hidden" id="hasOrganization" name="hasOrganization" value="<?= $this->hasOrganization ?>"/>
+                    <input type="hidden" id="hasLength" name="hasLength" value="<?= $this->hasLength ?>"/>
+                    <input type="hidden" id="hasRoller" name="hasRoller" value="<?= $this->hasRoller ?>"/>
+                    <input type="hidden" id="hasLamination" name="hasLamination" value="<?= $this->hasLamination ?>"/>
+                    <input type="hidden" id="hasColoring" name="hasColoring" value="<?= $this->hasColoring ?>"/>
+                    <input type="hidden" id="hasManager" name="hasManager" value="<?= $this->hasManager ?>"/>
+                    <input type="hidden" id="hasComment" name="hasComment" value="<?= $this->hasComment ?>"/>
+                    <div class="form-group">
+                        <label for="from">от&nbsp;</label>
+                        <input type="date" id="from" name="from" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="form-control btn btn-light" id="print_submit" name="print_submit">Печатать<span class='font-awesome'>&nbsp;&#xf02f;</span></button>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <button type="submit" class="form-control">Показать</button>
-            </div>
-        </form>
+        </div>
         <?php endif; ?>
     </div>
 </div>
@@ -789,6 +817,221 @@ class Grafik {
             echo "</form>";
             echo "</td>";
         };
+    }
+    
+    function Print() {
+        echo '<h1>'. $this->name.'</h1>';
+        
+        // Список рабочих смен
+        $all = array();
+        $sql = "select ws.id, ws.date date, date_format(ws.date, '%d.%m.%Y') fdate, ws.shift, u1.id u1_id, u1.fio u1_fio, u2.id u2_id, u2.fio u2_fio, "
+                . "(select count(id) from edition where workshift_id=ws.id) editions_count "
+                . "from workshift ws "
+                . "left join user u1 on ws.user1_id = u1.id "
+                . "left join user u2 on ws.user2_id = u2.id "
+                . "where ws.date >= '".$this->dateFrom->format('Y-m-d')."' and ws.date <= '".$this->dateTo->format('Y-m-d')."' and ws.machine_id = ". $this->machineId;
+        $fetcher = new Fetcher($sql);
+        
+        while ($item = $fetcher->Fetch()) {
+            $all[$item['date'].$item['shift']] = $item;
+        }
+        
+        // Список тиражей
+        $all_editions = [];
+        $sql = "select ws.date, ws.shift, e.id, e.workshift_id, e.name, e.organization, e.length, e.coloring, e.comment, "
+                . "e.roller_id, r.name roller, "
+                . "e.lamination_id, lam.name lamination, "
+                . "e.manager_id, m.fio manager "
+                . "from edition e "
+                . "left join roller r on e.roller_id = r.id "
+                . "left join lamination lam on e.lamination_id = lam.id "
+                . "left join user m on e.manager_id = m.id "
+                . "inner join workshift ws on e.workshift_id = ws.id "
+                . "where ws.date >= '".$this->dateFrom->format('Y-m-d')."' and ws.date <= '".$this->dateTo->format('Y-m-d')."' and ws.machine_id = ". $this->machineId;
+        
+        $fetcher = new Fetcher($sql);
+        
+        while ($item = $fetcher->Fetch()) {
+            if(!array_key_exists($item['date'], $all_editions) || !array_key_exists($item['shift'], $all_editions[$item['date']])) $all_editions[$item['date']][$item['shift']] = [];
+            array_push($all_editions[$item['date']][$item['shift']], $item);
+        }
+        
+        // Список дат и смен
+        $date_diff = $this->dateFrom->diff($this->dateTo);
+        $interval = DateInterval::createFromDateString("1 day");
+        $period = new DatePeriod($this->dateFrom, $interval, $date_diff->days);
+        $dateshifts = array();
+        
+        foreach ($period as $date) {
+            $dateshift['date'] = $date;
+            $dateshift['shift'] = 'day';
+            array_push($dateshifts, $dateshift);
+            
+            $dateshift['date'] = $date;
+            $dateshift['shift'] = 'night';
+            array_push($dateshifts, $dateshift);
+        }
+        
+        echo '<table class="table table-bordered print">';
+        echo '<th></th>';
+        echo '<th>Дата</th>';
+        echo '<th>Смена</th>';
+        if($this->user1Name != '') echo '<th>'.$this->user1Name.'</th>';
+        if($this->user2Name != '') echo '<th>'.$this->user2Name.'</th>';
+        if($this->hasOrganization) echo '<th>Заказчик</th>';
+        if($this->hasEdition) echo '<th>Наименование</th>';
+        if($this->hasLength) echo '<th>Метраж</th>';
+        if($this->hasRoller) echo '<th>Вал</th>';
+        if($this->hasLamination) echo '<th>Ламинация</th>';
+        if($this->hasColoring) echo '<th>Кр-ть</th>';
+        if($this->hasManager) echo '<th>Менеджер</th>'; 
+        if($this->hasComment) echo '<th>Комментарий</th>';
+        
+        foreach ($dateshifts as $dateshift) {
+            $key = $dateshift['date']->format('Y-m-d').$dateshift['shift'];
+            $row = array();
+            if(isset($all[$key])) $row = $all[$key];
+            
+            $str_date = $dateshift['date']->format('Y-m-d');
+            
+            $editions = array();
+            if(array_key_exists($str_date, $all_editions) && array_key_exists($dateshift['shift'], $all_editions[$str_date])) {
+                $editions = $all_editions[$str_date][$dateshift['shift']];
+            }
+            
+            $day_editions = array();
+            if(array_key_exists($str_date, $all_editions) && array_key_exists('day', $all_editions[$str_date])) {
+                $day_editions = $all_editions[$str_date]['day'];
+            }
+            
+            $night_editions = array();
+            if(array_key_exists($str_date, $all_editions) && array_key_exists('night', $all_editions[$str_date])) {
+                $night_editions = $all_editions[$str_date]['night'];
+            }
+            
+            $day_rowspan = count($day_editions);
+            if($day_rowspan == 0) $day_rowspan = 1;
+            $night_rowspan = count($night_editions);
+            if($night_rowspan == 0) $night_rowspan = 1;
+            $rowspan = $day_rowspan + $night_rowspan;
+            $my_rowspan = $dateshift['shift'] == 'day' ? $day_rowspan : $night_rowspan;
+            
+            $top = "nottop";
+            if($dateshift['shift'] == 'day') {
+                $top = "top";
+            }
+            
+            echo '<tr>';
+            if($dateshift['shift'] == 'day') {
+                echo "<td class='$top' rowspan='$rowspan'>".$GLOBALS['weekdays'][$dateshift['date']->format('w')].'</td>';
+                echo "<td class='$top' rowspan='$rowspan'>".$dateshift['date']->format("d.m.Y")."</td>";
+            }
+            echo "<td class='$top' rowspan='$my_rowspan'>".($dateshift['shift'] == 'day' ? 'День' : 'Ночь')."</td>";
+            
+            // Работник №1
+            if($this->user1Name != '') {
+                echo "<td class='$top' rowspan='$my_rowspan' title='".$this->user1Name."'>";
+                echo (isset($row['u1_fio']) ? $row['u1_fio'] : '');
+                echo '</td>';
+            }
+            
+            // Работник №2
+            if($this->user2Name != '') {
+                echo "<td class='$top' rowspan='$my_rowspan' title='".$this->user2Name."'>";
+                echo (isset($row['u2_fio']) ? $row['u2_fio'] : '');
+                echo '</td>';
+            }
+            
+            // Смены
+            $edition = null;
+            
+            if(count($editions) == 0) {
+                if($this->hasOrganization) echo "<td class='$top'></td>";
+                if($this->hasEdition) echo "<td class='$top'></td>";
+                if($this->hasLength) echo "<td class='$top'></td>";
+                if($this->hasRoller) echo "<td class='$top'></td>";
+                if($this->hasLamination) echo "<td class='$top'></td>";
+                if($this->hasColoring) echo "<td class='$top'></td>";
+                if($this->hasManager) echo "<td class='$top'></td>";
+                if($this->hasComment) echo "<td class='$top'></td>";
+            }
+            else {
+                $edition = array_shift($editions);
+                $this->PrintEdition($edition, $top);
+            }
+            
+            echo '</tr>';
+            
+            // Дополнительные смены
+            $edition = array_shift($editions);
+            
+            while ($edition != null) {
+                echo '<tr>';
+                $this->PrintEditon($edition, 'nottop');
+                echo '</tr>';
+                $edition = array_shift($editions);
+            }
+        }
+        
+        echo '</table>';
+    }
+    
+    private function PrintEdition($edition, $top) {
+        // Заказчик
+        if($this->hasOrganization) {
+            echo "<td class='$top'>";
+            echo (isset($edition['organization']) ? htmlentities($edition['organization']) : '');
+            echo "</td>";
+        }
+        
+        // Наименование заказа
+        if($this->hasEdition){
+            echo "<td class='$top'>";
+            echo (isset($edition['name']) ? htmlentities($edition['name']) : '');
+            echo "</td>";
+        }
+        
+        // Метраж
+        if($this->hasLength) {
+            echo "<td class='$top'>";
+            echo (isset($edition['length']) ? $edition['length'] : '');
+            echo "</td>";
+        };
+        
+        // Вал
+        if($this->hasRoller) {
+            echo "<td class='$top'>";
+            echo (isset($edition['roller']) ? $edition['roller'] : '');
+            echo "</td>";
+        };
+        
+        // Ламинация
+        if($this->hasLamination) {
+            echo "<td class='$top'>";
+            echo (isset($edition['lamination']) ? $edition['lamination'] : '');
+            echo "</td>";
+        }
+        
+        // Красочность
+        if($this->hasColoring) {
+            echo "<td class='$top'>";
+            echo (isset($edition['coloring']) ? $edition['coloring'] : '');
+            echo "</td>";
+        }
+        
+        // Менеджер
+        if($this->hasManager) {
+            echo "<td class='$top'>";
+            echo (isset($edition['manager']) ? $edition['manager'] : '');
+            echo "</td>";
+        }
+        
+        // Комментарий
+        if($this->hasComment) {
+            echo "<td class='$top'>";
+            echo (isset($edition['comment']) ? $edition['comment'] : '');
+            echo "</td>";
+        }
     }
 }
 ?>

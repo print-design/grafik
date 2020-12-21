@@ -5,12 +5,14 @@ $diff7Days = new DateInterval('P7D');
 $diff14Days = new DateInterval('P14D');
 $diff1Day = new DateInterval('P1D');
 
-if(isset($_GET['from']) && $_GET['from'] != '') {
-    $date_from = DateTime::createFromFormat("Y-m-d", $_GET['from']);
+$from = filter_input(INPUT_GET, 'from');
+if($from !== null) {
+    $date_from = DateTime::createFromFormat("Y-m-d", $from);
 }
 
-if(isset($_GET['to']) && $_GET['to'] != '') {
-    $date_to = DateTime::createFromFormat("Y-m-d", $_GET['to']);
+$to = filter_input(INPUT_GET, 'to');
+if($to !== null) {
+    $date_to = DateTime::createFromFormat("Y-m-d", $to);
     //$date_to->add($diff1Day);
 } 
 

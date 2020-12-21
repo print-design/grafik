@@ -11,6 +11,10 @@ body {
     background-color: #EEEEEE;
 }
 
+body.print {
+    background-color: white;
+}
+
 .newline {
     white-space: pre-line;
 }
@@ -25,6 +29,10 @@ table.typography tbody tr td {
 }
 
 table.typography tbody tr td.top {
+    border-top: solid 2px darkgray;
+}
+
+table.print tr td.top {
     border-top: solid 2px darkgray;
 }
 
