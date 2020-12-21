@@ -162,20 +162,20 @@ class Grafik {
             $this->error_message = (new Executer("insert into edition (workshift_id) values ($workshift_id)"))->error;
         }
         
-        // Название тиража
-        $name = filter_input(INPUT_POST, 'name');
-        if($name !== null) {
-            $name = addslashes($name);
-            $id = filter_input(INPUT_POST, 'id');
-            $this->error_message = (new Executer("update edition set name='$name' where id=$id"))->error;
-        }
-        
         // Заказчик
         $organization = filter_input(INPUT_POST, 'organization');
         if($organization !== null) {
             $organization = addslashes($organization);
             $id = filter_input(INPUT_POST, 'id');
             $this->error_message = (new Executer("update edition set organization='$organization' where id=$id"))->error;
+        }
+        
+        // Наименование заказа
+        $name = filter_input(INPUT_POST, 'name');
+        if($name !== null) {
+            $name = addslashes($name);
+            $id = filter_input(INPUT_POST, 'id');
+            $this->error_message = (new Executer("update edition set name='$name' where id=$id"))->error;
         }
         
         // Метраж
@@ -299,8 +299,8 @@ class Grafik {
             if($this->user1Name != '') echo '<th>'.$this->user1Name.'</th>';
             if($this->user2Name != '') echo '<th>'.$this->user2Name.'</th>';
             if(IsInRole('admin')) echo '<th></th>';
-            if($this->hasEdition) echo '<th>Тираж</th>';
             if($this->hasOrganization) echo '<th>Заказчик</th>';
+            if($this->hasEdition) echo '<th>Наименование</th>';
             if($this->hasLength) echo '<th>Метраж</th>';
             if($this->hasRoller) echo '<th>Вал</th>';
             if($this->hasLamination) echo '<th>Ламинация</th>';
@@ -546,8 +546,8 @@ class Grafik {
             $edition = null;
             
             if(count($editions) == 0) {
-                if($this->hasEdition) echo "<td class='$top $shift'></td>";
                 if($this->hasOrganization) echo "<td class='$top $shift'></td>";
+                if($this->hasEdition) echo "<td class='$top $shift'></td>";
                 if($this->hasLength) echo "<td class='$top $shift'></td>";
                 if($this->hasRoller) echo "<td class='$top $shift'></td>";
                 if($this->hasLamination) echo "<td class='$top $shift'></td>";
@@ -591,25 +591,6 @@ class Grafik {
     }
     
     private function ShowEditon($edition, $top, $shift) {
-        // Название тиража
-        if($this->hasEdition){
-            echo "<td class='$top $shift'>";
-            if(IsInRole('admin')) {
-                echo '<form method="post">';
-                echo '<input type="hidden" id="scroll" name="scroll" />';
-                echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
-                echo '<div class="input-group">';
-                echo '<input type="text" id="name" name="name" value="'.(isset($edition['name']) ? htmlentities($edition['name']) : '').'" class="editable" />';
-                echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
-                echo '</div>';
-                echo '</form>';
-            }
-            else {
-                echo (isset($edition['name']) ? htmlentities($edition['name']) : '');
-            }
-            echo "</td>";
-        }
-        
         // Заказчик
         if($this->hasOrganization) {
             echo "<td class='$top $shift'>";
@@ -625,6 +606,25 @@ class Grafik {
             }
             else {
                 echo (isset($edition['organization']) ? htmlentities($edition['organization']) : '');
+            }
+            echo "</td>";
+        }
+        
+        // Наименование заказа
+        if($this->hasEdition){
+            echo "<td class='$top $shift'>";
+            if(IsInRole('admin')) {
+                echo '<form method="post">';
+                echo '<input type="hidden" id="scroll" name="scroll" />';
+                echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
+                echo '<div class="input-group">';
+                echo '<input type="text" id="name" name="name" value="'.(isset($edition['name']) ? htmlentities($edition['name']) : '').'" class="editable" />';
+                echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                echo '</div>';
+                echo '</form>';
+            }
+            else {
+                echo (isset($edition['name']) ? htmlentities($edition['name']) : '');
             }
             echo "</td>";
         }
