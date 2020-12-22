@@ -313,7 +313,7 @@ class Grafik {
                     <input type="hidden" id="from" name="from" value="<?= $this->dateFrom->format('Y-m-d') ?>"/>
                     <input type="hidden" id="to" name="to" value="<?= $this->dateTo->format('Y-m-d') ?>"/>
                     <input type="hidden" id="machine" name="machine" value="<?= $this->machineId ?>"/>
-                    <button type="submit" class="form-control btn btn-light" id="export_submit" name="export_submit">Экспорт&nbsp;<i class="fas fa-file-csv"></i></button>
+                    <button type="submit" class="form-control btn btn-light d-none" id="export_submit" name="export_submit">Экспорт&nbsp;<i class="fas fa-file-csv"></i></button>
                 </form>
             </div>
         </div>
