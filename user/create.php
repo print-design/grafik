@@ -71,7 +71,7 @@ if($user_create_submit !== null) {
                             <h1>Новый пользователь</h1>
                         </div>
                         <div class="p-1">
-                            <a href="<?=APPLICATION ?>/user/" class="btn btn-outline-dark"><span class="font-awesome">&#xf0e2;</span>&nbsp;Отмена</a>
+                            <a href="<?=APPLICATION ?>/user/" class="btn btn-outline-dark"><i class="fas fa-undo-alt"></i>&nbsp;Отмена</a>
                         </div>
                     </div>
                     <hr/>

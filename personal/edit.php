@@ -65,7 +65,7 @@ $username = $row['username'];
                             <h1>Редактирование личных данных</h1>
                         </div>
                         <div class="p-1">
-                            <a href="<?=APPLICATION ?>/personal/" class="btn btn-outline-dark"><span class="font-awesome">&#xf0e2;</span>&nbsp;Отмена</a>
+                            <a href="<?=APPLICATION ?>/personal/" class="btn btn-outline-dark"><i class="fas fa-undo-alt"></i>&nbsp;Отмена</a>
                         </div>
                     </div>
                     <hr/>

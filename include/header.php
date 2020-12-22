@@ -1,7 +1,7 @@
 <div class="container-fluid">
     <nav class="navbar navbar-expand-sm">
         <a class="navbar-brand" href="<?=APPLICATION ?>/">
-            <span class="font-awesome">&#xf015;</span>
+            <i class="fas fa-home"></i>
         </a>
         <ul class="navbar-nav mr-auto">
             <?php
@@ -84,7 +84,7 @@
                 ?>
                 &nbsp;
             </label>
-            <button type="submit" class="btn btn-outline-dark" id="logout_submit" name="logout_submit">Выход</button>
+            <button type="submit" class="btn btn-outline-dark" id="logout_submit" name="logout_submit">Выход&nbsp;<i class="fas fa-sign-out-alt"></i></button>
         </form>
         <?php
         }
@@ -99,7 +99,7 @@
                 <input class="form-control mr-sm-2<?=$login_password_valid ?>" type="password" id="login_password" name="login_password" placeholder="Пароль" required="required" />
                 <div class="invalid-feedback">*</div>
             </div>
-            <button type="submit" class="btn btn-outline-dark my-2 my-sm-2" id="login_submit" name="login_submit">Войти</button>
+            <button type="submit" class="btn btn-outline-dark my-2 my-sm-2" id="login_submit" name="login_submit">Войти&nbsp;<i class="fas fa-sign-in-alt"></i></button>
         </form>
         <?php
         }

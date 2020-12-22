@@ -129,8 +129,8 @@ $myroles = (new Grabber("select ur.user_id, ur.role_id, r.local_name from role r
                         </div>
                         <div class="p-1">
                             <div class="btn-group">
-                                <a href="<?=APPLICATION ?>/user/" class="btn btn-outline-dark"><span class="font-awesome">&#xf0e2;</span>&nbsp;К списку</a>
-                                <a href="<?=APPLICATION ?>/user/edit.php?id=<?=$id ?>" class="btn btn-outline-dark"><span class="font-awesome">&#xf044;</span>&nbsp;Редактировать</a>
+                                <a href="<?=APPLICATION ?>/user/" class="btn btn-outline-dark"><i class="fas fa-undo"></i>&nbsp;К списку</a>
+                                <a href="<?=APPLICATION ?>/user/edit.php?id=<?=$id ?>" class="btn btn-outline-dark"><i class="fas fa-edit"></i>&nbsp;Редактировать</a>
                                 <?php
                                 $shifts_count = intval($comiflex_typographer) +
                                         intval($comiflex_assistant) +
@@ -150,7 +150,7 @@ $myroles = (new Grabber("select ur.user_id, ur.role_id, r.local_name from role r
                                         intval($cutting_manager);
                                 if($shifts_count === 0 && filter_input(INPUT_COOKIE, USERNAME) != $username) :
                                 ?>
-                                <a href="<?=APPLICATION ?>/user/delete.php?id=<?=$id ?>" class="btn btn-outline-dark"><span class="font-awesome">&#xf1f8;</span>&nbsp;Удалить</a>
+                                <a href="<?=APPLICATION ?>/user/delete.php?id=<?=$id ?>" class="btn btn-outline-dark"><i class="fas fa-trash-alt"></i>&nbsp;Удалить</a>
                                 <?php
                                 endif;
                                 ?>
@@ -259,7 +259,7 @@ $myroles = (new Grabber("select ur.user_id, ur.role_id, r.local_name from role r
                                 </div>
                                 <div class="form-group">
                                     <button type="submit" class="form-control" id="create_user_role_submit" name="create_user_role_submit">
-                                        <span class="font-awesome">&#xf067;</span>&nbsp;Добавить
+                                        <i class="fas fa-plus"></i>&nbsp;Добавить
                                     </button>
                                 </div>
                             </form>
@@ -274,11 +274,11 @@ $myroles = (new Grabber("select ur.user_id, ur.role_id, r.local_name from role r
                                 $local_name = $row['local_name'];
                                 echo <<<ROLE
                                 <tr>
-                                    <td>$local_name</td><td style='width:10%';>
+                                    <td>$local_name</td><td style='width:15%';>
                                         <form method='post'>
                                             <input type='hidden' id='user_id' name='user_id' value='$user_id' />
                                             <input type='hidden' id='role_id' name='role_id' value='$role_id' />
-                                            <button type='submit' id='delete_user_role_submit' name='delete_user_role_submit' class='form-control confirmable'><span class='font-awesome'>&#xf1f8;</span>&nbsp;Удалить</button>
+                                            <button type='submit' id='delete_user_role_submit' name='delete_user_role_submit' class='form-control confirmable text-nowrap'><i class='fas fa-trash-alt'></i>&nbsp;Удалить</button>
                                         </form>
                                     </td>
                                 </tr>

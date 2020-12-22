@@ -60,10 +60,10 @@ $name = htmlentities($row['name']);
                 <div class="col-12 col-md-4">
                     <div class="d-flex justify-content-between mb-2">
                         <div class="p-1">
-                            <h1>Редактирования машины</h1>
+                            <h1>Редактирование машины</h1>
                         </div>
                         <div class="p-1">
-                            <a href="<?=APPLICATION ?>/machine/details.php?id=<?=$id ?>" class="btn btn-outline-dark"><span class="font-awesome">&#xf0e2;</span>&nbsp;Отмена</a>
+                            <a href="<?=APPLICATION ?>/machine/details.php?id=<?=$id ?>" class="btn btn-outline-dark"><i class="fas fa-undo-alt"></i>&nbsp;Отмена</a>
                         </div>
                     </div>
                     <hr />

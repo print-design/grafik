@@ -71,9 +71,9 @@ $name = htmlentities($row['name']);
                         </div>
                         <div class="p-1">
                             <div class="btn-group">
-                                <a href="<?=APPLICATION ?>/machine/" class="btn btn-outline-dark"><span class="font-awesome">&#xf0e2;</span>&nbsp;К списку</a>
-                                <a href="<?=APPLICATION ?>/machine/edit.php?id=<?=$id ?>" class="btn btn-outline-dark"><span class="font-awesome">&#xf044;</span>&nbsp;Редактировать</a>
-                                <a href="<?=APPLICATION ?>/machine/delete.php?id=<?=$id ?>" class="btn btn-outline-dark"><span class="font-awesome">&#xf044;</span>&nbsp;Удалить</a>
+                                <a href="<?=APPLICATION ?>/machine/" class="btn btn-outline-dark"><i class="fas fa-undo-alt"></i>&nbsp;К списку</a>
+                                <a href="<?=APPLICATION ?>/machine/edit.php?id=<?=$id ?>" class="btn btn-outline-dark"><i class="fas fa-edit"></i>&nbsp;Редактировать</a>
+                                <a href="<?=APPLICATION ?>/machine/delete.php?id=<?=$id ?>" class="btn btn-outline-dark"><i class="fas fa-trash-alt"></i>&nbsp;Удалить</a>
                             </div>
                         </div>
                     </div>
@@ -90,7 +90,7 @@ $name = htmlentities($row['name']);
                                     <input type="number" class="form-control<?=$name_valid ?>" placeholder="Позиция" id="position" name="position" />
                                     <div class="input-group-append">
                                         <button type="submit" class="btn btn-outline-dark" id="add_roller_submit" name="add_roller_submit">
-                                            <span class="font-awesome">&#xf067;</span>&nbsp;Добавить
+                                            <i class="fas fa-plus"></i>&nbsp;Добавить
                                         </button>
                                     </div>
                                 </div>
@@ -117,12 +117,12 @@ $name = htmlentities($row['name']);
                                         ."<td>".htmlentities($row['name'])."</td>"
                                         . "<td>".$row['position']."</td>"
                                         ."<td class='text-right'>"
-                                        . "<a class='btn btn-outline-dark' title='Редактировать' href='edit_roller.php?id=".$row['id']."'><span class='font-awesome'>&#xf044;</span>&nbsp;Редактировать</a>"
+                                        . "<a class='btn btn-outline-dark' title='Редактировать' href='edit_roller.php?id=".$row['id']."'><i class='fas fa-edit'></i>&nbsp;Редактировать</a>"
                                         . "</td>"
                                         . "<td class='text-right'>"
                                         . "<form method='post'>"
                                         . "<input type='hidden' id='roller_id' name='roller_id' value='$roller_id' />"
-                                        . "<button type='submit' class='btn btn-outline-dark confirmable' id='delete_roller_submit' name='delete_roller_submit'><span class='font-awesome'>&#xf044;</span>&nbsp;Удалить</button>"
+                                        . "<button type='submit' class='btn btn-outline-dark confirmable' id='delete_roller_submit' name='delete_roller_submit'><i class='fas fa-trash-alt'></i>&nbsp;Удалить</button>"
                                         . "</form>"
                                         . "</td>"
                                         ."</tr>";

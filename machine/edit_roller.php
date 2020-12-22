@@ -71,7 +71,7 @@ $machine_id = $row['machine_id'];
                             <h1>Редактирования вала</h1>
                         </div>
                         <div class="p-1">
-                            <a href="<?=APPLICATION ?>/machine/details.php?id=<?=$machine_id ?>" class="btn btn-outline-dark"><span class="font-awesome">&#xf0e2;</span>&nbsp;Отмена</a>
+                            <a href="<?=APPLICATION ?>/machine/details.php?id=<?=$machine_id ?>" class="btn btn-outline-dark"><i class="fas fa-undo-alt"></i>&nbsp;Отмена</a>
                         </div>
                     </div>
                     <hr />

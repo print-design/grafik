@@ -25,7 +25,7 @@ include '../include/restrict_admin.php';
                 </div>
                 <div class="p-1">
                     <a href="create.php" title="Добавить пользователя" class="btn btn-outline-dark mr-sm-2">
-                        <span class="font-awesome">&#xf067;</span>&nbsp;Добавить
+                        <i class="fas fa-plus"></i>&nbsp;Добавить
                     </a>
                 </div>
             </div>
@@ -53,7 +53,7 @@ include '../include/restrict_admin.php';
                                 ."<td><a href='".APPLICATION."/user/details.php?id=".$row['id']."'>".$row['username']."</a></td>"
                                 ."<td>".$row['fio']."</td>"
                                 ."<td>".$row['roles']."</td>"
-                                ."<td>".($row['quit'] == 0 ? '' : '<span class="font-awesome">&#xf058;</span>')."</td>"
+                                ."<td>".($row['quit'] == 0 ? '' : '<i class="fas fa-check"></i>')."</td>"
                                 ."</tr>";
                     }
                     ?>

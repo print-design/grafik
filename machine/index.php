@@ -25,7 +25,7 @@ include '../include/restrict_admin.php';
                 </div>
                 <div class="p-1">
                     <a href="create.php" title="Добавить машину" class="btn btn-outline-dark mr-sm-2">
-                        <span class="font-awesome">&#xf067;</span>&nbsp;Добавить
+                        <i class="fas fa-plus"></i>&nbsp;Добавить
                     </a>
                 </div>
             </div>

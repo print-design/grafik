@@ -85,7 +85,7 @@ if ($row = (new Fetcher("select fio, quit, username from user where id=$id"))->F
                             <h1>Редактирование пользователя</h1>
                         </div>
                         <div class="p-1">
-                            <a href="<?=APPLICATION ?>/user/details.php?id=<?=$_GET['id'] ?>" class="btn btn-outline-dark"><span class="font-awesome">&#xf0e2;</span>&nbsp;Отмена</a>
+                            <a href="<?=APPLICATION ?>/user/details.php?id=<?=$_GET['id'] ?>" class="btn btn-outline-dark"><i class="fas fa-undo-alt"></i>&nbsp;Отмена</a>
                         </div>
                     </div>
                     <hr/>

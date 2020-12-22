@@ -38,8 +38,8 @@ $username = $row['username'];
                         </div>
                         <div class="p-1">
                             <div class="btn-group">
-                                <a href="<?=APPLICATION ?>/personal/edit.php" class="btn btn-outline-dark"><span class="font-awesome">&#xf044;</span>&nbsp;Редактировать</a>
-                                <a href="<?=APPLICATION ?>/personal/password.php" class="btn btn-outline-dark"><span class="font-awesome">&#xf023;</span>&nbsp;Сменить пароль</a>
+                                <a href="<?=APPLICATION ?>/personal/edit.php" class="btn btn-outline-dark"><i class="fas fa-edit"></i>&nbsp;Редактировать</a>
+                                <a href="<?=APPLICATION ?>/personal/password.php" class="btn btn-outline-dark"><i class="fas fa-key"></i>&nbsp;Сменить пароль</a>
                             </div>
                         </div>
                     </div>

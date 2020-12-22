@@ -54,7 +54,7 @@ if($machine_create_submit !== null) {
                             <h1>Новая машина</h1>
                         </div>
                         <div class="p-1">
-                            <a href="<?=APPLICATION ?>/machine/" class="btn btn-outline-dark"><span class="font-awesome">&#xf0e2;</span>&nbsp;Отмена</a>
+                            <a href="<?=APPLICATION ?>/machine/" class="btn btn-outline-dark"><i class="fas fa-undo-alt"></i>&nbsp;Отмена</a>
                         </div>
                     </div>
                     <hr/>
