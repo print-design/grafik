@@ -9,19 +9,19 @@ if($export_submit !== null) {
     $file_name = "grafik-ot-$from-do-$to.csv";
     
     $titles = array("id", "Название");
-$data = array(
+    $data = array(
 	array(1, 'Имя 1'),
 	array(2, 'Имя 2'),
 	array(3, 'Имя 3'),
 	array(4, 'Имя 4'),
 	array(5, 'Имя 5'),
 	array(5, 'Имя 6 с кавычкой " или \' '),
-);
-
-DownloadSendHeaders($file_name);
-echo Array2Csv($data, $titles);
-die();
-        }
+    );
+    
+    DownloadSendHeaders($file_name);
+    echo Array2Csv($data, $titles);
+    die();
+}
 ?>
 <html>
     <body>

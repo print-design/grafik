@@ -95,7 +95,7 @@ function DownloadSendHeaders($filename) {
     header("Content-Disposition: attachment;filename={$filename}");
     header("Content-Transfer-Encoding: binary");
 }
-    
+
 function Array2Csv(array &$array, $titles) {
     if (count($array) == 0) {
             return null;
