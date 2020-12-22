@@ -289,8 +289,9 @@ class Grafik {
                     </div>
                 </form>
             </div>
-            <div class="p-1 ml-5">
+            <div class="p-1 ml-1">
                 <form class="form-inline" action="<?=APPLICATION ?>/print.php" target="_blank" method="post">
+                    <input type="hidden" id="from" name="from" value="<?= $this->dateFrom->format('Y-m-d') ?>" />
                     <input type="hidden" id="machine" name="machine" value="<?= $this->machineId ?>"/>
                     <input type="hidden" id="name" name="name" value="<?= $this->name ?>"/>
                     <input type="hidden" id="user1Name" name="user1Name" value="<?= $this->user1Name ?>"/>
@@ -304,20 +305,14 @@ class Grafik {
                     <input type="hidden" id="hasColoring" name="hasColoring" value="<?= $this->hasColoring ?>"/>
                     <input type="hidden" id="hasManager" name="hasManager" value="<?= $this->hasManager ?>"/>
                     <input type="hidden" id="hasComment" name="hasComment" value="<?= $this->hasComment ?>"/>
-                    <div class="form-group ml-5">
-                        <label for="from">от&nbsp;</label>
-                        <input type="date" id="from" name="from" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" class="form-control btn btn-light" id="print_submit" name="print_submit">Печатать&nbsp;<i class="fas fa-print"></i></button>
-                    </div>
+                    <button type="submit" class="form-control btn btn-light" id="print_submit" name="print_submit">Печать&nbsp;<i class="fas fa-print"></i></button>
                 </form>
             </div>
             <div class="p-1 ml-1">
                 <form action="<?=APPLICATION ?>/csv.php" method="post">
+                    <input type="hidden" id="from" name="from" value="<?= $this->dateFrom->format('Y-m-d') ?>"/>
+                    <input type="hidden" id="to" name="to" value="<?= $this->dateTo->format('Y-m-d') ?>"/>
                     <input type="hidden" id="machine" name="machine" value="<?= $this->machineId ?>"/>
-                    <input type="hidden" id="from" name="from" value="<?= filter_input(INPUT_GET, 'from') ?>"/>
-                    <input type="hidden" id="to" name="to" value="<?= filter_input(INPUT_GET, 'to') ?>"/>
                     <button type="submit" class="form-control btn btn-light" id="export_submit" name="export_submit">Экспорт&nbsp;<i class="fas fa-file-csv"></i></button>
                 </form>
             </div>

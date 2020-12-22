@@ -3,8 +3,12 @@ include 'include/topscripts.php';
 include 'include/grafik.php';
 
 $export_submit = filter_input(INPUT_POST, 'export_submit');
-        if($export_submit !== null) {
-            $titles = array("id", "Название");
+if($export_submit !== null) {
+    $from = filter_input(INPUT_POST, 'from');
+    $to = filter_input(INPUT_POST, 'to');
+    $file_name = "grafik-ot-$from-do-$to.csv";
+    
+    $titles = array("id", "Название");
 $data = array(
 	array(1, 'Имя 1'),
 	array(2, 'Имя 2'),
@@ -14,7 +18,7 @@ $data = array(
 	array(5, 'Имя 6 с кавычкой " или \' '),
 );
 
-DownloadSendHeaders("data_export.csv");
+DownloadSendHeaders($file_name);
 echo Array2Csv($data, $titles);
 die();
         }
