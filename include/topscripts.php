@@ -36,6 +36,49 @@ function IsInRole($role) {
     return false;
 }
 
+function GetDateFromDateTo($getDateFrom, $getDateTo, &$dateFrom, &$dateTo) {
+    $dateFrom = null;
+    $dateTo = null;
+    
+    $diff7Days = new DateInterval('P7D');
+    $diff14Days = new DateInterval('P14D');
+    $diff1Day = new DateInterval('P1D');
+    
+    if($getDateFrom !== null) {
+        $dateFrom = DateTime::createFromFormat("Y-m-d", $getDateFrom);
+    }
+    
+    if($getDateTo !== null) {
+        $dateTo = DateTime::createFromFormat("Y-m-d", $getDateTo);
+        //$date_to->add($diff1Day);
+    }
+    
+    if($dateFrom != null && $dateTo == null) {
+        $dateTo = clone $dateFrom;
+        $dateTo->add($diff14Days);
+        //$date_to->add($diff1Day);
+    }
+    
+    if($dateFrom == null && $dateTo != null) {
+        $dateFrom = clone $dateTo;
+        $dateFrom->sub($diff14Days);
+        //$date_from->sub($diff1Day);
+    }
+    
+    if($dateFrom != null && $dateTo != null && $dateFrom >= $dateTo) {
+        $dateTo = clone $dateFrom;
+        //$date_to->add($diff14Days);
+        //$date_to->add($diff1Day);
+    }
+    
+    if($dateFrom == null && $dateTo == null) {
+        $dateFrom = new DateTime();
+        $dateTo = clone $dateFrom;
+        $dateTo->add($diff14Days);
+        //$date_to->add($diff1Day);
+    }
+}
+
 function DownloadSendHeaders($filename) {
     // disable caching
     $now = gmdate("D, d M Y H:i:s");

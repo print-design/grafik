@@ -322,7 +322,7 @@ die();
                     <input type="hidden" id="hasColoring" name="hasColoring" value="<?= $this->hasColoring ?>"/>
                     <input type="hidden" id="hasManager" name="hasManager" value="<?= $this->hasManager ?>"/>
                     <input type="hidden" id="hasComment" name="hasComment" value="<?= $this->hasComment ?>"/>
-                    <div class="form-group">
+                    <div class="form-group ml-5">
                         <label for="from">от&nbsp;</label>
                         <input type="date" id="from" name="from" class="form-control" />
                     </div>
@@ -331,8 +331,11 @@ die();
                     </div>
                 </form>
             </div>
-            <div class="p-1 mp-5">
+            <div class="p-1 ml-1">
                 <form method="post">
+                    <input type="hidden" id="machine" name="machine" value="<?= $this->machineId ?>"/>
+                    <input type="hidden" id="from" name="from" value="<?= filter_input(INPUT_GET, 'from') ?>"/>
+                    <input type="hidden" id="to" name="to" value="<?= filter_input(INPUT_GET, 'to') ?>"/>
                     <button type="submit" class="form-control btn btn-light" id="export_submit" name="export_submit">Экспорт&nbsp;<i class="fas fa-file-csv"></i></button>
                 </form>
             </div>

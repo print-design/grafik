@@ -1,7 +1,10 @@
 <?php
 include '../include/topscripts.php';
 include '../include/grafik.php';
-include '../include/date_from_date_to.php';
+
+$date_from = null;
+$date_to = null;
+GetDateFromDateTo(filter_input(INPUT_GET, 'from'), filter_input(INPUT_GET, 'to'), $date_from, $date_to);
 
 $grafik = new Grafik($date_from, $date_to, 3);
 $grafik->name = 'ZBS-2';
