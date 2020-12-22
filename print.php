@@ -60,7 +60,7 @@ else {
             ?>
         </div>
         <script>
-            var css = '@page { size: landscape; }',
+            var css = '@page { size: landscape; margin: 0mm; margin-right: 2mm; }',
                     head = document.head || document.getElementsByTagName('head')[0],
                     style = document.createElement('style');
             
