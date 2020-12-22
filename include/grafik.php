@@ -273,7 +273,7 @@ class Grafik {
     </div>
     <div class="p-1">
         <?php if(IsInRole('admin')): ?>
-        <div class="d-flex justify-content-end mb-2">
+        <div class="d-flex justify-content-end mb-auto">
             <div class="p-1">
                 <form class="form-inline">
                     <div class="form-group">
@@ -312,6 +312,9 @@ class Grafik {
                         <button type="submit" class="form-control btn btn-light" id="print_submit" name="print_submit">Печатать<span class='font-awesome'>&nbsp;&#xf02f;</span></button>
                     </div>
                 </form>
+            </div>
+            <div class="p-1 mp-5">
+                <a href="javascript:void(0);" class="btn btn-light">Экспорт<span class='font-awesome'>&nbsp;&#xf02f;</span></a>
             </div>
         </div>
         <?php endif; ?>
