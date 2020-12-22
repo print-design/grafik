@@ -106,13 +106,31 @@
             });
         });
         
-        $('select[id=user1_id],select[id=user2_id],select[id=roller_id],select[id=lamination_id],select[id=manager_id]').change(function(){
+        $('select[id=user1_id],select[id=user2_id],select[id=lamination_id],select[id=manager_id]').change(function(){
             if(this.value == '+') {
                 $(this).parent().next().removeClass('d-none');
                 $(this).parent().addClass('d-none');
                 return;
             }
             this.form.submit();
+        });
+        
+        $('select[id=roller_id]').change(function(){
+            $(this).next('.d-none').removeClass('d-none');
+        });
+        
+        $('select[id=roller_id]').focusout(function(){
+            var roller_id = $(this).val();
+            var id = $(this).prev('#id').val();
+            $(this).val('');
+            $.ajax({ url: "../ajax/edition.php?roller_id=" + roller_id + "&id=" + id, context: $(this) })
+                    .done(function(data) {
+                        $(this).val(data);
+                $(this).next('.input-group-append').addClass('d-none');
+            })
+                    .fail(function() {
+                        alert('Ошибка при смене вала');
+            });
         });
         
         $('button.confirmable').click(function(){

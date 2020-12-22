@@ -703,6 +703,7 @@ class Grafik {
                 }
                 echo '</optgroup>';
                 echo '</select>';
+                echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><i class="fas fa-save"></i></button></div>';
                 echo '</form>';
             }
             else {
