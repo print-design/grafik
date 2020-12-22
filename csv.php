@@ -1,0 +1,26 @@
+<?php
+include 'include/topscripts.php';
+include 'include/grafik.php';
+
+$export_submit = filter_input(INPUT_POST, 'export_submit');
+        if($export_submit !== null) {
+            $titles = array("id", "Название");
+$data = array(
+	array(1, 'Имя 1'),
+	array(2, 'Имя 2'),
+	array(3, 'Имя 3'),
+	array(4, 'Имя 4'),
+	array(5, 'Имя 5'),
+	array(5, 'Имя 6 с кавычкой " или \' '),
+);
+
+DownloadSendHeaders("data_export.csv");
+echo Array2Csv($data, $titles);
+die();
+        }
+?>
+<html>
+    <body>
+        <h1>Чтобы экспортировать в CSV надо наэати на кнопку "Экспорт" в верхней правой части страницы.</h1>
+    </body>
+</html>

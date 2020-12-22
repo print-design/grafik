@@ -263,24 +263,6 @@ class Grafik {
             $id = filter_input(INPUT_POST, 'id');
             $this->error_message = (new Executer("delete from workshift where id=$id"))->error;
         }
-        
-        // Экспорт
-        $export_submit = filter_input(INPUT_POST, 'export_submit');
-        if($export_submit !== null) {
-            $titles = array("id", "Название");
-$data = array(
-	array(1, 'Имя 1'),
-	array(2, 'Имя 2'),
-	array(3, 'Имя 3'),
-	array(4, 'Имя 4'),
-	array(5, 'Имя 5'),
-	array(5, 'Имя 6 с кавычкой " или \' '),
-);
-
-DownloadSendHeaders("data_export.csv");
-echo Array2Csv($data, $titles);
-die();
-        }
     }
 
     function ShowPage() {
@@ -332,7 +314,7 @@ die();
                 </form>
             </div>
             <div class="p-1 ml-1">
-                <form method="post">
+                <form action="<?=APPLICATION ?>/csv.php" method="post">
                     <input type="hidden" id="machine" name="machine" value="<?= $this->machineId ?>"/>
                     <input type="hidden" id="from" name="from" value="<?= filter_input(INPUT_GET, 'from') ?>"/>
                     <input type="hidden" id="to" name="to" value="<?= filter_input(INPUT_GET, 'to') ?>"/>
