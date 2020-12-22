@@ -72,11 +72,11 @@ class Grafik {
                 $r_executer = new Executer("insert into user_role (user_id, role_id) values ($user1_id, $role_id)");
                 $this->error_message = $r_executer->error;
                 
-                if($this->error_message == '') {
+                if($r_executer->error == '') {
                     $sql = '';
                     $id = filter_input(INPUT_POST, 'id');
                     
-                    if($sql != null) {
+                    if($id !== null) {
                         $this->error_message = (new Executer("update workshift set user1_id=$user1_id where id=$id"))->error;
                     }
                     else {
@@ -512,7 +512,7 @@ class Grafik {
                     echo '<input type="hidden" id="shift" name="shift" value="'.$dateshift['shift'].'" />';
                     echo '<div class="input-group">';
                     echo '<input type="text" id="user1" name="user1" value="" class="editable" />';
-                    echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                    echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><i class="fas fa-save"></i></button></div>';
                     echo '</div>';
                     echo '</form>';
                 }
@@ -557,7 +557,7 @@ class Grafik {
                     echo '<input type="hidden" id="shift" name="shift" value="'.$dateshift['shift'].'" />';
                     echo '<div class="input-group">';
                     echo '<input type="text" id="user2" name="user2" value="" class="editable" />';
-                    echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
+                    echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><i class="fas fa-save"></i></button></div>';
                     echo '</div>';
                     echo '</form>';
                 }
