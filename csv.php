@@ -4,11 +4,7 @@ include 'include/grafik.php';
 
 $export_submit = filter_input(INPUT_POST, 'export_submit');
 if($export_submit !== null) {
-    $from = filter_input(INPUT_POST, 'from');
-    $to = filter_input(INPUT_POST, 'to');
-    $file_name = "grafik-ot-$from-do-$to.csv";
-    
-    $titles = array("id", "Название");
+    $titles = array("id", "date", "shift", "user1_id", "user1", "user2_id", "user2", "machine_id");
     $data = array(
 	array(1, 'Имя 1'),
 	array(2, 'Имя 2'),
@@ -17,6 +13,10 @@ if($export_submit !== null) {
 	array(5, 'Имя 5'),
 	array(5, 'Имя 6 с кавычкой " или \' '),
     );
+    
+    $from = filter_input(INPUT_POST, 'from');
+    $to = filter_input(INPUT_POST, 'to');
+    $file_name = "grafik-ot-$from-do-$to.csv";
     
     DownloadSendHeaders($file_name);
     echo Array2Csv($data, $titles);

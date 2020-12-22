@@ -53,19 +53,19 @@ function GetDateFromDateTo($getDateFrom, $getDateTo, &$dateFrom, &$dateTo) {
         //$date_to->add($diff1Day);
     }
     
-    if($dateFrom != null && $dateTo == null) {
+    if($dateFrom !== null && $dateTo == null) {
         $dateTo = clone $dateFrom;
         $dateTo->add($diff14Days);
         //$date_to->add($diff1Day);
     }
     
-    if($dateFrom == null && $dateTo != null) {
+    if($dateFrom == null && $dateTo !== null) {
         $dateFrom = clone $dateTo;
         $dateFrom->sub($diff14Days);
         //$date_from->sub($diff1Day);
     }
     
-    if($dateFrom != null && $dateTo != null && $dateFrom >= $dateTo) {
+    if($dateFrom !== null && $dateTo !== null && $dateFrom >= $dateTo) {
         $dateTo = clone $dateFrom;
         //$date_to->add($diff14Days);
         //$date_to->add($diff1Day);
@@ -102,6 +102,7 @@ function Array2Csv(array &$array, $titles) {
     }
     ob_start();
     $df = fopen("php://output", 'w');
+    fputs($df, chr(0xEF) . chr(0xBB) . chr(0xBF)); // Это для правильной кодировки
     fputcsv($df, $titles, ';');
     foreach ($array as $row) {
         fputcsv($df, $row, ';');
