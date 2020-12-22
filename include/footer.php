@@ -119,6 +119,10 @@
             return confirm('Действительно удалить?');
         });
         
+        $('input[type=date]#from').change(function(){
+            $('input[type=hidden].print_from').val($(this).val());
+        });
+        
         <?php if (!empty($_REQUEST['scroll'])): ?>
         window.scrollTo(0, <?php echo intval($_REQUEST['scroll']); ?>);
         <?php endif; ?>
