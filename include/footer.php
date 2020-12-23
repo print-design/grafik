@@ -5,6 +5,7 @@
 
 <script src='<?=APPLICATION ?>/js/jquery-3.5.1.min.js'></script>
 <script src='<?=APPLICATION ?>/js/bootstrap.js'></script>
+<script src="<?=APPLICATION ?>/js/jquery-ui.js"></script>
 
 <script>
     $(document).ready(function(){
@@ -28,22 +29,13 @@
             $(this).removeClass('is-invalid');
         });
         
-        $('.editable').keypress(function(){
-            $(this).next('.d-none').removeClass('d-none');
-        });
-        
-        $('.editable').change(function(){
-            $(this).next('.d-none').removeClass('d-none');
-        });
-        
-        $('input#name.editable').focusout(function(){
-            var name = $(this).val();
+        $('input#edition.editable').focusout(function(){
+            var edition = $(this).val();
             var id = $(this).parent().prev('#id').val();
             $(this).val('000');
-            $.ajax({ url: "../ajax/edition.php?name=" + name + "&id=" + id, context: $(this) })
+            $.ajax({ url: "../ajax/edition.php?edition=" + edition + "&id=" + id, context: $(this) })
                     .done(function(data) {
                         $(this).val(data);
-                $(this).next('.input-group-append').addClass('d-none');
             })
                     .fail(function() {
                         $(this).val('70773');
@@ -57,7 +49,6 @@
             $.ajax({ url: "../ajax/edition.php?organization=" + organization + "&id=" + id, context: $(this) })
                     .done(function(data) {
                         $(this).val(data);
-                $(this).next('.input-group-append').addClass('d-none');
             })
                     .fail(function() {
                         $(this).val('70773');
@@ -71,7 +62,6 @@
             $.ajax({ url: "../ajax/edition.php?length=" + length + "&id=" + id, context: $(this) })
                     .done(function(data) {
                         $(this).val(data);
-                $(this).next('.input-group-append').addClass('d-none');
             })
                     .fail(function() {
                         $(this).val('70773');
@@ -85,7 +75,6 @@
             $.ajax({ url: "../ajax/edition.php?coloring=" + coloring + "&id=" + id, context: $(this) })
                     .done(function(data) {
                         $(this).val(data);
-                $(this).next('.input-group-append').addClass('d-none');
             })
                     .fail(function() {
                         $(this).val('70773');
@@ -99,7 +88,6 @@
             $.ajax({ url: "../ajax/edition.php?comment=" + comment + "&id=" + id, context: $(this) })
                     .done(function(data) {
                         $(this).val(data);
-                $(this).next('.input-group-append').addClass('d-none');
             })
                     .fail(function() {
                         $(this).val('70773');
@@ -115,10 +103,6 @@
             this.form.submit();
         });
         
-        $('select[id=roller_id],select[id=lamination_id],select[id=manager_id]').change(function(){
-            $(this).next('.d-none').removeClass('d-none');
-        });
-        
         $('select[id=roller_id]').focusout(function(){
             var roller_id = $(this).val();
             var id = $(this).prev('#id').val();
@@ -126,7 +110,6 @@
             $.ajax({ url: "../ajax/edition.php?roller_id=" + roller_id + "&id=" + id, context: $(this) })
                     .done(function(data) {
                         $(this).val(data);
-                $(this).next('.input-group-append').addClass('d-none');
             })
                     .fail(function() {
                         alert('Ошибка при смене вала');
@@ -140,7 +123,6 @@
             $.ajax({ url: "../ajax/edition.php?lamination_id=" + lamination_id + "&id=" + id, context: $(this) })
                     .done(function(data){
                         $(this).val(data);
-                $(this).next('.input-group-append').addClass('d-none');
                     })
                     .fail(function(){
                         alert('Ошибка при смене ламинации');
@@ -154,7 +136,6 @@
            $.ajax({ url: "../ajax/edition.php?manager_id=" + manager_id + "&id=" + id, context: $(this) })
                    .done(function(data){
                        $(this).val(data);
-               $(this).next('.input-group-append').addClass('d-none');
            })
                    .fail(function(){
                        alert('Ошибка при смене менеджера');
@@ -171,6 +152,40 @@
         
         $('input[type=date]#from').change(function(){
             $('input[type=hidden].print_from').val($(this).val());
+        });
+        
+        var organizations = [
+            <?php
+            $orgs = array();
+            $fetcher = new Fetcher("select distinct organization from edition order by organization");
+            while ($row = $fetcher->Fetch()) {
+                if (count_chars($row['organization']) > 0) {
+                    array_push($orgs, '"'.addslashes($row['organization']).'"');
+                }
+            }
+            
+            echo implode(",", $orgs);
+            ?>
+        ];
+        $(".organizations").autocomplete({
+            source: organizations
+        });
+        
+        var editions = [
+            <?php
+            $eds = array();
+            $fetcher = new Fetcher("select distinct name from edition order by name");
+            while ($row = $fetcher->Fetch()) {
+                if(count_chars($row['name']) > 0) {
+                    array_push($eds, '"'.addslashes($row['name']).'"');
+                }
+            }
+            
+            echo implode(",", $eds);
+            ?>
+        ];
+        $(".editions").autocomplete({
+            source: editions
         });
         
         <?php if (!empty($_REQUEST['scroll'])): ?>

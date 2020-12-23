@@ -52,4 +52,17 @@ table.in-cell tr td {
     border: 0;
     padding: 0;
     vertical-align: middle;
+    padding: 0;
+}
+
+/*jquery ui*/
+ul.ui-menu {
+    background-color: white;
+    z-index: 3000;
+}
+
+ul.ui-menu li {
+    list-style-type: none;
+    margin-left: 0;
+    padding-left: 0;
 }

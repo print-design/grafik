@@ -171,11 +171,11 @@ class Grafik {
         }
         
         // Наименование заказа
-        $name = filter_input(INPUT_POST, 'name');
-        if($name !== null) {
-            $name = addslashes($name);
+        $edition = filter_input(INPUT_POST, 'edition');
+        if($edition !== null) {
+            $edition = addslashes($edition);
             $id = filter_input(INPUT_POST, 'id');
-            $this->error_message = (new Executer("update edition set name='$name' where id=$id"))->error;
+            $this->error_message = (new Executer("update edition set name='$edition' where id=$id"))->error;
         }
         
         // Метраж
@@ -396,7 +396,7 @@ class Grafik {
         
         // Список тиражей
         $all_editions = [];
-        $sql = "select ws.date, ws.shift, e.id, e.workshift_id, e.name, e.organization, e.length, e.coloring, e.comment, "
+        $sql = "select ws.date, ws.shift, e.id, e.workshift_id, e.name edition, e.organization, e.length, e.coloring, e.comment, "
                 . "e.roller_id, r.name roller, "
                 . "e.lamination_id, lam.name lamination, "
                 . "e.manager_id, m.fio manager "
@@ -515,7 +515,7 @@ class Grafik {
                     echo '<input type="hidden" id="shift" name="shift" value="'.$dateshift['shift'].'" />';
                     echo '<div class="input-group">';
                     echo '<input type="text" id="user1" name="user1" value="" class="editable" />';
-                    echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><i class="fas fa-save"></i></button></div>';
+                    echo '<div class="input-group-append"><button type="submit" class="btn btn-outline-dark"><i class="fas fa-save"></i></button></div>';
                     echo '</div>';
                     echo '</form>';
                 }
@@ -560,7 +560,7 @@ class Grafik {
                     echo '<input type="hidden" id="shift" name="shift" value="'.$dateshift['shift'].'" />';
                     echo '<div class="input-group">';
                     echo '<input type="text" id="user2" name="user2" value="" class="editable" />';
-                    echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><i class="fas fa-save"></i></button></div>';
+                    echo '<div class="input-group-append"><button type="submit" class="btn btn-outline-dark"><i class="fas fa-save"></i></button></div>';
                     echo '</div>';
                     echo '</form>';
                 }
@@ -640,7 +640,7 @@ class Grafik {
                 echo '<input type="hidden" id="scroll" name="scroll" />';
                 echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
                 echo '<div class="input-group">';
-                echo '<input type="text" id="organization" name="organization" value="'.(isset($edition['organization']) ? htmlentities($edition['organization']) : '').'" class="editable" />';
+                echo '<input type="text" id="organization" name="organization" value="'.(isset($edition['organization']) ? htmlentities($edition['organization']) : '').'" class="editable organizations" />';
                 echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><i class="fas fa-save"></i></button></div>';
                 echo '</div>';
                 echo '</form>';
@@ -659,7 +659,7 @@ class Grafik {
                 echo '<input type="hidden" id="scroll" name="scroll" />';
                 echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
                 echo '<div class="input-group">';
-                echo '<input type="text" id="name" name="name" value="'.(isset($edition['name']) ? htmlentities($edition['name']) : '').'" class="editable" />';
+                echo '<input type="text" id="edition" name="edition" value="'.(isset($edition['edition']) ? htmlentities($edition['edition']) : '').'" class="editable editions" />';
                 echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><i class="fas fa-save"></i></button></div>';
                 echo '</div>';
                 echo '</form>';

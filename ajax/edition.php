@@ -4,9 +4,9 @@ include '../include/topscripts.php';
 $error_message = '';
 $id = filter_input(INPUT_GET, 'id');
 
-$name = filter_input(INPUT_GET, 'name');
-if($name !== null) {
-    $error_message = (new Executer("update edition set name='$name' where id=$id"))->error;
+$edition = filter_input(INPUT_GET, 'edition');
+if($edition !== null) {
+    $error_message = (new Executer("update edition set name='$edition' where id=$id"))->error;
     
     if($error_message == '') {
         $fetcher = new Fetcher("select name from edition where id=$id");
