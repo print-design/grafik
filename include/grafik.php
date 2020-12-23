@@ -228,8 +228,11 @@ class Grafik {
             $date = filter_input(INPUT_POST, 'date');
             $shift = filter_input(INPUT_POST, 'shift');
             $machine_id = filter_input(INPUT_POST, 'machine_id');
+            $current_date = filter_input(INPUT_POST, 'current_date');
+            $current_shift = filter_input(INPUT_POST, 'current_shift');
             
-            if($date != null && $shift != '') {
+            // Нельзя копировать в пустоту или в ту же самую смену
+            if($date != null && $shift != '' && !($date == $current_date && $shift == $current_shift)) {
                 if($row = (new Fetcher("select id from workshift where date='$date' and shift='$shift' and machine_id=$machine_id"))->Fetch()) {
                     // Если в этой дате и в этом времени суток есть смена, то тираж добавляется к ней
                     $sql = "insert into edition (name, organization, length, lamination_id, coloring, roller_id, manager_id, comment, workshift_id) "
@@ -809,6 +812,8 @@ class Grafik {
             echo '<input type="hidden" id="scroll" name="scroll" />';
             echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
             echo "<input type='hidden' id='machine_id' name='machine_id' value='". $this->machineId."' />";
+            echo "<input type='hidden' id='current_date' name='current_date' value='".$edition['date']."' />";
+            echo "<input type='hidden' id='current_shift' name='current_shift' value='".$edition['shift']."' />";
             echo "<table class='in-cell'>";
             echo "<tr>";
             echo "<td class='$shift'><input type='date' id='date' name='date' style='width:140px;' /></td>";
