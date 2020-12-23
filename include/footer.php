@@ -1,3 +1,4 @@
+<div id="organizations_bottom"></div>
 <hr />
 <div class="container-fluid">
     &COPY;&nbsp;Принт-дизайн
@@ -36,6 +37,8 @@
             $.ajax({ url: "../ajax/edition.php?edition=" + edition + "&id=" + id, context: $(this) })
                     .done(function(data) {
                         $(this).val(data);
+                editions.push(data);
+                editions = editions.filter(unique).sort();
             })
                     .fail(function() {
                         $(this).val('70773');
@@ -49,6 +52,8 @@
             $.ajax({ url: "../ajax/edition.php?organization=" + organization + "&id=" + id, context: $(this) })
                     .done(function(data) {
                         $(this).val(data);
+                organizations.push(data);
+                organizations = organizations.filter(unique).sort();
             })
                     .fail(function() {
                         $(this).val('70773');
