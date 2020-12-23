@@ -816,7 +816,7 @@ class Grafik {
             echo "<input type='hidden' id='current_shift' name='current_shift' value='".$edition['shift']."' />";
             echo "<table class='in-cell'>";
             echo "<tr>";
-            echo "<td class='$shift'><input type='date' id='date' name='date' style='width:140px;' /></td>";
+            echo "<td class='$shift'><input type='date' id='date' name='date' style='width:140px;' class='copy' /></td>";
             echo "<td><select id='shift' name='shift'><option value=''>...</option><option value='day'>День</option><option value='night'>Ночь</option></select></td>";
             echo "<td><button type='submit' id='copy_edition_submit' name='copy_edition_submit' class='btn btn-outline-dark btn-sm' title='Копировать тираж'><i class='fas fa-copy'></i></button></td>";
             echo "</tr>";

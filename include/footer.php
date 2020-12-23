@@ -161,6 +161,10 @@
            });
         });
         
+        $('input[type=date].copy').click(function(){
+            $(this).val($(this).parent().parent().parent().parent().prev().prev().val());
+        });
+        
         $('button.confirmable').click(function(){
             return confirm('Действительно удалить?');
         });
