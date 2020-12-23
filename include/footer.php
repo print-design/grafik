@@ -106,7 +106,7 @@
             });
         });
         
-        $('select[id=user1_id],select[id=user2_id],select[id=lamination_id],select[id=manager_id]').change(function(){
+        $('select[id=user1_id],select[id=user2_id]').change(function(){
             if(this.value == '+') {
                 $(this).parent().next().removeClass('d-none');
                 $(this).parent().addClass('d-none');
@@ -115,7 +115,7 @@
             this.form.submit();
         });
         
-        $('select[id=roller_id]').change(function(){
+        $('select[id=roller_id],select[id=lamination_id],select[id=manager_id]').change(function(){
             $(this).next('.d-none').removeClass('d-none');
         });
         
@@ -131,6 +131,34 @@
                     .fail(function() {
                         alert('Ошибка при смене вала');
             });
+        });
+        
+        $('select[id=lamination_id]').focusout(function(){
+            var lamination_id = $(this).val();
+            var id = $(this).prev('#id').val();
+            $(this).val('');
+            $.ajax({ url: "../ajax/edition.php?lamination_id=" + lamination_id + "&id=" + id, context: $(this) })
+                    .done(function(data){
+                        $(this).val(data);
+                $(this).next('.input-group-append').addClass('d-none');
+                    })
+                    .fail(function(){
+                        alert('Ошибка при смене ламинации');
+                    });
+        });
+        
+        $('select[id=manager_id]').focusout(function(){
+           var manager_id = $(this).val();
+           var id = $(this).prev('#id').val();
+           $(this).val('');
+           $.ajax({ url: "../ajax/edition.php?manager_id=" + manager_id + "&id=" + id, context: $(this) })
+                   .done(function(data){
+                       $(this).val(data);
+               $(this).next('.input-group-append').addClass('d-none');
+           })
+                   .fail(function(){
+                       alert('Ошибка при смене менеджера');
+           });
         });
         
         $('button.confirmable').click(function(){

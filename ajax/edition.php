@@ -95,6 +95,36 @@ if($roller_id !== null) {
     }
 }
 
+$lamination_id = filter_input(INPUT_GET, 'lamination_id');
+if($lamination_id !== null) {
+    $error_message = (new Executer("update edition set lamination_id=$lamination_id where id=$id"))->error;
+    
+    if($error_message == '') {
+        $fetcher = new Fetcher("select lamination_id from edition where id=$id");
+        $row = $fetcher->Fetch();
+        $error_message = $fetcher->error;
+        
+        if($error_message == '') {
+            echo $row['lamination_id'];
+        }
+    }
+}
+
+$manager_id = filter_input(INPUT_GET, 'manager_id');
+if($manager_id !== null) {
+    $error_message = (new Executer("update edition set manager_id=$manager_id where id=$id"))->error;
+    
+    if($error_message == '') {
+        $fetcher = new Fetcher("select manager_id from edition where id=$id");
+        $row = $fetcher->Fetch();
+        $error_message = $fetcher->error;
+        
+        if($error_message == '') {
+            echo $row['manager_id'];
+        }
+    }
+}
+
 if($error_message != '') {
     echo $error_message;
 }
