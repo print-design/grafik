@@ -1,4 +1,3 @@
-<div id="organizations_bottom"></div>
 <hr />
 <div class="container-fluid">
     &COPY;&nbsp;Принт-дизайн
@@ -38,7 +37,7 @@
                     .done(function(data) {
                         $(this).val(data);
                 editions.push(data);
-                editions = editions.filter(unique).sort();
+                editions = [...new Set(editions)].sort();
             })
                     .fail(function() {
                         $(this).val('70773');
@@ -53,7 +52,7 @@
                     .done(function(data) {
                         $(this).val(data);
                 organizations.push(data);
-                organizations = organizations.filter(unique).sort();
+                organizations = [...new Set(organizations)].sort();
             })
                     .fail(function() {
                         $(this).val('70773');

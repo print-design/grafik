@@ -232,7 +232,7 @@ class Grafik {
             $current_shift = filter_input(INPUT_POST, 'current_shift');
             
             // Нельзя копировать в пустоту или в ту же самую смену
-            if($date != null && $shift != '' && !($date == $current_date && $shift == $current_shift)) {
+            if($date != null && $shift != '') {
                 if($row = (new Fetcher("select id from workshift where date='$date' and shift='$shift' and machine_id=$machine_id"))->Fetch()) {
                     // Если в этой дате и в этом времени суток есть смена, то тираж добавляется к ней
                     $sql = "insert into edition (name, organization, length, lamination_id, coloring, roller_id, manager_id, comment, workshift_id) "
