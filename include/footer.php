@@ -107,6 +107,19 @@
             this.form.submit();
         });
         
+        $('select[id=status_id]').focusout(function(){
+            var status_id = $(this).val();
+            var id = $(this).prev('#id').val();
+            $(this).val('');
+            $.ajax({ url: "../ajax/edition.php?status_id=" + status_id + "&id=" + id, context: $(this) })
+                    .done(function(data) {
+                        $(this).val(data);
+            })
+                    .fail(function() {
+                        alert('Ошибка при смене статуса');
+            });
+        });
+        
         $('select[id=roller_id]').focusout(function(){
             var roller_id = $(this).val();
             var id = $(this).prev('#id').val();

@@ -18,6 +18,7 @@ class Grafik {
     public $hasEdition = false;
     public $hasOrganization = false;
     public $hasLength = false;
+    public $hasStatus = false;
     public $hasRoller = false;
     public $hasLamination = false;
     public $hasColoring = false;
@@ -30,6 +31,7 @@ class Grafik {
     
     private $users1 = [];
     private $users2 = [];
+    private $statuses = [];
     private $rollers = [];
     private $laminations = [];
     private $managers = [];
@@ -185,6 +187,13 @@ class Grafik {
             $this->error_message = (new Executer("update edition set length=$length where id=$id"))->error;
         }
         
+        // Статус
+        $status_id = filter_input(INPUT_POST, 'status_id');
+        if($status_id !== null) {
+            $id = filter_input(INPUT_POST, 'id');
+            $this->error_message = (new Executer("update edition set status_id=$status_id where id=$id"))->error;
+        }
+        
         // Вал
         $roller_id = filter_input(INPUT_POST, 'roller_id');
         if($roller_id !== null) {
@@ -303,6 +312,7 @@ class Grafik {
                     <input type="hidden" id="hasEdition" name="hasEdition" value="<?= $this->hasEdition ?>"/>
                     <input type="hidden" id="hasOrganization" name="hasOrganization" value="<?= $this->hasOrganization ?>"/>
                     <input type="hidden" id="hasLength" name="hasLength" value="<?= $this->hasLength ?>"/>
+                    <input type="hidden" id="hasStatus" name="hasStatus" value="<?= $this->hasStatus ?>"/>
                     <input type="hidden" id="hasRoller" name="hasRoller" value="<?= $this->hasRoller ?>"/>
                     <input type="hidden" id="hasLamination" name="hasLamination" value="<?= $this->hasLamination ?>"/>
                     <input type="hidden" id="hasColoring" name="hasColoring" value="<?= $this->hasColoring ?>"/>
@@ -336,6 +346,7 @@ class Grafik {
             if($this->hasOrganization) echo '<th>Заказчик</th>';
             if($this->hasEdition) echo '<th>Наименование</th>';
             if($this->hasLength) echo '<th>Метраж</th>';
+            if($this->hasStatus) echo '<th>Статус</th>';
             if($this->hasRoller) echo '<th>Вал</th>';
             if($this->hasLamination) echo '<th>Ламинация</th>';
             if($this->hasColoring) echo '<th>Кр-ть</th>';
@@ -358,6 +369,11 @@ class Grafik {
         // Список работников №2
         if(IsInRole('admin') && $this->user2Name != '') {
             $this->users2 = (new Grabber('select u.id, u.fio from user u inner join user_role ur on ur.user_id = u.id where quit = 0 and ur.role_id = '. $this->userRole.' order by u.fio'))->result;
+        }
+        
+        // Список статусов
+        if(IsInRole('admin')) {
+            $this->statuses = (new Grabber("select id, name from edition_status order by name"))->result;
         }
         
         // Список валов
@@ -397,10 +413,12 @@ class Grafik {
         // Список тиражей
         $all_editions = [];
         $sql = "select ws.date, ws.shift, e.id, e.workshift_id, e.name edition, e.organization, e.length, e.coloring, e.comment, "
+                . "e.status_id, s.name status, "
                 . "e.roller_id, r.name roller, "
                 . "e.lamination_id, lam.name lamination, "
                 . "e.manager_id, m.fio manager "
                 . "from edition e "
+                . "left join edition_status s on e.status_id = s.id "
                 . "left join roller r on e.roller_id = r.id "
                 . "left join lamination lam on e.lamination_id = lam.id "
                 . "left join user m on e.manager_id = m.id "
@@ -590,6 +608,7 @@ class Grafik {
                 if($this->hasOrganization) echo "<td class='$top $shift'></td>";
                 if($this->hasEdition) echo "<td class='$top $shift'></td>";
                 if($this->hasLength) echo "<td class='$top $shift'></td>";
+                if($this->hasStatus) echo "<td class='$top $shift'></td>";
                 if($this->hasRoller) echo "<td class='$top $shift'></td>";
                 if($this->hasLamination) echo "<td class='$top $shift'></td>";
                 if($this->hasColoring) echo "<td class='$top $shift'></td>";
@@ -685,6 +704,32 @@ class Grafik {
             }
             else {
                 echo (isset($edition['length']) ? $edition['length'] : '');
+            }
+            echo "</td>";
+        };
+        
+        // Статус
+        if($this->hasStatus) {
+            echo "<td class='$top $shift'>";
+            if(IsInRole('admin')) {
+                echo "<form method='post'>";
+                echo '<input type="hidden" id="scroll" name="scroll" />';
+                echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
+                echo "<select id='status_id' name='status_id'>";
+                echo '<optgroup>';
+                echo '<option value="">...</option>';
+                foreach ($this->statuses as $value) {
+                    $selected = '';
+                    if(isset($edition['status_id']) && $edition['status_id'] == $value['id']) $selected = " selected = 'selected'";
+                    echo "<option$selected value='".$value['id']."'>".$value['name']."</option>";
+                }
+                echo '</optgroup>';
+                echo '</select>';
+                echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><i class="fas fa-save"></i></button></div>';
+                echo '</form>';
+            }
+            else {
+                echo (isset($edition['status']) ? $edition['status'] : '');
             }
             echo "</td>";
         };
@@ -899,6 +944,7 @@ class Grafik {
         if($this->hasOrganization) echo '<th>Заказчик</th>';
         if($this->hasEdition) echo '<th>Наименование</th>';
         if($this->hasLength) echo '<th>Метраж</th>';
+        if($this->hasStatus) echo '<th>Статус</th>';
         if($this->hasRoller) echo '<th>Вал</th>';
         if($this->hasLamination) echo '<th>Ламинация</th>';
         if($this->hasColoring) echo '<th>Кр-ть</th>';
@@ -967,6 +1013,7 @@ class Grafik {
                 if($this->hasOrganization) echo "<td class='$top'></td>";
                 if($this->hasEdition) echo "<td class='$top'></td>";
                 if($this->hasLength) echo "<td class='$top'></td>";
+                if($this->hasStatus) echo "<td class='$top'></td>";
                 if($this->hasRoller) echo "<td class='$top'></td>";
                 if($this->hasLamination) echo "<td class='$top'></td>";
                 if($this->hasColoring) echo "<td class='$top'></td>";
@@ -1015,6 +1062,13 @@ class Grafik {
             echo (isset($edition['length']) ? $edition['length'] : '');
             echo "</td>";
         };
+        
+        // Статус
+        if($this->hasStatus) {
+            echo "<td class='$top'>";
+            echo (isset($edition['status']) ? $edition['status'] : '');
+            echo "</td>";
+        }
         
         // Вал
         if($this->hasRoller) {

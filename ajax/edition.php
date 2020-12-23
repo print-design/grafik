@@ -80,6 +80,21 @@ if($comment !== null) {
     }
 }
 
+$status_id = filter_input(INPUT_GET, 'status_id');
+if($status_id !== null) {
+    $error_message = (new Executer("update edition set status_id=$status_id where id=$id"))->error;
+    
+    if($error_message == '') {
+        $fetcher = new Fetcher("select status_id from edition where id=$id");
+        $row = $fetcher->Fetch();
+        $error_message = $fetcher->error;
+        
+        if($error_message == '') {
+            echo $row['status_id'];
+        }
+    }
+}
+
 $roller_id = filter_input(INPUT_GET, 'roller_id');
 if($roller_id !== null) {
     $error_message = (new Executer("update edition set roller_id=$roller_id where id=$id"))->error;
