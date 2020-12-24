@@ -342,7 +342,10 @@ class Grafik {
             <?php
             if($this->user1Name != '') echo '<th>'.$this->user1Name.'</th>';
             if($this->user2Name != '') echo '<th>'.$this->user2Name.'</th>';
-            if(IsInRole('admin')) echo '<th></th>';
+            if(IsInRole('admin')) {
+                echo '<th></th>';
+                echo '<th></th>';
+            }
             if($this->hasOrganization) echo '<th>Заказчик</th>';
             if($this->hasEdition) echo '<th>Наименование</th>';
             if($this->hasLength) echo '<th>Метраж</th>';
@@ -595,10 +598,8 @@ class Grafik {
                     echo "<form method='post'>";
                     echo '<input type="hidden" id="scroll" name="scroll" />';
                     echo "<input type='hidden' id='workshift_id' name='workshift_id' value='".$row['id']."' />";
-                    echo "<button type='submit' id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark btn-sm' title='Добавить тираж'><i class='fas fa-plus'></i></button>";
+                    echo "<button type='submit' id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark btn-sm mb-1' title='Добавить тираж'><i class='fas fa-plus'></i></button>";
                     echo '</form>';
-                    
-                    echo "<button class='btn btn-outline-dark btn-sm mt-1 mb-1 clipboard_copy' data='".$row['id']."' title='Копировать тираж'><i class='fas fa-copy'></i><div class='alert alert-info clipboard_alert'>Скопировано</div></button>";
                 }
                 echo "<form method='post'>";
                 echo '<input type="hidden" id="scroll" name="scroll" />';
@@ -612,6 +613,7 @@ class Grafik {
             $edition = null;
             
             if(count($editions) == 0) {
+                if(IsInRole('admin')) echo "<td class='$top $shift'></td>";
                 if($this->hasOrganization) echo "<td class='$top $shift'></td>";
                 if($this->hasEdition) echo "<td class='$top $shift'></td>";
                 if($this->hasLength) echo "<td class='$top $shift'></td>";
@@ -658,6 +660,13 @@ class Grafik {
     }
     
     private function ShowEditon($edition, $top, $shift) {
+        // Копирование
+        if(IsInRole('admin')){
+            echo "<td class='$top $shift'>";
+            echo "<button class='btn btn-outline-dark btn-sm clipboard_copy' data='".$edition['id']."' title='Копировать тираж'><i class='fas fa-copy'></i><div class='alert alert-info clipboard_alert'>Скопировано</div></button>";
+            echo "</td>";
+        }
+                
         // Заказчик
         if($this->hasOrganization) {
             echo "<td class='$top $shift'>";
