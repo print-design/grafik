@@ -8,215 +8,213 @@
 <script src="<?=APPLICATION ?>/js/jquery-ui.js"></script>
 
 <script>
-    $(document).ready(function(){
-        $('.int-only').keypress(function(e) {
-            if(/\D/.test(String.fromCharCode(e.charCode))) {
-                return false;
+    // Фильтрация ввода
+    $('.int-only').keypress(function(e) {
+        if(/\D/.test(String.fromCharCode(e.charCode))) {
+            return false;
+        }
+    });
+        
+    $('.float-only').keypress(function(e) {
+        if(!/[\.\d]/.test(String.fromCharCode(e.charCode))) {
+            return false;
+        }
+    });
+    
+    // Валидация
+    $('input').keypress(function(){
+        $(this).removeClass('is-invalid');
+    });
+        
+    $('select').change(function(){
+        $(this).removeClass('is-invalid');
+    });
+    
+    // Работа с буфером обмена
+    $('.clipboard_paste').prop("disabled", true);
+    
+    $('.clipboard_copy').click(function(){
+        $(this).children('.clipboard_alert').slideDown(300, function(){
+            $(this).slideUp(1000);
+        });
+        $('.clipboard_paste').prop("disabled", false);
+    });
+    
+    // Подтверждение удаления
+    $('button.confirmable').click(function(){
+        return confirm('Действительно удалить?');
+    });
+    
+    // Печать
+    $('input[type=date]#from').change(function(){
+        $('input[type=hidden].print_from').val($(this).val());
+    });
+    
+    // Автозаполнение текстового поля "Заказчик"
+    var organizations = [
+        <?php
+        $orgs = array();
+        $fetcher = new Fetcher("select distinct organization from edition order by organization");
+        while ($row = $fetcher->Fetch()) {
+            if (count_chars($row['organization']) > 0) {
+                array_push($orgs, '"'.addslashes($row['organization']).'"');
             }
-        });
+        }
         
-        $('.float-only').keypress(function(e) {
-            if(!/[\.\d]/.test(String.fromCharCode(e.charCode))) {
-                return false;
+        echo implode(",", $orgs);
+        ?>
+    ];
+    $(".organizations").autocomplete({
+        source: organizations
+    });
+        
+    // Автозаполнение текстового поля "Наименование тиража"
+    var editions = [
+        <?php
+        $eds = array();
+        $fetcher = new Fetcher("select distinct name from edition order by name");
+        while ($row = $fetcher->Fetch()) {
+            if(count_chars($row['name']) > 0) {
+                array_push($eds, '"'.addslashes($row['name']).'"');
             }
-        });
-        
-        $('input').keypress(function(){
-            $(this).removeClass('is-invalid');
-        });
-        
-        $('select').change(function(){
-            $(this).removeClass('is-invalid');
-        });
-        
-        $('input#edition.editable').focusout(function(){
-            var edition = $(this).val();
-            var id = $(this).parent().prev('#id').val();
-            $(this).val('000');
-            $.ajax({ url: "../ajax/edition.php?edition=" + edition + "&id=" + id, context: $(this) })
-                    .done(function(data) {
-                        $(this).val(data);
-                editions.push(data);
-                editions = [...new Set(editions)].sort();
-            })
-                    .fail(function() {
-                        $(this).val('70773');
-            });
-        });
-        
-        $('input#organization.editable').focusout(function(){
-            var organization = $(this).val();
-            var id = $(this).parent().prev('#id').val();
-            $(this).val('000');
-            $.ajax({ url: "../ajax/edition.php?organization=" + organization + "&id=" + id, context: $(this) })
-                    .done(function(data) {
-                        $(this).val(data);
-                organizations.push(data);
-                organizations = [...new Set(organizations)].sort();
-            })
-                    .fail(function() {
-                        $(this).val('70773');
-            });
-        });
-        
-        $('input#length.editable').focusout(function(){
-            var length = $(this).val();
-            var id = $(this).parent().prev('#id').val();
-            $(this).val('000');
-            $.ajax({ url: "../ajax/edition.php?length=" + length + "&id=" + id, context: $(this) })
-                    .done(function(data) {
-                        $(this).val(data);
-            })
-                    .fail(function() {
-                        $(this).val('70773');
-            });
-        });
-        
-        $('input#coloring.editable').focusout(function(){
-            var coloring = $(this).val();
-            var id = $(this).parent().prev('#id').val();
-            $(this).val('000');
-            $.ajax({ url: "../ajax/edition.php?coloring=" + coloring + "&id=" + id, context: $(this) })
-                    .done(function(data) {
-                        $(this).val(data);
-            })
-                    .fail(function() {
-                        $(this).val('70773');
-            });
-        });
-        
-        $('input#comment.editable').focusout(function(){
-            var comment = $(this).val();
-            var id = $(this).parent().prev('#id').val();
-            $(this).val('000');
-            $.ajax({ url: "../ajax/edition.php?comment=" + comment + "&id=" + id, context: $(this) })
-                    .done(function(data) {
-                        $(this).val(data);
-            })
-                    .fail(function() {
-                        $(this).val('70773');
-            });
-        });
-        
-        $('select[id=user1_id],select[id=user2_id]').change(function(){
-            if(this.value == '+') {
-                $(this).parent().next().removeClass('d-none');
-                $(this).parent().addClass('d-none');
-                return;
-            }
-            this.form.submit();
-        });
-        
-        $('select[id=status_id]').focusout(function(){
-            var status_id = $(this).val();
-            var id = $(this).prev('#id').val();
-            $(this).val('');
-            $.ajax({ url: "../ajax/edition.php?status_id=" + status_id + "&id=" + id, context: $(this) })
-                    .done(function(data) {
-                        $(this).val(data);
-            })
-                    .fail(function() {
-                        alert('Ошибка при смене статуса');
-            });
-        });
-        
-        $('select[id=roller_id]').focusout(function(){
-            var roller_id = $(this).val();
-            var id = $(this).prev('#id').val();
-            $(this).val('');
-            $.ajax({ url: "../ajax/edition.php?roller_id=" + roller_id + "&id=" + id, context: $(this) })
-                    .done(function(data) {
-                        $(this).val(data);
-            })
-                    .fail(function() {
-                        alert('Ошибка при смене вала');
-            });
-        });
-        
-        $('select[id=lamination_id]').focusout(function(){
-            var lamination_id = $(this).val();
-            var id = $(this).prev('#id').val();
-            $(this).val('');
-            $.ajax({ url: "../ajax/edition.php?lamination_id=" + lamination_id + "&id=" + id, context: $(this) })
-                    .done(function(data){
-                        $(this).val(data);
-                    })
-                    .fail(function(){
-                        alert('Ошибка при смене ламинации');
-                    });
-        });
-        
-        $('select[id=manager_id]').focusout(function(){
-           var manager_id = $(this).val();
-           var id = $(this).prev('#id').val();
-           $(this).val('');
-           $.ajax({ url: "../ajax/edition.php?manager_id=" + manager_id + "&id=" + id, context: $(this) })
-                   .done(function(data){
-                       $(this).val(data);
-           })
-                   .fail(function(){
-                       alert('Ошибка при смене менеджера');
-           });
-        });
-        
-        $('input[type=date].copy').click(function(){
-            $(this).val($(this).parent().parent().parent().parent().prev().prev().val());
-        });
-        
-        $('button.confirmable').click(function(){
-            return confirm('Действительно удалить?');
-        });
-        
-        $('input[type=date]#from').change(function(){
-            $('input[type=hidden].print_from').val($(this).val());
-        });
-        
-        // Работа с буфером обмена
-        $('.clipboard_copy').click(function(){
-            $(this).children('.clipboard_alert').slideDown(300, function(){
-                $(this).slideUp(1000);
-            });
-        });
-        
-        // Автозаполнение текстового поля "Заказчик"
-        var organizations = [
-            <?php
-            $orgs = array();
-            $fetcher = new Fetcher("select distinct organization from edition order by organization");
-            while ($row = $fetcher->Fetch()) {
-                if (count_chars($row['organization']) > 0) {
-                    array_push($orgs, '"'.addslashes($row['organization']).'"');
-                }
-            }
+        }
             
-            echo implode(",", $orgs);
-            ?>
-        ];
-        $(".organizations").autocomplete({
-            source: organizations
+        echo implode(",", $eds);
+        ?>
+    ];
+    $(".editions").autocomplete({
+        source: editions
+    });
+    
+    // Автоматическое сохранение значений полей
+    $('input#edition.editable').focusout(function(){
+        var edition = $(this).val();
+        var id = $(this).parent().prev('#id').val();
+        $(this).val('000');
+        $.ajax({ url: "../ajax/edition.php?edition=" + edition + "&id=" + id, context: $(this) })
+                .done(function(data) {
+                    $(this).val(data);
+            editions.push(data);
+            editions = [...new Set(editions)].sort();
+        })
+                .fail(function() {
+                    $(this).val('70773');
         });
+    });
         
-        // Автозаполнение текстового поля "Наименование тиража"
-        var editions = [
-            <?php
-            $eds = array();
-            $fetcher = new Fetcher("select distinct name from edition order by name");
-            while ($row = $fetcher->Fetch()) {
-                if(count_chars($row['name']) > 0) {
-                    array_push($eds, '"'.addslashes($row['name']).'"');
-                }
-            }
-            
-            echo implode(",", $eds);
-            ?>
-        ];
-        $(".editions").autocomplete({
-            source: editions
+    $('input#organization.editable').focusout(function(){
+        var organization = $(this).val();
+        var id = $(this).parent().prev('#id').val();
+        $(this).val('000');
+        $.ajax({ url: "../ajax/edition.php?organization=" + organization + "&id=" + id, context: $(this) })
+                .done(function(data) {
+                    $(this).val(data);
+            organizations.push(data);
+            organizations = [...new Set(organizations)].sort();
+        })
+                .fail(function() {
+                    $(this).val('70773');
         });
+    });
         
-        <?php if (!empty($_REQUEST['scroll'])): ?>
-        window.scrollTo(0, <?php echo intval($_REQUEST['scroll']); ?>);
-        <?php endif; ?>
+    $('input#length.editable').focusout(function(){
+        var length = $(this).val();
+        var id = $(this).parent().prev('#id').val();
+        $(this).val('000');
+        $.ajax({ url: "../ajax/edition.php?length=" + length + "&id=" + id, context: $(this) })
+                .done(function(data) {
+                    $(this).val(data);
+        })
+                .fail(function() {
+                    $(this).val('70773');
+        });
+    });
+        
+    $('input#coloring.editable').focusout(function(){
+        var coloring = $(this).val();
+        var id = $(this).parent().prev('#id').val();
+        $(this).val('000');
+        $.ajax({ url: "../ajax/edition.php?coloring=" + coloring + "&id=" + id, context: $(this) })
+                .done(function(data) {
+                    $(this).val(data);
+        })
+                .fail(function() {
+                    $(this).val('70773');
+        });
+    });
+        
+    $('input#comment.editable').focusout(function(){
+        var comment = $(this).val();
+        var id = $(this).parent().prev('#id').val();
+        $(this).val('000');
+        $.ajax({ url: "../ajax/edition.php?comment=" + comment + "&id=" + id, context: $(this) })
+                .done(function(data) {
+                    $(this).val(data);
+        })
+                .fail(function() {
+                    $(this).val('70773');
+        });
+    });
+        
+    $('select[id=user1_id],select[id=user2_id]').change(function(){
+        if(this.value == '+') {
+            $(this).parent().next().removeClass('d-none');
+            $(this).parent().addClass('d-none');
+            return;
+        }
+        this.form.submit();
+    });
+        
+    $('select[id=status_id]').focusout(function(){
+        var status_id = $(this).val();
+        var id = $(this).prev('#id').val();
+        $(this).val('');
+        $.ajax({ url: "../ajax/edition.php?status_id=" + status_id + "&id=" + id, context: $(this) })
+                .done(function(data) {
+                    $(this).val(data);
+        })
+                .fail(function() {
+                    alert('Ошибка при смене статуса');
+        });
+    });
+        
+    $('select[id=roller_id]').focusout(function(){
+        var roller_id = $(this).val();
+        var id = $(this).prev('#id').val();
+        $(this).val('');
+        $.ajax({ url: "../ajax/edition.php?roller_id=" + roller_id + "&id=" + id, context: $(this) })
+                .done(function(data) {
+                    $(this).val(data);
+        })
+                .fail(function() {
+                    alert('Ошибка при смене вала');
+        });
+    });
+        
+    $('select[id=lamination_id]').focusout(function(){
+        var lamination_id = $(this).val();
+        var id = $(this).prev('#id').val();
+        $(this).val('');
+        $.ajax({ url: "../ajax/edition.php?lamination_id=" + lamination_id + "&id=" + id, context: $(this) })
+                .done(function(data){
+                    $(this).val(data);
+        })
+                .fail(function(){
+                    alert('Ошибка при смене ламинации');
+        });
+    });
+        
+    $('select[id=manager_id]').focusout(function(){
+        var manager_id = $(this).val();
+        var id = $(this).prev('#id').val();
+        $(this).val('');
+        $.ajax({ url: "../ajax/edition.php?manager_id=" + manager_id + "&id=" + id, context: $(this) })
+                .done(function(data){
+                    $(this).val(data);
+        })
+                .fail(function(){
+                    alert('Ошибка при смене менеджера');
+        });
     });
     
     // Прокрутка на прежнее место после отправки формы
@@ -237,4 +235,8 @@
             }
         }
     });
+    
+    <?php if (!empty($_REQUEST['scroll'])): ?>
+    window.scrollTo(0, <?php echo intval($_REQUEST['scroll']); ?>);
+    <?php endif; ?>
 </script>
