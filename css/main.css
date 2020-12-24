@@ -24,6 +24,10 @@ body.print {
     transform-style: preserve-3d;
 }
 
+table.typography {
+    font-size: smaller;
+}
+
 table.typography tbody tr td {
     background-color: white;
 }
