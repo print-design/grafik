@@ -230,39 +230,10 @@ class Grafik {
             $this->error_message = (new Executer("update edition set comment='$comment' where id=$id"))->error;
         }
         
-        // Копирование тиража
-        $copy_edition_submit = filter_input(INPUT_POST, 'copy_edition_submit');
-        if($copy_edition_submit !== null) {
-            $id = filter_input(INPUT_POST, 'id');
-            $date = filter_input(INPUT_POST, 'date');
-            $shift = filter_input(INPUT_POST, 'shift');
-            $machine_id = filter_input(INPUT_POST, 'machine_id');
-            $current_date = filter_input(INPUT_POST, 'current_date');
-            $current_shift = filter_input(INPUT_POST, 'current_shift');
-            
-            // Нельзя копировать в пустоту или в ту же самую смену
-            if($date != null && $shift != '') {
-                if($row = (new Fetcher("select id from workshift where date='$date' and shift='$shift' and machine_id=$machine_id"))->Fetch()) {
-                    // Если в этой дате и в этом времени суток есть смена, то тираж добавляется к ней
-                    $sql = "insert into edition (name, organization, length, lamination_id, coloring, roller_id, manager_id, comment, workshift_id) "
-                            . "select name, organization, length, lamination_id, coloring, roller_id, manager_id, comment, ".$row['id']." from edition where id=$id";
-                    $this->error_message = (new Executer($sql))->error;
-                }
-                else {
-                    // Если смены нет, то она копируется из текущей смены
-                    $sql = "insert into workshift (date, shift, user1_id, user2_id, machine_id) "
-                            . "select '$date', '$shift', user1_id, user2_id, machine_id from workshift where id=(select workshift_id from edition where id=$id)";
-                    $executer = new Executer($sql);
-                    $this->error_message = $executer->error;
-                    $insert_id = $executer->insert_id;
-                    $sql = "insert into edition (name, organization, length, lamination_id, coloring, roller_id, manager_id, comment, workshift_id) "
-                            . "select name, organization, length, lamination_id, coloring, roller_id, manager_id, comment, $insert_id from edition where id=$id";
-                    $this->error_message = (new Executer($sql))->error;
-                }
-            }
-        }
-        
         // Вставка тиража
+        $clipboard = '';
+        $disabled = " disabled='disabled'";
+                
         $paste_edition_submit = filter_input(INPUT_POST, 'paste_edition_submit');
         if($paste_edition_submit !== null) {
             $clipboard = filter_input(INPUT_POST, 'clipboard');
@@ -351,10 +322,7 @@ class Grafik {
             <?php
             if($this->user1Name != '') echo '<th>'.$this->user1Name.'</th>';
             if($this->user2Name != '') echo '<th>'.$this->user2Name.'</th>';
-            if(IsInRole('admin')) {
-                echo '<th></th>';
-                echo '<th></th>';
-            }
+            if(IsInRole('admin')) echo '<th></th>';
             if($this->hasOrganization) echo '<th>Заказчик</th>';
             if($this->hasEdition) echo '<th>Наименование</th>';
             if($this->hasLength) echo '<th>Метраж</th>';
@@ -610,10 +578,23 @@ class Grafik {
                     echo "<button type='submit' id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark btn-sm mb-1' title='Добавить тираж'><i class='fas fa-plus'></i></button>";
                     echo '</form>';
                 }
+                
+                // Вставка тиража
+                $clipboard = '';
+                $disabled = " disabled='disabled'";
+                
+                $paste_edition_submit = filter_input(INPUT_POST, 'paste_edition_submit');
+                if($paste_edition_submit !== null) {
+                    $clipboard = filter_input(INPUT_POST, 'clipboard');
+                    if($clipboard != '') {
+                        $disabled = '';
+                    }
+                }
+                
                 echo "<form method='post'>";
                 echo '<input type="hidden" id="scroll" name="scroll" />';
-                echo '<input type="hidden" class="clipboard" id="clipboard" name="clipboard">';
-                echo "<button id='paste_edition_submit' name='paste_edition_submit' class='btn btn-outline-dark btn-sm clipboard_paste' title='Вставить тираж'><i class='fas fa-paste'></i></button>";
+                echo "<input type='hidden' class='clipboard' id='clipboard' name='clipboard' value='$clipboard'>";
+                echo "<button id='paste_edition_submit' name='paste_edition_submit' class='btn btn-outline-dark btn-sm clipboard_paste' title='Вставить тираж'$disabled><i class='fas fa-paste'></i></button>";
                 echo "</form>";
                 
                 echo '</td>';
@@ -623,7 +604,6 @@ class Grafik {
             $edition = null;
             
             if(count($editions) == 0) {
-                if(IsInRole('admin')) echo "<td class='$top $shift'></td>";
                 if($this->hasOrganization) echo "<td class='$top $shift'></td>";
                 if($this->hasEdition) echo "<td class='$top $shift'></td>";
                 if($this->hasLength) echo "<td class='$top $shift'></td>";
@@ -670,13 +650,6 @@ class Grafik {
     }
     
     private function ShowEditon($edition, $top, $shift) {
-        // Копирование
-        if(IsInRole('admin')){
-            echo "<td class='$top $shift'>";
-            echo "<button class='btn btn-outline-dark btn-sm clipboard_copy' data='".$edition['id']."' title='Копировать тираж'><i class='fas fa-copy'></i><div class='alert alert-info clipboard_alert'>Скопировано</div></button>";
-            echo "</td>";
-        }
-                
         // Заказчик
         if($this->hasOrganization) {
             echo "<td class='$top $shift'>";
@@ -877,22 +850,9 @@ class Grafik {
         }
         
         // Копирование
-        if(IsInRole('admin')) {
+        if(IsInRole('admin')){
             echo "<td class='$top $shift'>";
-            echo "<form method='post'>";
-            echo '<input type="hidden" id="scroll" name="scroll" />';
-            echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
-            echo "<input type='hidden' id='machine_id' name='machine_id' value='". $this->machineId."' />";
-            echo "<input type='hidden' id='current_date' name='current_date' value='".$edition['date']."' />";
-            echo "<input type='hidden' id='current_shift' name='current_shift' value='".$edition['shift']."' />";
-            echo "<table class='in-cell'>";
-            echo "<tr>";
-            echo "<td class='$shift'><input type='date' id='date' name='date' style='width:140px;' class='copy' /></td>";
-            echo "<td><select id='shift' name='shift'><option value=''>...</option><option value='day'>День</option><option value='night'>Ночь</option></select></td>";
-            echo "<td><button type='submit' id='copy_edition_submit' name='copy_edition_submit' class='btn btn-outline-dark btn-sm' title='Копировать тираж'><i class='fas fa-copy'></i></button></td>";
-            echo "</tr>";
-            echo "</table>";
-            echo "</form>";
+            echo "<button class='btn btn-outline-dark btn-sm clipboard_copy' data='".$edition['id']."' title='Копировать тираж'><i class='fas fa-copy'></i><div class='alert alert-info clipboard_alert'>Скопировано</div></button>";
             echo "</td>";
         }
         
