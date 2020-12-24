@@ -32,6 +32,7 @@
     
     // Работа с буфером обмена
     $('.clipboard_copy').click(function(){
+        var alert = $(this).children('.clipboard_alert');
         var edition = $(this).attr('data');
         $.ajax("../ajax/clipboard.php?edition=" + edition)
                 .done(function(data){
@@ -41,7 +42,7 @@
                     else {
                         $('.clipboard').val(data);
                         $('.clipboard_paste').prop("disabled", false);
-                        $(this).children('.clipboard_alert').slideDown(300, function(){
+                        alert.slideDown(300, function(){
                             $(this).slideUp(1000);
                         });
                     }
