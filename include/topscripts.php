@@ -14,23 +14,19 @@ $weekdays[6] = 'Сб';
 
 // Функции
 function LoggedIn() {
-    if(isset($_COOKIE[USERNAME]) && $_COOKIE[USERNAME] != '') {
-        return true;
-    }
-    else {
-        return false;   
-    }
+    $username = filter_input(INPUT_COOKIE, USERNAME);
+    return $username !== null;
 }
 
 function GetUserId() {
-    return $_COOKIE[USER_ID];
+    return filter_input(INPUT_COOKIE, USER_ID);
 }
 
 function IsInRole($role) {
-    if(isset($_COOKIE[ROLES])) {
-        $roles = unserialize($_COOKIE[ROLES]);
-        if(in_array($role, $roles))
-                return true;
+    $roles = filter_input(INPUT_COOKIE, ROLES);
+    if($roles !== null) {
+        $arr_roles = unserialize($roles);
+        return in_array($role, $arr_roles);
     }
     
     return false;
