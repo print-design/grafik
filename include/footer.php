@@ -34,10 +34,11 @@
     $('.clipboard_paste').prop("disabled", true);
     
     $('.clipboard_copy').click(function(){
+        $('.clipboard').val($(this).attr('data'));
+        $('.clipboard_paste').prop("disabled", false);
         $(this).children('.clipboard_alert').slideDown(300, function(){
             $(this).slideUp(1000);
         });
-        $('.clipboard_paste').prop("disabled", false);
     });
     
     // Подтверждение удаления

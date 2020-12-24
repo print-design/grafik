@@ -262,6 +262,15 @@ class Grafik {
             }
         }
         
+        // Вставка тиража
+        $paste_edition_submit = filter_input(INPUT_POST, 'paste_edition_submit');
+        if($paste_edition_submit !== null) {
+            $clipboard = filter_input(INPUT_POST, 'clipboard');
+            if($clipboard != '') {
+                echo $clipboard;
+            }
+        }
+        
         // Удаление тиража
         $delete_edition_submit = filter_input(INPUT_POST, 'delete_edition_submit');
         if($delete_edition_submit !== null) {
@@ -591,7 +600,7 @@ class Grafik {
                 echo '</td>';
             }
             
-            // Добавление смены
+            // Добавление или вставка смены
             if(IsInRole('admin')) {
                 echo "<td class='$top $shift align-bottom' rowspan='$my_rowspan'>";
                 if(isset($row['id'])) {
@@ -603,7 +612,8 @@ class Grafik {
                 }
                 echo "<form method='post'>";
                 echo '<input type="hidden" id="scroll" name="scroll" />';
-                echo "<button class='btn btn-outline-dark btn-sm clipboard_paste' title='Вставить тираж'><i class='fas fa-paste'></i></button>";
+                echo '<input type="hidden" class="clipboard" id="clipboard" name="clipboard">';
+                echo "<button id='paste_edition_submit' name='paste_edition_submit' class='btn btn-outline-dark btn-sm clipboard_paste' title='Вставить тираж'><i class='fas fa-paste'></i></button>";
                 echo "</form>";
                 
                 echo '</td>';
