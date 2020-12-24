@@ -597,7 +597,14 @@ class Grafik {
                     echo "<input type='hidden' id='workshift_id' name='workshift_id' value='".$row['id']."' />";
                     echo "<button type='submit' id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark btn-sm' title='Добавить тираж'><i class='fas fa-plus'></i></button>";
                     echo '</form>';
+                    
+                    echo "<button class='btn btn-outline-dark btn-sm mt-1 mb-1 clipboard_copy' data='".$row['id']."' title='Копировать тираж'><i class='fas fa-copy'></i><div class='alert alert-info clipboard_alert'>Скопировано</div></button>";
                 }
+                echo "<form method='post'>";
+                echo '<input type="hidden" id="scroll" name="scroll" />';
+                echo "<button class='btn btn-outline-dark btn-sm clipboard_paste' title='Вставить тираж'><i class='fas fa-paste'></i></button>";
+                echo "</form>";
+                
                 echo '</td>';
             }
             

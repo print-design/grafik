@@ -171,6 +171,14 @@
             $('input[type=hidden].print_from').val($(this).val());
         });
         
+        // Работа с буфером обмена
+        $('.clipboard_copy').click(function(){
+            $(this).children('.clipboard_alert').slideDown(300, function(){
+                $(this).slideUp(1000);
+            });
+        });
+        
+        // Автозаполнение текстового поля "Заказчик"
         var organizations = [
             <?php
             $orgs = array();
@@ -188,6 +196,7 @@
             source: organizations
         });
         
+        // Автозаполнение текстового поля "Наименование тиража"
         var editions = [
             <?php
             $eds = array();
@@ -210,6 +219,7 @@
         <?php endif; ?>
     });
     
+    // Прокрутка на прежнее место после отправки формы
     $(window).on("scroll", function(){
         $('input[name="scroll"]').val($(window).scrollTop());
         
