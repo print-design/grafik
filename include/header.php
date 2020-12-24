@@ -25,6 +25,8 @@
                 $period['to'] = $_GET['to'];
             if(count($period) > 0)
                 $query_string = '?'.http_build_query ($period);
+            
+            if(LoggedIn()) {
             ?>
             <li class="nav-item">
                 <a class="nav-link<?=$comiflex_status ?>" href="<?=APPLICATION ?>/comiflex/<?=$query_string ?>">Comiflex</a>
@@ -47,9 +49,6 @@
             <li class="nav-item">
                 <a class="nav-link<?=$cutters_status ?>" href="<?=APPLICATION ?>/cutters/<?=$query_string ?>">Резка</a>
             </li>
-            <?php
-            if(LoggedIn()) {
-            ?>
             <li class="nav-item">
                 <a class="nav-link<?=$personal_status ?>" href="<?=APPLICATION ?>/personal/">Мои настройки</a>
             </li>

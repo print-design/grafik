@@ -1,5 +1,6 @@
 <?php
 include '../include/topscripts.php';
+include '../include/restrict_logged_in.php';
 include '../include/grafik.php';
 
 $date_from = null;
