@@ -34,11 +34,42 @@
     $('.clipboard_paste').prop("disabled", true);
     
     $('.clipboard_copy').click(function(){
-        $('.clipboard').val($(this).attr('data'));
+        /*$('.clipboard').val($(this).attr('data'));
         $('.clipboard_paste').prop("disabled", false);
         $(this).children('.clipboard_alert').slideDown(300, function(){
             $(this).slideUp(1000);
+        });*/
+        
+        var edition = $(this).attr('data');
+        $.ajax("../ajax/clipboard.php?edition=" + edition)
+                .done(function(data){
+                    if(data == '') {
+                        alert('OK');
+                    }
+                    else {
+                        alert(data);
+                    }
+                })
+                .fail(function(){
+                    alert('Ошибка при копировании тиража в буфер обмена.');
         });
+        
+        /*
+         * 
+         * var edition = $(this).val();
+        var id = $(this).parent().prev('#id').val();
+        $(this).val('000');
+        $.ajax({ url: "../ajax/edition.php?edition=" + edition + "&id=" + id, context: $(this) })
+                .done(function(data) {
+                    $(this).val(data);
+            editions.push(data);
+            editions = [...new Set(editions)].sort();
+        })
+                .fail(function() {
+                    $(this).val('70773');
+        });
+         * 
+         */
     });
     
     // Подтверждение удаления
