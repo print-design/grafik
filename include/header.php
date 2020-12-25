@@ -31,7 +31,7 @@
             if(count($period) > 0)
                 $query_string = '?'.http_build_query($period);
             
-            if(LoggedIn()) {
+            if(LoggedIn()):
             ?>
             <li class="nav-item">
                 <a class="nav-link<?=$comiflex_status ?>" href="<?=APPLICATION ?>/comiflex/<?=$query_string ?>">Comiflex</a>
@@ -58,8 +58,8 @@
                 <a class="nav-link<?=$personal_status ?>" href="<?=APPLICATION ?>/personal/">Мои настройки</a>
             </li>
             <?php
-            }
-            if(IsInRole('admin')) {
+            endif;
+            if(IsInRole('admin')):
             ?>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
@@ -71,28 +71,24 @@
                 </div>
             </li>
             <?php
-            }
+            endif;
             ?>
         </ul>
         <?php
-        if(isset($_COOKIE[USERNAME]) && $_COOKIE[USERNAME] != '') {
+        $user_name = filter_input(INPUT_COOKIE, USERNAME);
+        if($user_name !== null):
         ?>
         <form class="form-inline" method="post">
             <label>
                 <?php
-                $full_user_name = '';
-                if(isset($_COOKIE[FIO]) && $_COOKIE[FIO] != '') {
-                    $full_user_name .= $_COOKIE[FIO];
-                }
-                echo $full_user_name;
+                echo filter_input(INPUT_COOKIE, FIO);
                 ?>
                 &nbsp;
             </label>
             <button type="submit" class="btn btn-outline-dark" id="logout_submit" name="logout_submit">Выход&nbsp;<i class="fas fa-sign-out-alt"></i></button>
         </form>
         <?php
-        }
-        else {
+        else:
         ?>
         <form class="form-inline my-2 my-lg-0" method="post">
             <div class="form-group">
@@ -106,7 +102,7 @@
             <button type="submit" class="btn btn-outline-dark my-2 my-sm-2" id="login_submit" name="login_submit">Войти&nbsp;<i class="fas fa-sign-in-alt"></i></button>
         </form>
         <?php
-        }
+        endif;
         ?>
     </nav>
 </div>
