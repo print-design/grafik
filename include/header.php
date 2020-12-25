@@ -5,26 +5,31 @@
         </a>
         <ul class="navbar-nav mr-auto">
             <?php
-            $comiflex_status = $_SERVER['PHP_SELF'] == APPLICATION.'/comiflex/index.php' ? ' disabled' : '';
-            $zbs1_status = $_SERVER['PHP_SELF'] == APPLICATION.'/zbs1/index.php' ? ' disabled' : '';
-            $zbs2_status = $_SERVER['PHP_SELF'] == APPLICATION.'/zbs2/index.php' ? ' disabled' : '';
-            $zbs3_status = $_SERVER['PHP_SELF'] == APPLICATION.'/zbs3/index.php' ? ' disabled' : '';
-            $atlas_status = $_SERVER['PHP_SELF'] == APPLICATION.'/atlas/index.php' ? ' disabled' : '';
-            $laminators_status = $_SERVER['PHP_SELF'] == APPLICATION.'/laminators/index.php' ? ' disabled' : '';
-            $cutters_status = $_SERVER['PHP_SELF'] == APPLICATION.'/cutters/index.php' ? ' disabled' : '';
-            $machine_status = $_SERVER['PHP_SELF'] == APPLICATION.'/machine/index.php' ? ' disabled' : '';
-            $lamination_status = $_SERVER['PHP_SELF'] == APPLICATION.'/lamination/index.php' ? ' disabled' : '';
-            $user_status = $_SERVER['PHP_SELF'] == APPLICATION.'/user/index.php' ? ' disabled' : '';
-            $personal_status = $_SERVER['PHP_SELF'] == APPLICATION.'/personal/index.php' ? ' disabled' : '';
+            $comiflex_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/comiflex/index.php' ? ' disabled' : '';
+            $zbs1_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/zbs1/index.php' ? ' disabled' : '';
+            $zbs2_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/zbs2/index.php' ? ' disabled' : '';
+            $zbs3_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/zbs3/index.php' ? ' disabled' : '';
+            $atlas_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/atlas/index.php' ? ' disabled' : '';
+            $laminators_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/laminators/index.php' ? ' disabled' : '';
+            $cutters_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/cutters/index.php' ? ' disabled' : '';
+            $machine_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/machine/index.php' ? ' disabled' : '';
+            $lamination_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/lamination/index.php' ? ' disabled' : '';
+            $user_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/user/index.php' ? ' disabled' : '';
+            $personal_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/personal/index.php' ? ' disabled' : '';
             
             $query_string = '';
             $period = array();
-            if(isset($_GET['from']) && $_GET['from'] != '')
-                $period['from'] = $_GET['from'];
-            if(isset($_GET['to']) && $_GET['to'] != '')
-                $period['to'] = $_GET['to'];
+            
+            $from = filter_input(INPUT_GET, 'from');
+            if($from !== null)
+                $period['from'] = $from;
+            
+            $to = filter_input(INPUT_POST, 'to');
+            if($to !== null)
+                $period['to'] = $to;
+            
             if(count($period) > 0)
-                $query_string = '?'.http_build_query ($period);
+                $query_string = '?'.http_build_query($period);
             
             if(LoggedIn()) {
             ?>
