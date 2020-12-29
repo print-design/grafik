@@ -82,6 +82,10 @@ if($comment !== null) {
 
 $status_id = filter_input(INPUT_GET, 'status_id');
 if($status_id !== null) {
+    if($status_id === '') {
+        $status_id = 'NULL';
+    }
+    
     $error_message = (new Executer("update edition set status_id=$status_id where id=$id"))->error;
     
     if($error_message == '') {
@@ -97,6 +101,10 @@ if($status_id !== null) {
 
 $roller_id = filter_input(INPUT_GET, 'roller_id');
 if($roller_id !== null) {
+    if($roller_id === '') {
+        $roller_id = 'NULL';
+    }
+    
     $error_message = (new Executer("update edition set roller_id=$roller_id where id=$id"))->error;
     
     if($error_message == '') {
@@ -112,6 +120,10 @@ if($roller_id !== null) {
 
 $lamination_id = filter_input(INPUT_GET, 'lamination_id');
 if($lamination_id !== null) {
+    if($lamination_id === '') {
+        $lamination_id = 'NULL';
+    }
+    
     $error_message = (new Executer("update edition set lamination_id=$lamination_id where id=$id"))->error;
     
     if($error_message == '') {
@@ -127,6 +139,10 @@ if($lamination_id !== null) {
 
 $manager_id = filter_input(INPUT_GET, 'manager_id');
 if($manager_id !== null) {
+    if($manager_id === '') {
+        $manager_id = 'NULL';
+    }
+    
     $error_message = (new Executer("update edition set manager_id=$manager_id where id=$id"))->error;
     
     if($error_message == '') {
