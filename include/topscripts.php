@@ -40,11 +40,11 @@ function GetDateFromDateTo($getDateFrom, $getDateTo, &$dateFrom, &$dateTo) {
     $diff14Days = new DateInterval('P14D');
     $diff1Day = new DateInterval('P1D');
     
-    if($getDateFrom !== null) {
+    if($getDateFrom !== null && $getDateFrom !== '') {
         $dateFrom = DateTime::createFromFormat("Y-m-d", $getDateFrom);
     }
     
-    if($getDateTo !== null) {
+    if($getDateTo !== null && $getDateTo !== '') {
         $dateTo = DateTime::createFromFormat("Y-m-d", $getDateTo);
         //$date_to->add($diff1Day);
     }
