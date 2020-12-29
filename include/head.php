@@ -1,5 +1,5 @@
 <meta charset="UTF-8">
-<title>Принт-дизайн. График работы сотрудиков</title>
+<title>Принт-дизайн. График печати</title>
 <link href="<?=APPLICATION ?>/css/bootstrap.css" rel="stylesheet" />
 <link href="<?=APPLICATION ?>/fontawesome-free-5.15.1-web/css/all.min.css" rel="stylesheet" />
 <link href="<?=APPLICATION ?>/css/jquery-ui.css" rel="stylesheet"/>
