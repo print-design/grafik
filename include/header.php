@@ -11,7 +11,11 @@
             $zbs3_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/zbs3/index.php' ? ' disabled' : '';
             $atlas_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/atlas/index.php' ? ' disabled' : '';
             $laminators_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/laminators/index.php' ? ' disabled' : '';
-            $cutters_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/cutters/index.php' ? ' disabled' : '';
+            $cutters1_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/cutters1/index.php' ? ' disabled' : '';
+            $cutters2_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/cutters2/index.php' ? ' disabled' : '';
+            $cutters3_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/cutters3/index.php' ? ' disabled' : '';
+            $cutters_atlas_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/cutters_atlas/index.php' ? ' disabled' : '';
+            $cutters_soma_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/cutters_soma/index.php' ? ' disabled' : '';
             $machine_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/machine/index.php' ? ' disabled' : '';
             $lamination_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/lamination/index.php' ? ' disabled' : '';
             $user_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/user/index.php' ? ' disabled' : '';
@@ -52,7 +56,19 @@
                 <a class="nav-link<?=$laminators_status ?>" href="<?=APPLICATION ?>/laminators/<?=$query_string ?>">Ламинатор</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link<?=$cutters_status ?>" href="<?=APPLICATION ?>/cutters/<?=$query_string ?>">Резка</a>
+                <a class="nav-link<?=$cutters1_status ?>" href="<?=APPLICATION ?>/cutters1/<?=$query_string ?>">Резка 1</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link<?=$cutters2_status ?>" href="<?=APPLICATION ?>/cutters2/<?=$query_string ?>">Резка 2</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link<?=$cutters3_status ?>" href="<?=APPLICATION ?>/cutters3/<?=$query_string ?>">Резка 3</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link<?=$cutters_atlas_status ?>" href="<?=APPLICATION ?>/cutters_atlas/<?=$query_string ?>">Резка &laquo;Атлас&raquo;</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link<?=$cutters_soma_status ?>" href="<?=APPLICATION ?>/cutters_soma/<?=$query_string ?>">Резка &laquo;Сома&raquo;</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link<?=$personal_status ?>" href="<?=APPLICATION ?>/personal/">Мои настройки</a>
