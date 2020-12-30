@@ -10,7 +10,8 @@
             $zbs2_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/zbs2/index.php' ? ' disabled' : '';
             $zbs3_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/zbs3/index.php' ? ' disabled' : '';
             $atlas_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/atlas/index.php' ? ' disabled' : '';
-            $laminators_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/laminators/index.php' ? ' disabled' : '';
+            $laminators1_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/laminators1/index.php' ? ' disabled' : '';
+            $laminators2_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/laminators2/index.php' ? ' disabled' : '';
             $cutters1_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/cutters1/index.php' ? ' disabled' : '';
             $cutters2_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/cutters2/index.php' ? ' disabled' : '';
             $cutters3_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/cutters3/index.php' ? ' disabled' : '';
@@ -53,7 +54,10 @@
                 <a class="nav-link<?=$atlas_status ?>" href="<?=APPLICATION ?>/atlas/<?=$query_string ?>">Атлас</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link<?=$laminators_status ?>" href="<?=APPLICATION ?>/laminators/<?=$query_string ?>">Ламинатор</a>
+                <a class="nav-link<?=$laminators1_status ?>" href="<?=APPLICATION ?>/laminators1/<?=$query_string ?>">Ламинатор 1</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link<?=$laminators2_status ?>" href="<?=APPLICATION ?>/laminators2/<?=$query_string ?>">Ламинатор 2</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link<?=$cutters1_status ?>" href="<?=APPLICATION ?>/cutters1/<?=$query_string ?>">Резка 1</a>
