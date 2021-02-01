@@ -155,11 +155,11 @@
         });
     });
         
-    $('input#comment.editable').focusout(function(){
+    $('textarea#comment.editable').focusout(function(){
         var comment = $(this).val();
         var id = $(this).parent().prev('#id').val();
         $(this).val('000');
-        $.ajax({ url: "../ajax/edition.php?comment=" + comment + "&id=" + id, context: $(this) })
+        $.ajax({ url: "../ajax/edition.php?comment=" + encodeURI(comment) + "&id=" + id, context: $(this) })
                 .done(function(data) {
                     $(this).val(data);
         })

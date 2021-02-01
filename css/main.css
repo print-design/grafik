@@ -62,3 +62,9 @@ table.in-cell tr td {
     z-index: 100;
     display: none;
 }
+
+/* Элементы управления */
+textarea#editable {
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}

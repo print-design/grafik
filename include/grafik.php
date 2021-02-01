@@ -878,7 +878,7 @@ class Grafik {
                 echo '<input type="hidden" id="scroll" name="scroll" />';
                 echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
                 echo '<div class="input-group">';
-                echo '<input type="text" id="comment" name="comment" value="'.(isset($edition['comment']) ? htmlentities($edition['comment']) : '').'" style="width:100px;" class="editable" />';
+                echo '<textarea rows="5" cols="30" wrap="hard" id="comment" name="comment" class="editable">'.(isset($edition['comment']) ? htmlentities($edition['comment']) : '').'</textarea>';
                 echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><span class="font-awesome">&#xf0c7;</span></button></div>';
                 echo '</div>';
                 echo '</form>';
