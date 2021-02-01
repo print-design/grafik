@@ -15,7 +15,6 @@ $grafik->userRole = 5;
 $grafik->hasEdition = true;
 $grafik->hasOrganization = true;
 $grafik->hasLength = true;
-$grafik->hasStatus = true;
 $grafik->hasManager = true;
 $grafik->hasComment = true;
 $grafik->isCutter = true;

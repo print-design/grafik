@@ -355,7 +355,9 @@ class Grafik {
             if($this->hasOrganization) echo '<th>Заказчик</th>';
             if($this->hasEdition) echo '<th>Наименование</th>';
             if($this->hasLength) echo '<th>Метраж</th>';
-            if(IsInRole('admin')) echo '<th>Статус</th>';
+            if(IsInRole('admin')) {
+                if($this->hasStatus) echo '<th>Статус</th>';
+            }
             if($this->hasRoller) echo '<th>Вал</th>';
             if($this->hasLamination) echo '<th>Ламинация</th>';
             if($this->hasColoring) echo '<th>Кр-ть</th>';
