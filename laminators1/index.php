@@ -9,8 +9,7 @@ GetDateFromDateTo(filter_input(INPUT_GET, 'from'), filter_input(INPUT_GET, 'to')
 
 $grafik = new Grafik($date_from, $date_to, 6);
 $grafik->name = 'Ламинатор 1';
-$grafik->user1Name = 'Ламинаторщик 1';
-$grafik->user2Name = 'Ламинаторщик 2';
+$grafik->user1Name = 'Ламинаторщик';
 $grafik->userRole = 4;
 
 $grafik->hasEdition = true;
