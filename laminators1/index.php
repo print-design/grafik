@@ -25,7 +25,7 @@ $error_message = $grafik->error_message;
 <!DOCTYPE html>
 <html>
     <head>
-        <title>График - Comiflex</title>
+        <title>График - Ламинатор 1</title>
         <?php
         include '../include/head.php';
         ?>

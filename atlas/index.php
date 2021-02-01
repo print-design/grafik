@@ -28,7 +28,7 @@ $error_message = $grafik->error_message;
 <!DOCTYPE html>
 <html>
     <head>
-        <title>График - ZBS-1</title>
+        <title>График - Атлас</title>
         <?php
         include '../include/head.php';
         ?>

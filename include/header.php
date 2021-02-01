@@ -15,6 +15,7 @@
             $cutters1_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/cutters1/index.php' ? ' disabled' : '';
             $cutters2_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/cutters2/index.php' ? ' disabled' : '';
             $cutters3_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/cutters3/index.php' ? ' disabled' : '';
+            $cutters4_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/cutters4/index.php' ? ' disabled' : '';
             $cutters_atlas_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/cutters_atlas/index.php' ? ' disabled' : '';
             $cutters_soma_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/cutters_soma/index.php' ? ' disabled' : '';
             $machine_status = filter_input(INPUT_SERVER, 'PHP_SELF') == APPLICATION.'/machine/index.php' ? ' disabled' : '';
@@ -67,6 +68,9 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link<?=$cutters3_status ?>" href="<?=APPLICATION ?>/cutters3/<?=$query_string ?>">Резка 3</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link<?=$cutters4_status ?>" href="<?=APPLICATION ?>/cutters4/<?=$query_string ?>">Резка 4</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link<?=$cutters_atlas_status ?>" href="<?=APPLICATION ?>/cutters_atlas/<?=$query_string ?>">Резка &laquo;Атлас&raquo;</a>

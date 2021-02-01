@@ -25,7 +25,7 @@ $error_message = $grafik->error_message;
 <!DOCTYPE html>
 <html>
     <head>
-        <title>График - Comiflex</title>
+        <title>График - Резка "Атлас"</title>
         <?php
         include '../include/head.php';
         ?>
