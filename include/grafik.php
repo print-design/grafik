@@ -163,7 +163,23 @@ class Grafik {
             $workshift_id = filter_input(INPUT_POST, 'workshift_id');
             $date = filter_input(INPUT_POST, 'date');
             $shift = filter_input(INPUT_POST, 'shift');
-            $this->error_message = (new Executer("insert into edition (workshift_id, position) values ($workshift_id, (SELECT max(e.position) FROM edition e inner join workshift ws on e.workshift_id = ws.id WHERE ws.date = '$date' and ws.shift = '$shift') + 1)"))->error;
+            $position = 1;
+            
+            $direction_post = filter_input(INPUT_POST, 'direction');
+            $position_post = filter_input(INPUT_POST, 'position');
+            if($direction_post !== null && $position_post !== null) {
+                if($direction_post == 'up') {
+                    $this->error_message = (new Executer("update edition e inner join workshift ws on e.workshift_id = ws.id set e.position = e.position - 1 where ws.date = '$date' and ws.shift = '$shift' and position < $position_post"))->error;
+                    $position = intval($position_post) - 1;
+                }
+                
+                if($direction_post == 'down') {
+                    $this->error_message = (new Executer("update edition e inner join workshift ws on e.workshift_id = ws.id set e.position = e.position + 1 where ws.date = '$date' and ws.shift = '$shift' and position < $position_post"))->error;
+                    $position = intval($position_post) + 1;
+                }
+            }
+            
+            $this->error_message = (new Executer("insert into edition (workshift_id, position) values ($workshift_id, $position)"))->error;
         }
         
         // Вставка тиража
@@ -621,17 +637,7 @@ class Grafik {
             
             // Добавление или вставка смены
             if(IsInRole('admin')) {
-                echo "<td class='$top $shift align-bottom' rowspan='$my_rowspan'>";
-                if(isset($row['id'])) {
-                    echo "<form method='post'>";
-                    echo '<input type="hidden" id="scroll" name="scroll" />';
-                    echo "<input type='hidden' id='workshift_id' name='workshift_id' value='".$row['id']."' />";
-                    echo "<input type='hidden' id='date' name='date' value='".$dateshift['date']->format('Y-m-d')."' />";
-                    echo "<input type='hidden' id='shift' name='shift' value='".$dateshift['shift']."' />";
-                    echo "<button type='submit' id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark btn-sm mb-1' title='Добавить тираж'><i class='fas fa-plus'></i></button>";
-                    echo '</form>';
-                }
-                else {
+                if(!isset($row['id'])) {
                     // Вставка тиража
                     $clipboard = '';
                     $disabled = " disabled='disabled'";
@@ -644,6 +650,8 @@ class Grafik {
                         }
                     }
                     
+                    echo "<td class='$top $shift align-bottom' rowspan='$my_rowspan'>";
+                    
                     echo "<form method='post'>";
                     echo '<input type="hidden" id="scroll" name="scroll" />';
                     echo "<input type='hidden' class='clipboard' id='clipboard' name='clipboard' value='$clipboard'>";
@@ -654,8 +662,9 @@ class Grafik {
                     echo '<input type="hidden" id="shift" name="shift" value="'.$dateshift['shift'].'" />';
                     echo "<button id='paste_edition_submit' name='paste_edition_submit' class='btn btn-outline-dark btn-sm clipboard_paste' title='Вставить тираж'$disabled><i class='fas fa-paste'></i></button>";
                     echo "</form>";
+                    
+                    echo '</td>';
                 }
-                echo '</td>';
             }
             
             // Смены
@@ -714,19 +723,32 @@ class Grafik {
         $date = $edition['date'];
         $shift = $edition['shift'];
         $position = $edition['position'];
+        $workshift_id = $edition['workshift_id'];
         
         // Кнопки добавления тиража
-        /*echo "<td class='$top $shift'>";
+        echo "<td class='$top $shift'>";
         
         echo "<form method='post'>";
         echo '<input type="hidden" id="scroll" name="scroll" />';
-        echo "<input type='hidden' id='workshift_id' name='workshift_id' value='".$row['id']."' />";
-        echo "<input type='hidden' id='date' name='date' value='".$dateshift['date']->format('Y-m-d')."' />";
-        echo "<input type='hidden' id='shift' name='shift' value='".$dateshift['shift']."' />";
-        echo "<button type='submit' id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark btn-sm mb-1' title='Добавить тираж'><i class='fas fa-plus'></i></button>";
+        echo "<input type='hidden' id='workshift_id' name='workshift_id' value='$workshift_id' />";
+        echo "<input type='hidden' id='date' name='date' value='$date' />";
+        echo "<input type='hidden' id='shift' name='shift' value='$shift' />";
+        echo "<input type='hidden' id='position' name='position' value='$position' />";
+        echo "<input type='hidden' id='direction' name='direction' value='up' />";
+        echo "<button type='submit' id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark btn-sm mb-1' title='Добавить тираж выше'><i class='fas fa-plus'></i><i class='fas fa-long-arrow-alt-up'></i></button>";
         echo '</form>';
         
-        echo "</td>";*/
+        echo "<form method='post'>";
+        echo '<input type="hidden" id="scroll" name="scroll" />';
+        echo "<input type='hidden' id='workshift_id' name='workshift_id' value='$workshift_id' />";
+        echo "<input type='hidden' id='date' name='date' value='$date' />";
+        echo "<input type='hidden' id='shift' name='shift' value='$shift' />";
+        echo "<input type='hidden' id='position' name='position' value='$position' />";
+        echo "<input type='hidden' id='direction' name='direction' value='down' />";
+        echo "<button type='submit' id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark btn-sm mb-1' title='Добавить тираж ниже'><i class='fas fa-plus'></i><i class='fas fa-long-arrow-alt-down'></i></button>";
+        echo '</form>';
+        
+        echo "</td>";
         
         // Кнопки вставки тиража
         $clipboard = '';
@@ -745,27 +767,23 @@ class Grafik {
         echo "<form method='post'>";
         echo '<input type="hidden" id="scroll" name="scroll" />';
         echo "<input type='hidden' class='clipboard' id='clipboard' name='clipboard' value='$clipboard'>";
-        if(isset($row['id'])) {
-            echo "<input type='hidden' id='workshift_id' name='workshift_id' value='".$row['id']."' />";
-        }
+        echo "<input type='hidden' id='workshift_id' name='workshift_id' value='$workshift_id' />";
         echo "<input type='hidden' id='date' name='date' value='$date' />";
         echo "<input type='hidden' id='shift' name='shift' value='$shift' />";
         echo "<input type='hidden' id='position' name='position' value='$position' />";
         echo "<input type='hidden' id='direction' name='direction' value='up' />";
-        echo "<button id='paste_edition_submit' name='paste_edition_submit' class='btn btn-outline-dark btn-sm clipboard_paste' title='Вставить тираж'$disabled><i class='fas fa-paste'></i><i class='fas fa-long-arrow-alt-up'></i></button>";
+        echo "<button id='paste_edition_submit' name='paste_edition_submit' class='btn btn-outline-dark btn-sm clipboard_paste' title='Вставить тираж выше'$disabled><i class='fas fa-paste'></i><i class='fas fa-long-arrow-alt-up'></i></button>";
         echo "</form>";
         
         echo "<form method='post'>";
         echo '<input type="hidden" id="scroll" name="scroll" />';
         echo "<input type='hidden' class='clipboard' id='clipboard' name='clipboard' value='$clipboard'>";
-        if(isset($row['id'])) {
-            echo "<input type='hidden' id='workshift_id' name='workshift_id' value='".$row['id']."' />";
-        }
+        echo "<input type='hidden' id='workshift_id' name='workshift_id' value='$workshift_id' />";
         echo "<input type='hidden' id='date' name='date' value='$date' />";
         echo "<input type='hidden' id='shift' name='shift' value='$shift' />";
         echo "<input type='hidden' id='position' name='position' value='$position' />";
         echo "<input type='hidden' id='direction' name='direction' value='down' />";
-        echo "<button id='paste_edition_submit' name='paste_edition_submit' class='btn btn-outline-dark btn-sm clipboard_paste' title='Вставить тираж'$disabled><i class='fas fa-paste'></i><i class='fas fa-long-arrow-alt-down'></i></button>";
+        echo "<button id='paste_edition_submit' name='paste_edition_submit' class='btn btn-outline-dark btn-sm clipboard_paste' title='Вставить тираж ниже'$disabled><i class='fas fa-paste'></i><i class='fas fa-long-arrow-alt-down'></i></button>";
         echo "</form>";
                 
         echo "</td>";
