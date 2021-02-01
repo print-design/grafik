@@ -1020,7 +1020,7 @@ class Grafik {
                 . "left join user m on e.manager_id = m.id "
                 . "left join edition_status s on e.status_id = s.id "
                 . "inner join workshift ws on e.workshift_id = ws.id "
-                . "where ws.date >= '".$this->dateFrom->format('Y-m-d')."' and ws.date <= '".$this->dateTo->format('Y-m-d')."' and ws.machine_id = ". $this->machineId;
+                . "where ws.date >= '".$this->dateFrom->format('Y-m-d')."' and ws.date <= '".$this->dateTo->format('Y-m-d')."' and ws.machine_id = ". $this->machineId." order by e.position";
         
         $fetcher = new Fetcher($sql);
         
