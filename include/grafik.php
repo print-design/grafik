@@ -711,6 +711,23 @@ class Grafik {
     }
     
     private function ShowEdition($edition, $top) {
+        $date = $edition['date'];
+        $shift = $edition['shift'];
+        $position = $edition['position'];
+        
+        // Кнопки добавления тиража
+        /*echo "<td class='$top $shift'>";
+        
+        echo "<form method='post'>";
+        echo '<input type="hidden" id="scroll" name="scroll" />';
+        echo "<input type='hidden' id='workshift_id' name='workshift_id' value='".$row['id']."' />";
+        echo "<input type='hidden' id='date' name='date' value='".$dateshift['date']->format('Y-m-d')."' />";
+        echo "<input type='hidden' id='shift' name='shift' value='".$dateshift['shift']."' />";
+        echo "<button type='submit' id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark btn-sm mb-1' title='Добавить тираж'><i class='fas fa-plus'></i></button>";
+        echo '</form>';
+        
+        echo "</td>";*/
+        
         // Кнопки вставки тиража
         $clipboard = '';
         $disabled = " disabled='disabled'";
@@ -723,9 +740,6 @@ class Grafik {
             }
         }
         
-        $date = $edition['date'];
-        $shift = $edition['shift'];
-        $position = $edition['position'];
         echo "<td class='$top $shift'>";
         
         echo "<form method='post'>";
