@@ -16,7 +16,6 @@ $grafik->userRole = 4;
 $grafik->hasEdition = true;
 $grafik->hasOrganization = true;
 $grafik->hasLength = true;
-$grafik->hasStatus = true;
 $grafik->hasLamination = true;
 $grafik->hasManager = true;
 $grafik->hasComment = true;
