@@ -352,6 +352,7 @@ class Grafik {
             if($this->user1Name != '') echo '<th>'.$this->user1Name.'</th>';
             if($this->user2Name != '') echo '<th>'.$this->user2Name.'</th>';
             if(IsInRole('admin')) echo '<th></th>';
+            if(IsInRole('admin')) echo '<th></th>';
             if($this->hasOrganization) echo '<th>Заказчик</th>';
             if($this->hasEdition) echo '<th>Наименование</th>';
             if($this->hasLength) echo '<th>Метраж</th>';
@@ -434,7 +435,7 @@ class Grafik {
                 . "left join lamination lam on e.lamination_id = lam.id "
                 . "left join user m on e.manager_id = m.id "
                 . "inner join workshift ws on e.workshift_id = ws.id "
-                . "where ws.date >= '".$this->dateFrom->format('Y-m-d')."' and ws.date <= '".$this->dateTo->format('Y-m-d')."' and ws.machine_id = ". $this->machineId;
+                . "where ws.date >= '".$this->dateFrom->format('Y-m-d')."' and ws.date <= '".$this->dateTo->format('Y-m-d')."' and ws.machine_id = ". $this->machineId." order by e.position";
         
         $fetcher = new Fetcher($sql);
         
@@ -500,6 +501,7 @@ class Grafik {
                 $top = "top";
             }
             
+            $date = $dateshift['date'];
             $shift = $dateshift['shift'];
             
             echo '<tr>';
@@ -609,30 +611,30 @@ class Grafik {
                     echo "<button type='submit' id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark btn-sm mb-1' title='Добавить тираж'><i class='fas fa-plus'></i></button>";
                     echo '</form>';
                 }
-                
-                // Вставка тиража
-                $clipboard = '';
-                $disabled = " disabled='disabled'";
-                
-                $paste_edition_submit = filter_input(INPUT_POST, 'paste_edition_submit');
-                if($paste_edition_submit !== null) {
-                    $clipboard = filter_input(INPUT_POST, 'clipboard');
-                    if($clipboard != '') {
-                        $disabled = '';
+                else {
+                    // Вставка тиража
+                    $clipboard = '';
+                    $disabled = " disabled='disabled'";
+                    
+                    $paste_edition_submit = filter_input(INPUT_POST, 'paste_edition_submit');
+                    if($paste_edition_submit !== null) {
+                        $clipboard = filter_input(INPUT_POST, 'clipboard');
+                        if($clipboard != '') {
+                            $disabled = '';
+                        }
                     }
+                    
+                    echo "<form method='post'>";
+                    echo '<input type="hidden" id="scroll" name="scroll" />';
+                    echo "<input type='hidden' class='clipboard' id='clipboard' name='clipboard' value='$clipboard'>";
+                    if(isset($row['id'])) {
+                        echo "<input type='hidden' id='workshift_id' name='workshift_id' value='".$row['id']."' />";
+                    }
+                    echo '<input type="hidden" id="date" name="date" value="'.$dateshift['date']->format('Y-m-d').'" />';
+                    echo '<input type="hidden" id="shift" name="shift" value="'.$dateshift['shift'].'" />';
+                    echo "<button id='paste_edition_submit' name='paste_edition_submit' class='btn btn-outline-dark btn-sm clipboard_paste' title='Вставить тираж'$disabled><i class='fas fa-paste'></i></button>";
+                    echo "</form>";
                 }
-                
-                echo "<form method='post'>";
-                echo '<input type="hidden" id="scroll" name="scroll" />';
-                echo "<input type='hidden' class='clipboard' id='clipboard' name='clipboard' value='$clipboard'>";
-                if(isset($row['id'])) {
-                    echo "<input type='hidden' id='workshift_id' name='workshift_id' value='".$row['id']."' />";
-                }
-                echo '<input type="hidden" id="date" name="date" value="'.$dateshift['date']->format('Y-m-d').'" />';
-                echo '<input type="hidden" id="shift" name="shift" value="'.$dateshift['shift'].'" />';
-                echo "<button id='paste_edition_submit' name='paste_edition_submit' class='btn btn-outline-dark btn-sm clipboard_paste' title='Вставить тираж'$disabled><i class='fas fa-paste'></i></button>";
-                echo "</form>";
-                
                 echo '</td>';
             }
             
@@ -640,6 +642,7 @@ class Grafik {
             $edition = null;
             
             if(count($editions) == 0) {
+                echo "<td class='$top $shift'></td>"; // Кнопки вставки тиража, доступны внутри тиража
                 if($this->hasOrganization) echo "<td class='$top $shift'></td>";
                 if($this->hasEdition) echo "<td class='$top $shift'></td>";
                 if($this->hasLength) echo "<td class='$top $shift'></td>";
@@ -666,7 +669,7 @@ class Grafik {
             }
             else {
                 $edition = array_shift($editions);
-                $this->ShowEditon($edition, $top, $shift);
+                $this->ShowEdition($edition, $top, $date, $shift);
             }
             
             echo '</tr>';
@@ -676,7 +679,7 @@ class Grafik {
             
             while ($edition != null) {
                 echo '<tr>';
-                $this->ShowEditon($edition, 'nottop', $shift);
+                $this->ShowEdition($edition, 'nottop', $date, $shift);
                 echo '</tr>';
                 $edition = array_shift($editions);
             }
@@ -687,7 +690,45 @@ class Grafik {
 <?php
     }
     
-    private function ShowEditon($edition, $top, $shift) {
+    private function ShowEdition($edition, $top, $date, $shift) {
+        // Кнопки вставки тиража
+        $clipboard = '';
+        $disabled = " disabled='disabled'";
+        
+        $paste_edition_submit = filter_input(INPUT_POST, 'paste_edition_submit');
+        if($paste_edition_submit !== null) {
+            $clipboard = filter_input(INPUT_POST, 'clipboard');
+            if($clipboard != '') {
+                $disabled = '';
+            }
+        }
+        
+        echo "<td class='$top $shift'>";
+        
+        echo "<form method='post'>";
+        echo '<input type="hidden" id="scroll" name="scroll" />';
+        echo "<input type='hidden' class='clipboard' id='clipboard' name='clipboard' value='$clipboard'>";
+        if(isset($row['id'])) {
+            echo "<input type='hidden' id='workshift_id' name='workshift_id' value='".$row['id']."' />";
+        }
+        echo '<input type="hidden" id="date" name="date" value="'.$date->format('Y-m-d').'" />';
+        echo '<input type="hidden" id="shift" name="shift" value="'.$shift.'" />';
+        echo "<button id='paste_edition_submit' name='paste_edition_submit' class='btn btn-outline-dark btn-sm clipboard_paste' title='Вставить тираж'$disabled><i class='fas fa-paste'></i><i class='fas fa-long-arrow-alt-up'></i></button>";
+        echo "</form>";
+        
+        echo "<form method='post'>";
+        echo '<input type="hidden" id="scroll" name="scroll" />';
+        echo "<input type='hidden' class='clipboard' id='clipboard' name='clipboard' value='$clipboard'>";
+        if(isset($row['id'])) {
+            echo "<input type='hidden' id='workshift_id' name='workshift_id' value='".$row['id']."' />";
+        }
+        echo '<input type="hidden" id="date" name="date" value="'.$date->format('Y-m-d').'" />';
+        echo '<input type="hidden" id="shift" name="shift" value="'.$shift.'" />';
+        echo "<button id='paste_edition_submit' name='paste_edition_submit' class='btn btn-outline-dark btn-sm clipboard_paste' title='Вставить тираж'$disabled><i class='fas fa-paste'></i><i class='fas fa-long-arrow-alt-down'></i></button>";
+        echo "</form>";
+                
+        echo "</td>";
+        
         // Заказчик
         if($this->hasOrganization) {
             echo "<td class='$top $shift'>";
