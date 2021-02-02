@@ -667,6 +667,11 @@ class Grafik {
                     
                     echo '</td>';
                 }
+                else if(count($editions) == 0) {
+                    // Добавление тиража
+                    echo "<td class='$top $shift align-bottom' rowspan='$my_rowspan'>";
+                    echo '</td>';
+                }
             }
             
             // Смены
@@ -728,72 +733,74 @@ class Grafik {
         $machine_id = $edition['machine_id'];
         $workshift_id = $edition['workshift_id'];
         
-        // Кнопки добавления тиража
-        echo "<td class='$top $shift'>";
-        
-        echo "<form method='post'>";
-        echo '<input type="hidden" id="scroll" name="scroll" />';
-        echo "<input type='hidden' id='workshift_id' name='workshift_id' value='$workshift_id' />";
-        echo "<input type='hidden' id='date' name='date' value='$date' />";
-        echo "<input type='hidden' id='shift' name='shift' value='$shift' />";
-        echo "<input type='hidden' id='machine_id' name='machine_id' value='$machine_id' />";
-        echo "<input type='hidden' id='position' name='position' value='$position' />";
-        echo "<input type='hidden' id='direction' name='direction' value='up' />";
-        echo "<button type='submit' id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark btn-sm mb-1' title='Добавить тираж выше'><i class='fas fa-plus'></i><i class='fas fa-long-arrow-alt-up'></i></button>";
-        echo '</form>';
-        
-        echo "<form method='post'>";
-        echo '<input type="hidden" id="scroll" name="scroll" />';
-        echo "<input type='hidden' id='workshift_id' name='workshift_id' value='$workshift_id' />";
-        echo "<input type='hidden' id='date' name='date' value='$date' />";
-        echo "<input type='hidden' id='shift' name='shift' value='$shift' />";
-        echo "<input type='hidden' id='machine_id' name='machine_id' value='$machine_id' />";
-        echo "<input type='hidden' id='position' name='position' value='$position' />";
-        echo "<input type='hidden' id='direction' name='direction' value='down' />";
-        echo "<button type='submit' id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark btn-sm mb-1' title='Добавить тираж ниже'><i class='fas fa-plus'></i><i class='fas fa-long-arrow-alt-down'></i></button>";
-        echo '</form>';
-        
-        echo "</td>";
-        
-        // Кнопки вставки тиража
-        $clipboard = '';
-        $disabled = " disabled='disabled'";
-        
-        $paste_edition_submit = filter_input(INPUT_POST, 'paste_edition_submit');
-        if($paste_edition_submit !== null) {
-            $clipboard = filter_input(INPUT_POST, 'clipboard');
-            if($clipboard != '') {
-                $disabled = '';
+        if(IsInRole('admin')) {
+            // Кнопки добавления тиража
+            echo "<td class='$top $shift'>";
+            
+            echo "<form method='post'>";
+            echo '<input type="hidden" id="scroll" name="scroll" />';
+            echo "<input type='hidden' id='workshift_id' name='workshift_id' value='$workshift_id' />";
+            echo "<input type='hidden' id='date' name='date' value='$date' />";
+            echo "<input type='hidden' id='shift' name='shift' value='$shift' />";
+            echo "<input type='hidden' id='machine_id' name='machine_id' value='$machine_id' />";
+            echo "<input type='hidden' id='position' name='position' value='$position' />";
+            echo "<input type='hidden' id='direction' name='direction' value='up' />";
+            echo "<button type='submit' id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark btn-sm mb-1' title='Добавить тираж выше'><i class='fas fa-plus'></i><i class='fas fa-long-arrow-alt-up'></i></button>";
+            echo '</form>';
+            
+            echo "<form method='post'>";
+            echo '<input type="hidden" id="scroll" name="scroll" />';
+            echo "<input type='hidden' id='workshift_id' name='workshift_id' value='$workshift_id' />";
+            echo "<input type='hidden' id='date' name='date' value='$date' />";
+            echo "<input type='hidden' id='shift' name='shift' value='$shift' />";
+            echo "<input type='hidden' id='machine_id' name='machine_id' value='$machine_id' />";
+            echo "<input type='hidden' id='position' name='position' value='$position' />";
+            echo "<input type='hidden' id='direction' name='direction' value='down' />";
+            echo "<button type='submit' id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark btn-sm mb-1' title='Добавить тираж ниже'><i class='fas fa-plus'></i><i class='fas fa-long-arrow-alt-down'></i></button>";
+            echo '</form>';
+            
+            echo "</td>";
+            
+            // Кнопки вставки тиража
+            $clipboard = '';
+            $disabled = " disabled='disabled'";
+            
+            $paste_edition_submit = filter_input(INPUT_POST, 'paste_edition_submit');
+            if($paste_edition_submit !== null) {
+                $clipboard = filter_input(INPUT_POST, 'clipboard');
+                if($clipboard != '') {
+                    $disabled = '';
+                }
             }
+            
+            echo "<td class='$top $shift'>";
+            
+            echo "<form method='post'>";
+            echo '<input type="hidden" id="scroll" name="scroll" />';
+            echo "<input type='hidden' class='clipboard' id='clipboard' name='clipboard' value='$clipboard'>";
+            echo "<input type='hidden' id='workshift_id' name='workshift_id' value='$workshift_id' />";
+            echo "<input type='hidden' id='date' name='date' value='$date' />";
+            echo "<input type='hidden' id='shift' name='shift' value='$shift' />";
+            echo "<input type='hidden' id='machine_id' name='machine_id' value='$machine_id' />";
+            echo "<input type='hidden' id='position' name='position' value='$position' />";
+            echo "<input type='hidden' id='direction' name='direction' value='up' />";
+            echo "<button id='paste_edition_submit' name='paste_edition_submit' class='btn btn-outline-dark btn-sm clipboard_paste' title='Вставить тираж выше'$disabled><i class='fas fa-paste'></i><i class='fas fa-long-arrow-alt-up'></i></button>";
+            echo "</form>";
+            
+            echo "<form method='post'>";
+            echo '<input type="hidden" id="scroll" name="scroll" />';
+            echo "<input type='hidden' class='clipboard' id='clipboard' name='clipboard' value='$clipboard'>";
+            echo "<input type='hidden' id='workshift_id' name='workshift_id' value='$workshift_id' />";
+            echo "<input type='hidden' id='date' name='date' value='$date' />";
+            echo "<input type='hidden' id='shift' name='shift' value='$shift' />";
+            echo "<input type='hidden' id='machine_id' name='machine_id' value='$machine_id' />";
+            echo "<input type='hidden' id='position' name='position' value='$position' />";
+            echo "<input type='hidden' id='direction' name='direction' value='down' />";
+            echo "<button id='paste_edition_submit' name='paste_edition_submit' class='btn btn-outline-dark btn-sm clipboard_paste' title='Вставить тираж ниже'$disabled><i class='fas fa-paste'></i><i class='fas fa-long-arrow-alt-down'></i></button>";
+            echo "</form>";
+            
+            echo "</td>";
         }
-        
-        echo "<td class='$top $shift'>";
-        
-        echo "<form method='post'>";
-        echo '<input type="hidden" id="scroll" name="scroll" />';
-        echo "<input type='hidden' class='clipboard' id='clipboard' name='clipboard' value='$clipboard'>";
-        echo "<input type='hidden' id='workshift_id' name='workshift_id' value='$workshift_id' />";
-        echo "<input type='hidden' id='date' name='date' value='$date' />";
-        echo "<input type='hidden' id='shift' name='shift' value='$shift' />";
-        echo "<input type='hidden' id='machine_id' name='machine_id' value='$machine_id' />";
-        echo "<input type='hidden' id='position' name='position' value='$position' />";
-        echo "<input type='hidden' id='direction' name='direction' value='up' />";
-        echo "<button id='paste_edition_submit' name='paste_edition_submit' class='btn btn-outline-dark btn-sm clipboard_paste' title='Вставить тираж выше'$disabled><i class='fas fa-paste'></i><i class='fas fa-long-arrow-alt-up'></i></button>";
-        echo "</form>";
-        
-        echo "<form method='post'>";
-        echo '<input type="hidden" id="scroll" name="scroll" />';
-        echo "<input type='hidden' class='clipboard' id='clipboard' name='clipboard' value='$clipboard'>";
-        echo "<input type='hidden' id='workshift_id' name='workshift_id' value='$workshift_id' />";
-        echo "<input type='hidden' id='date' name='date' value='$date' />";
-        echo "<input type='hidden' id='shift' name='shift' value='$shift' />";
-        echo "<input type='hidden' id='machine_id' name='machine_id' value='$machine_id' />";
-        echo "<input type='hidden' id='position' name='position' value='$position' />";
-        echo "<input type='hidden' id='direction' name='direction' value='down' />";
-        echo "<button id='paste_edition_submit' name='paste_edition_submit' class='btn btn-outline-dark btn-sm clipboard_paste' title='Вставить тираж ниже'$disabled><i class='fas fa-paste'></i><i class='fas fa-long-arrow-alt-down'></i></button>";
-        echo "</form>";
-                
-        echo "</td>";
         
         // Заказчик
         if($this->hasOrganization) {
