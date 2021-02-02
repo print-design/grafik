@@ -667,18 +667,15 @@ class Grafik {
                     
                     echo '</td>';
                 }
-                else if(count($editions) == 0) {
-                    // Добавление тиража
-                    echo "<td class='$top $shift align-bottom' rowspan='$my_rowspan'>";
-                    echo '</td>';
-                }
             }
             
             // Смены
             $edition = null;
             
             if(count($editions) == 0) {
-                echo "<td class='$top $shift'></td>"; // Кнопки вставки тиража, доступны внутри тиража
+                if(IsInRole('admin')) {
+                    echo "<td class='$top $shift'></td>"; // Кнопки вставки тиража, доступны внутри тиража
+                }
                 if($this->hasOrganization) echo "<td class='$top $shift'></td>";
                 if($this->hasEdition) echo "<td class='$top $shift'></td>";
                 if($this->hasLength) echo "<td class='$top $shift'></td>";
