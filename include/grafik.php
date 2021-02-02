@@ -797,7 +797,7 @@ class Grafik {
         
         // Заказчик
         if($this->hasOrganization) {
-            echo "<td class='$top $shift'>";            echo $position;
+            echo "<td class='$top $shift'>";
             if(IsInRole('admin')) {
                 echo '<form method="post">';
                 echo '<input type="hidden" id="scroll" name="scroll" />';
