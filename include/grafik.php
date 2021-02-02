@@ -157,25 +157,24 @@ class Grafik {
             }
         }
         
-        // Добавление тиража
+        // Создание тиража
         $create_shift_submit = filter_input(INPUT_POST, 'create_edition_submit');
         if($create_shift_submit !== null) {
             $workshift_id = filter_input(INPUT_POST, 'workshift_id');
             $date = filter_input(INPUT_POST, 'date');
             $shift = filter_input(INPUT_POST, 'shift');
-            $machine_id = filter_input(INPUT_POST, 'machine_id');
             $position = 1;
             
             $direction_post = filter_input(INPUT_POST, 'direction');
             $position_post = filter_input(INPUT_POST, 'position');
             if($direction_post !== null && $position_post !== null) {
                 if($direction_post == 'up') {
-                    $this->error_message = (new Executer("update edition e inner join workshift ws on e.workshift_id = ws.id set e.position = e.position - 1 where ws.date = '$date' and ws.shift = '$shift' and ws.machine_id = '$machine_id' and position < $position_post"))->error;
+                    $this->error_message = (new Executer("update edition e inner join workshift ws on e.workshift_id = ws.id set e.position = e.position - 1 where ws.date = '$date' and ws.shift = '$shift' and ws.machine_id = '$this->machineId' and position < $position_post"))->error;
                     $position = intval($position_post) - 1;
                 }
                 
                 if($direction_post == 'down') {
-                    $this->error_message = (new Executer("update edition e inner join workshift ws on e.workshift_id = ws.id set e.position = e.position + 1 where ws.date = '$date' and ws.shift = '$shift' and ws.machine_id = '$machine_id' and position > $position_post"))->error;
+                    $this->error_message = (new Executer("update edition e inner join workshift ws on e.workshift_id = ws.id set e.position = e.position + 1 where ws.date = '$date' and ws.shift = '$shift' and ws.machine_id = '$this->machineId' and position > $position_post"))->error;
                     $position = intval($position_post) + 1;
                 }
             }
@@ -205,12 +204,10 @@ class Grafik {
             $user2_id = $row['user2_id'] == null ? 'NULL' : "'".$row['user2_id']."'";
             $date = filter_input(INPUT_POST, 'date');
             $shift = filter_input(INPUT_POST, 'shift');
-            $machine_id = filter_input(INPUT_POST, 'machine_id');
-            $position = 0;
+            $position = 1;
             
             $workshift_id = filter_input(INPUT_POST, 'workshift_id');
             if($workshift_id == null) {
-                $position = 1;
                 $sql = "insert into workshift (date, machine_id, shift, user1_id, user2_id) values ('$date', $this->machineId, '$shift', $user1_id, $user2_id)";
                 $ws_executer = new Executer($sql);
                 $this->error_message = $ws_executer->error;
@@ -225,12 +222,12 @@ class Grafik {
             $position_post = filter_input(INPUT_POST, 'position');
             if($direction_post !== null && $position_post !== null) {
                 if($direction_post == 'up') {
-                    $this->error_message = (new Executer("update edition e inner join workshift ws on e.workshift_id = ws.id set e.position = e.position - 1 where ws.date = '$date' and ws.shift = '$shift' and ws.machine_id = '$machine_id' and position < $position_post"))->error;
+                    $this->error_message = (new Executer("update edition e inner join workshift ws on e.workshift_id = ws.id set e.position = e.position - 1 where ws.date = '$date' and ws.shift = '$shift' and ws.machine_id = '$this->machineId' and position < $position_post"))->error;
                     $position = intval($position_post) - 1;
                 }
                 
                 if($direction_post == 'down') {
-                    $this->error_message = (new Executer("update edition e inner join workshift ws on e.workshift_id = ws.id set e.position = e.position + 1 where ws.date = '$date' and ws.shift = '$shift' and ws.machine_id = '$machine_id' and position > $position_post"))->error;
+                    $this->error_message = (new Executer("update edition e inner join workshift ws on e.workshift_id = ws.id set e.position = e.position + 1 where ws.date = '$date' and ws.shift = '$shift' and ws.machine_id = '$this->machineId' and position > $position_post"))->error;
                     $position = intval($position_post) + 1;
                 }
             }
@@ -637,9 +634,22 @@ class Grafik {
                 echo '</td>';
             }
             
-            // Добавление или вставка смены
+            // Создание и вставка тиража
             if(IsInRole('admin')) {
-                if(!isset($row['id'])) {
+                if(count($editions) == 0) {
+                    echo "<td class='$top $shift align-bottom' rowspan='$my_rowspan'>";
+                    
+                    if(isset($row['id'])) {
+                        // Создание тиража
+                        echo "<form method='post'>";
+                        echo "<input type='hidden' id='scroll' name='scroll' />";
+                        echo '<input type="hidden" id="date" name="date" value="'.$dateshift['date']->format('Y-m-d').'" />';
+                        echo '<input type="hidden" id="shift" name="shift" value="'.$dateshift['shift'].'" />';
+                        echo "<input type='hidden' id='workshift_id' name='workshift_id' value='".$row['id']."' />";
+                        echo "<button id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark btn-sm mb-1' title='Добавить тираж'><i class='fas fa-plus'></i></button>";
+                        echo '</form>';
+                    }
+                    
                     // Вставка тиража
                     $clipboard = '';
                     $disabled = " disabled='disabled'";
@@ -652,16 +662,14 @@ class Grafik {
                         }
                     }
                     
-                    echo "<td class='$top $shift align-bottom' rowspan='$my_rowspan'>";
-                    
                     echo "<form method='post'>";
                     echo '<input type="hidden" id="scroll" name="scroll" />';
                     echo "<input type='hidden' class='clipboard' id='clipboard' name='clipboard' value='$clipboard'>";
+                    echo '<input type="hidden" id="date" name="date" value="'.$dateshift['date']->format('Y-m-d').'" />';
+                    echo '<input type="hidden" id="shift" name="shift" value="'.$dateshift['shift'].'" />';
                     if(isset($row['id'])) {
                         echo "<input type='hidden' id='workshift_id' name='workshift_id' value='".$row['id']."' />";
                     }
-                    echo '<input type="hidden" id="date" name="date" value="'.$dateshift['date']->format('Y-m-d').'" />';
-                    echo '<input type="hidden" id="shift" name="shift" value="'.$dateshift['shift'].'" />';
                     echo "<button id='paste_edition_submit' name='paste_edition_submit' class='btn btn-outline-dark btn-sm clipboard_paste' title='Вставить тираж'$disabled><i class='fas fa-paste'></i></button>";
                     echo "</form>";
                     
@@ -739,7 +747,6 @@ class Grafik {
             echo "<input type='hidden' id='workshift_id' name='workshift_id' value='$workshift_id' />";
             echo "<input type='hidden' id='date' name='date' value='$date' />";
             echo "<input type='hidden' id='shift' name='shift' value='$shift' />";
-            echo "<input type='hidden' id='machine_id' name='machine_id' value='$machine_id' />";
             echo "<input type='hidden' id='position' name='position' value='$position' />";
             echo "<input type='hidden' id='direction' name='direction' value='up' />";
             echo "<button type='submit' id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark btn-sm mb-1' title='Добавить тираж выше'><i class='fas fa-plus'></i><i class='fas fa-long-arrow-alt-up'></i></button>";
@@ -750,10 +757,9 @@ class Grafik {
             echo "<input type='hidden' id='workshift_id' name='workshift_id' value='$workshift_id' />";
             echo "<input type='hidden' id='date' name='date' value='$date' />";
             echo "<input type='hidden' id='shift' name='shift' value='$shift' />";
-            echo "<input type='hidden' id='machine_id' name='machine_id' value='$machine_id' />";
             echo "<input type='hidden' id='position' name='position' value='$position' />";
             echo "<input type='hidden' id='direction' name='direction' value='down' />";
-            echo "<button type='submit' id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark btn-sm mb-1' title='Добавить тираж ниже'><i class='fas fa-plus'></i><i class='fas fa-long-arrow-alt-down'></i></button>";
+            echo "<button type='submit' id='create_edition_submit' name='create_edition_submit' class='btn btn-outline-dark btn-sm' title='Добавить тираж ниже'><i class='fas fa-plus'></i><i class='fas fa-long-arrow-alt-down'></i></button>";
             echo '</form>';
             
             echo "</td>";
@@ -781,7 +787,7 @@ class Grafik {
             echo "<input type='hidden' id='machine_id' name='machine_id' value='$machine_id' />";
             echo "<input type='hidden' id='position' name='position' value='$position' />";
             echo "<input type='hidden' id='direction' name='direction' value='up' />";
-            echo "<button id='paste_edition_submit' name='paste_edition_submit' class='btn btn-outline-dark btn-sm clipboard_paste' title='Вставить тираж выше'$disabled><i class='fas fa-paste'></i><i class='fas fa-long-arrow-alt-up'></i></button>";
+            echo "<button id='paste_edition_submit' name='paste_edition_submit' class='btn btn-outline-dark btn-sm mb-1 clipboard_paste' title='Вставить тираж выше'$disabled><i class='fas fa-paste'></i><i class='fas fa-long-arrow-alt-up'></i></button>";
             echo "</form>";
             
             echo "<form method='post'>";
