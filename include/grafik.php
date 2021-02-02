@@ -175,7 +175,7 @@ class Grafik {
                 }
                 
                 if($direction_post == 'down') {
-                    $this->error_message = (new Executer("update edition e inner join workshift ws on e.workshift_id = ws.id set e.position = e.position + 1 where ws.date = '$date' and ws.shift = '$shift' and ws.machine_id = '$machine_id' and position < $position_post"))->error;
+                    $this->error_message = (new Executer("update edition e inner join workshift ws on e.workshift_id = ws.id set e.position = e.position + 1 where ws.date = '$date' and ws.shift = '$shift' and ws.machine_id = '$machine_id' and position > $position_post"))->error;
                     $position = intval($position_post) + 1;
                 }
             }
@@ -230,7 +230,7 @@ class Grafik {
                 }
                 
                 if($direction_post == 'down') {
-                    $this->error_message = (new Executer("update edition e inner join workshift ws on e.workshift_id = ws.id set e.position = e.position + 1 where ws.date = '$date' and ws.shift = '$shift' and ws.machine_id = '$machine_id' and position < $position_post"))->error;
+                    $this->error_message = (new Executer("update edition e inner join workshift ws on e.workshift_id = ws.id set e.position = e.position + 1 where ws.date = '$date' and ws.shift = '$shift' and ws.machine_id = '$machine_id' and position > $position_post"))->error;
                     $position = intval($position_post) + 1;
                 }
             }
@@ -797,7 +797,7 @@ class Grafik {
         
         // Заказчик
         if($this->hasOrganization) {
-            echo "<td class='$top $shift'>";
+            echo "<td class='$top $shift'>";            echo $position;
             if(IsInRole('admin')) {
                 echo '<form method="post">';
                 echo '<input type="hidden" id="scroll" name="scroll" />';
