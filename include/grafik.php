@@ -813,7 +813,7 @@ class Grafik {
                 echo '<input type="hidden" id="scroll" name="scroll" />';
                 echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
                 echo '<div class="input-group">';
-                echo '<input type="text" id="organization" name="organization" value="'.(isset($edition['organization']) ? htmlentities($edition['organization']) : '').'" class="editable organizations" />';
+                echo '<input type="text" id="organization" name="organization" value="'.(isset($edition['organization']) ? htmlentities($edition['organization']) : '').'" class="editable organizations" style="width:140px;" />';
                 echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><i class="fas fa-save"></i></button></div>';
                 echo '</div>';
                 echo '</form>';
@@ -832,7 +832,7 @@ class Grafik {
                 echo '<input type="hidden" id="scroll" name="scroll" />';
                 echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
                 echo '<div class="input-group">';
-                echo '<input type="text" id="edition" name="edition" value="'.(isset($edition['edition']) ? htmlentities($edition['edition']) : '').'" class="editable editions" />';
+                echo '<input type="text" id="edition" name="edition" value="'.(isset($edition['edition']) ? htmlentities($edition['edition']) : '').'" class="editable editions" style="width:140px;" />';
                 echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><i class="fas fa-save"></i></button></div>';
                 echo '</div>';
                 echo '</form>';
@@ -851,7 +851,7 @@ class Grafik {
                 echo '<input type="hidden" id="scroll" name="scroll" />';
                 echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
                 echo '<div class="input-group">';
-                echo '<input type="number" min="0" pattern="\d*" id="length" name="length" value="'.(isset($edition['length']) ? $edition['length'] : '').'" class="editable" style="width:80px;" />';
+                echo '<input type="number" min="0" pattern="\d*" id="length" name="length" value="'.(isset($edition['length']) ? $edition['length'] : '').'" class="editable" style="width:65px;" />';
                 echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><i class="fas fa-save"></i></button></div>';
                 echo '</div>';
                 echo '</form>';
@@ -874,7 +874,7 @@ class Grafik {
                 echo "<form method='post'>";
                 echo '<input type="hidden" id="scroll" name="scroll" />';
                 echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
-                echo "<select id='status_id' name='status_id'>";
+                echo "<select id='status_id' name='status_id' style='width:85px;'>";
                 echo '<optgroup>';
                 echo '<option value="">...</option>';
                 foreach ($this->statuses as $value) {
@@ -923,7 +923,7 @@ class Grafik {
                 echo "<form method='post'>";
                 echo '<input type="hidden" id="scroll" name="scroll" />';
                 echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
-                echo "<select id='lamination_id' name='lamination_id'>";
+                echo "<select id='lamination_id' name='lamination_id' style='width:55px;'>";
                 echo '<optgroup>';
                 echo '<option value="">...</option>';
                 foreach ($this->laminations as $value) {
@@ -950,7 +950,7 @@ class Grafik {
                 echo '<input type="hidden" id="scroll" name="scroll" />';
                 echo "<input type='hidden' id='id' name='id' value='".$edition['id']."' />";
                 echo '<div class="input-group">';
-                echo '<input type="number" min="0" max="'.$this->coloring.'" pattern="\d*" id="coloring" name="coloring" value="'.(isset($edition['coloring']) ? $edition['coloring'] : '').'" class="editable" style="width:50px;" />';
+                echo '<input type="number" min="0" max="'.$this->coloring.'" pattern="\d*" id="coloring" name="coloring" value="'.(isset($edition['coloring']) ? $edition['coloring'] : '').'" class="editable" style="width:35px;" />';
                 echo '<div class="input-group-append d-none"><button type="submit" class="btn btn-outline-dark"><i class="fas fa-save"></i></button></div>';
                 echo '</div>';
                 echo '</form>';

@@ -15,6 +15,10 @@ body.print {
     transform-style: preserve-3d;
 }
 
+.table th, .table td {
+    padding: 5px;
+}
+
 table.typography {
     font-size: smaller;
 }
